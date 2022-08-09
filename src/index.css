@@ -1,0 +1,14 @@
+@font-face {
+    font-family: "Tarkov";
+    src: url("../public/static/fonts/Jovanny Lemonad - Bender.otf") format("opentype")
+}
+
+main {
+    background-color: #000;
+    min-height: 90vh;
+}
+
+.nav-link, .dropdown-item {
+    font-family: Tarkov, serif;
+    font-size: 20px;
+}
