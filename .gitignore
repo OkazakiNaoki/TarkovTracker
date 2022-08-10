@@ -9,3 +9,5 @@ public/main.js
 .env
 
 bootstrap.min.css
+
+server/seeddata
