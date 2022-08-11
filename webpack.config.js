@@ -15,6 +15,12 @@ module.exports = {
     open: true,
     hot: true,
     liveReload: true,
+    proxy: {
+      "/api/*": {
+        target: "http://localhost:3333",
+        secure: false,
+      },
+    },
   },
   resolve: {
     extensions: [".js", ".jsx", ".json"],

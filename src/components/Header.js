@@ -12,12 +12,7 @@ import logo from "../../public/static/images/escape_from_tarkov_logo.png"
 const Header = () => {
   return (
     <header>
-      <Navbar
-        className="bg-gradient"
-        bg="dark gradient"
-        variant="dark"
-        expand="lg"
-      >
+      <Navbar bg="dark" variant="dark" expand="lg">
         <Container>
           <LinkContainer to="/">
             <NavbarBrand>
@@ -44,11 +39,7 @@ const Header = () => {
               <LinkContainer to="/">
                 <Nav.Link className="mx-3">Login</Nav.Link>
               </LinkContainer>
-              <NavDropdown
-                menuVariant="dark"
-                title="profile dropdown"
-                id="username"
-              >
+              <NavDropdown menuVariant="dark" title="profile" id="username">
                 <LinkContainer to="/">
                   <NavDropdown.Item>Profile</NavDropdown.Item>
                 </LinkContainer>

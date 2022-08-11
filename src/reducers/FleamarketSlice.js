@@ -1,46 +1,48 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import axios from "axios"
 
-export const incrementThunk = createAsyncThunk(
-  "counter/incrementThunk",
-  async () => {
-    const res = await fetch("https://httpbin.org/get")
-    return res.json()
+export const searchItemByName = createAsyncThunk(
+  "fleamarket/searchItemByName",
+  async (keyword) => {
+    try {
+      if (keyword) {
+        const { data } = await axios.get(`/api/items?keyword=${keyword}`)
+        return data
+      } else {
+        const { data } = await axios.get(`/api/items`)
+        return data
+      }
+    } catch (error) {
+      console.log(error)
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
   }
 )
 
 export const FleamarketSlice = createSlice({
   name: "fleamarket",
   initialState: {
-    counting: 0,
+    isLoading: false,
+    items: [],
   },
-  reducers: {
-    increment: (state) => {
-      state.counting += 1
-    },
-    decrement: (state) => {
-      state.counting -= 1
-    },
-    incrementWithAmount: (state, action) => {
-      state.counting += action.payload
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(incrementThunk.fulfilled, (state, action) => {
-      console.log(action.payload)
-      state.counting += 100
-    })
+    builder
+      .addCase(searchItemByName.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(searchItemByName.fulfilled, (state, action) => {
+        state.success = true
+        state.isLoading = false
+        state.items = action.payload.items
+      })
+      .addCase(searchItemByName.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
   },
 })
-
-export const { increment, decrement, incrementWithAmount } =
-  FleamarketSlice.actions
-
-export const incrementWithAmountAsync = (amount) => (dispatch) => {
-  setTimeout(() => {
-    dispatch(incrementWithAmount(amount))
-  }, 1000)
-}
-
-export const selectCount = (state) => state.fleamarket.counting
 
 export default FleamarketSlice.reducer

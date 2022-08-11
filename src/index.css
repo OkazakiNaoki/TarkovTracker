@@ -14,9 +14,25 @@ nav {
 
 .nav-link, .dropdown-item {
     font-family: Tarkov, serif;
+    letter-spacing: 1px;
     font-size: 20px;
 }
 
 .input-group .btn {
     font-family: Tarkov, serif;
+    letter-spacing: 1px;
+}
+
+.card-title, .card-text {
+    font-family: Tarkov, serif;
+    letter-spacing: 1px;
+}
+
+.item-shortname {
+    font-size: 10px;
+    text-shadow:
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }

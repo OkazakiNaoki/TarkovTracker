@@ -20,8 +20,12 @@ function App() {
       >
         <Container>
           <Routes>
-            <Route path="/" element={<HomeScreen />} />
+            <Route
+              path="/fleamarket/:itemName"
+              element={<FleamarketScreen />}
+            />
             <Route path="/fleamarket" element={<FleamarketScreen />} />
+            <Route path="/" element={<HomeScreen />} />
           </Routes>
         </Container>
       </main>
