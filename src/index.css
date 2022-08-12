@@ -36,3 +36,10 @@ nav {
         -1px 1px 0 #000,
         1px 1px 0 #000;
 }
+
+.two-line-text-trunc {
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

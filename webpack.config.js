@@ -20,6 +20,10 @@ module.exports = {
         target: "http://localhost:3333",
         secure: false,
       },
+      "/asset/*": {
+        target: "http://localhost:3333",
+        secure: false,
+      },
     },
   },
   resolve: {

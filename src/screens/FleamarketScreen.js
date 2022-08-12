@@ -57,6 +57,7 @@ const FleamarketScreen = () => {
             md={6}
             lg={4}
             xl={3}
+            xxl={2}
             className="d-flex align-items-stretch"
           >
             <ItemRow item={item} />
