@@ -24,6 +24,10 @@ function App() {
               path="/fleamarket/:itemName"
               element={<FleamarketScreen />}
             />
+            <Route
+              path="/fleamarket/:itemCategory/:itemName"
+              element={<FleamarketScreen />}
+            />
             <Route path="/fleamarket" element={<FleamarketScreen />} />
             <Route path="/" element={<HomeScreen />} />
           </Routes>

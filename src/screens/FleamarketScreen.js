@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react"
-import { Row, Col, InputGroup, Form, Button } from "react-bootstrap"
+import {
+  Row,
+  Col,
+  InputGroup,
+  Form,
+  Button,
+  ToggleButton,
+} from "react-bootstrap"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { HeadMeta } from "../components/HeadMeta"
@@ -9,7 +16,7 @@ import ItemRow from "../components/ItemRow"
 const FleamarketScreen = () => {
   // router
   const navigate = useNavigate()
-  const { itemName } = useParams()
+  const { itemCategory, itemName } = useParams()
 
   // redux
   const dispatch = useDispatch()
@@ -18,16 +25,24 @@ const FleamarketScreen = () => {
   )
 
   // hooks
+  const [curCategory, setCurCategory] = useState("Drink")
   const [keyword, setKeyword] = useState("")
+  const [categoryToggle, setCategoryToggle] = useState([
+    { name: "Food", toggle: false },
+  ])
   useEffect(() => {
-    dispatch(searchItemByName(itemName))
+    dispatch(searchItemByName({ category: itemCategory, keyword: itemName }))
   }, [dispatch, itemName])
 
   // handler
   const submitHandler = (e) => {
     e.preventDefault()
     if (keyword.trim()) {
-      navigate(`/fleamarket/${keyword}`)
+      if (curCategory) {
+        navigate(`/fleamarket/${curCategory}/${keyword}`)
+      } else {
+        navigate(`/fleamarket/${keyword}`)
+      }
     }
   }
 
@@ -49,10 +64,28 @@ const FleamarketScreen = () => {
         </Button>
       </InputGroup>
 
+      {/* TODO: procedure generate category toggle button */}
+      <ToggleButton
+        id="food-toggle"
+        type="checkbox"
+        variant="outline-primary"
+        checked={categoryToggle[0].toggle}
+        value="1"
+        onClick={(e) => {
+          let newArr = [...categoryToggle]
+          newArr[0].toggle = !newArr[0].toggle
+
+          setCategoryToggle(newArr)
+        }}
+        style={{ "--bs-btn-hover-bg": "none" }}
+      >
+        {categoryToggle[0].name}
+      </ToggleButton>
+
       <Row>
         {items.map((item) => (
           <Col
-            key={item._id}
+            key={item.id}
             sm={12}
             md={6}
             lg={4}

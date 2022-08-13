@@ -3,14 +3,27 @@ import axios from "axios"
 
 export const searchItemByName = createAsyncThunk(
   "fleamarket/searchItemByName",
-  async (keyword) => {
+  async (params) => {
+    const { category, keyword } = params
     try {
       if (keyword) {
-        const { data } = await axios.get(`/api/items?keyword=${keyword}`)
-        return data
+        if (category) {
+          const { data } = await axios.get(
+            `/api/items?category=${category}&keyword=${keyword}`
+          )
+          return data
+        } else {
+          const { data } = await axios.get(`/api/items?keyword=${keyword}`)
+          return data
+        }
       } else {
-        const { data } = await axios.get(`/api/items`)
-        return data
+        if (category) {
+          const { data } = await axios.get(`/api/items?category=${category}`)
+          return data
+        } else {
+          const { data } = await axios.get(`/api/items`)
+          return data
+        }
       }
     } catch (error) {
       console.log(error)
