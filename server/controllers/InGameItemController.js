@@ -6,11 +6,14 @@ import InGameItemCategory from "../models/InGameItemCategoryModel.js"
 // @route GET /api/items
 // @access public
 const getItems = asyncHandler(async (req, res) => {
-  let limit = 12
   const keyword = req.query.keyword
   const category = req.query.category
+  const page = Number(req.query.page) || 1
 
-  const items = await InGameItem.aggregate([
+  let limit = 12
+  let skip = limit * (page - 1)
+
+  const aggregateArr = [
     {
       $match: {
         name: keyword ? new RegExp(".*" + keyword + ".*", "i") : /(.*?)/,
@@ -34,12 +37,23 @@ const getItems = asyncHandler(async (req, res) => {
         },
       },
     },
+  ]
+
+  const items = await InGameItem.aggregate([
+    ...aggregateArr,
+    {
+      $skip: skip,
+    },
     {
       $limit: limit,
     },
   ])
+  const [{ count }] = await InGameItem.aggregate([
+    ...aggregateArr,
+    { $count: "count" },
+  ])
 
-  res.json({ items })
+  res.json({ items, page, pages: Math.ceil(count / limit) })
 })
 
 // @desc Get all item categories
