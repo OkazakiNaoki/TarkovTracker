@@ -99,6 +99,41 @@ const getItemCategories = asyncHandler(async (req, res) => {
       },
     ])
     res.json({ categories })
+  } else if (type === "all") {
+    const categories = await InGameItemCategory.aggregate([
+      {
+        $lookup: {
+          from: "ingameitemcategories",
+          let: { id: "$parent.id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$$id", "$id"] },
+              },
+            },
+            { $project: { _id: 0, name: 1 } },
+          ],
+
+          as: "parentObj",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: 1,
+          parentName: { $arrayElemAt: ["$parentObj.name", 0] },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          parentName: {
+            $cond: [{ $ifNull: ["$parentName", false] }, "$parentName", null],
+          },
+        },
+      },
+    ])
+    res.json({ categories })
   }
 })
 

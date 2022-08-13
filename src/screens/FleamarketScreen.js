@@ -6,11 +6,12 @@ import {
   Form,
   Button,
   ToggleButton,
+  Collapse,
 } from "react-bootstrap"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { HeadMeta } from "../components/HeadMeta"
-import { searchItemByName } from "../reducers/FleamarketSlice"
+import { searchItemByName, getItemCategory } from "../reducers/FleamarketSlice"
 import ItemRow from "../components/ItemRow"
 
 const FleamarketScreen = () => {
@@ -20,25 +21,35 @@ const FleamarketScreen = () => {
 
   // redux
   const dispatch = useDispatch()
-  const { isLoading, error, success, items } = useSelector(
+  const { isLoading, error, success, items, categories } = useSelector(
     (state) => state.fleamarket
   )
 
-  // hooks
-  const [curCategory, setCurCategory] = useState("Drink")
+  // hooks state
+  const [curCategory, setCurCategory] = useState("")
   const [keyword, setKeyword] = useState("")
-  const [categoryToggle, setCategoryToggle] = useState([
-    { name: "Food", toggle: false },
-  ])
+  const [categoryToggle, setCategoryToggle] = useState([])
+  const [expandCategory, setExpandCategory] = useState(false)
+
+  // hooks effect
   useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(getItemCategory({ type: "all" }))
+    }
+    if (categoryToggle.length === 0 && categories.length !== 0) {
+      const toggleCat = categories.map((el) => {
+        return { ...el, toggle: false }
+      })
+      setCategoryToggle(toggleCat)
+    }
     dispatch(searchItemByName({ category: itemCategory, keyword: itemName }))
-  }, [dispatch, itemName])
+  }, [dispatch, itemCategory, itemName, categories, categoryToggle])
 
   // handler
   const submitHandler = (e) => {
     e.preventDefault()
     if (keyword.trim()) {
-      if (curCategory) {
+      if (curCategory.trim()) {
         navigate(`/fleamarket/${curCategory}/${keyword}`)
       } else {
         navigate(`/fleamarket/${keyword}`)
@@ -64,23 +75,48 @@ const FleamarketScreen = () => {
         </Button>
       </InputGroup>
 
-      {/* TODO: procedure generate category toggle button */}
-      <ToggleButton
-        id="food-toggle"
-        type="checkbox"
-        variant="outline-primary"
-        checked={categoryToggle[0].toggle}
-        value="1"
-        onClick={(e) => {
-          let newArr = [...categoryToggle]
-          newArr[0].toggle = !newArr[0].toggle
-
-          setCategoryToggle(newArr)
-        }}
-        style={{ "--bs-btn-hover-bg": "none" }}
+      <Button
+        onClick={() => setExpandCategory(!expandCategory)}
+        aria-controls="collapse-category-button"
+        aria-expanded={expandCategory}
+        className="mb-1"
       >
-        {categoryToggle[0].name}
-      </ToggleButton>
+        Category filter
+      </Button>
+      <Collapse in={expandCategory}>
+        <div id="collapse-category-button">
+          {categoryToggle.map((el, i) => {
+            return (
+              <ToggleButton
+                key={el.name}
+                type="checkbox"
+                variant="outline-primary"
+                checked={categoryToggle[i].toggle}
+                value="1"
+                onClick={(e) => {
+                  let toggle = el.toggle
+                  let newArr = categoryToggle.map((el) => {
+                    el.toggle = false
+                    return el
+                  })
+                  newArr[i].toggle = !toggle
+                  if (newArr[i].toggle) {
+                    setCurCategory(newArr[i].name)
+                  } else {
+                    setCurCategory("")
+                  }
+
+                  setCategoryToggle(newArr)
+                }}
+                style={{ "--bs-btn-hover-bg": "none" }}
+                className="mx-1 mb-1"
+              >
+                {categoryToggle[i].name}
+              </ToggleButton>
+            )
+          })}
+        </div>
+      </Collapse>
 
       <Row>
         {items.map((item) => (

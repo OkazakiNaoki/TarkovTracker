@@ -34,11 +34,28 @@ export const searchItemByName = createAsyncThunk(
   }
 )
 
+export const getItemCategory = createAsyncThunk(
+  "fleamarket/getItemCategory",
+  async (params) => {
+    const { type } = params
+    try {
+      const { data } = await axios.get(`/api/items/categories?type=${type}`)
+      return data
+    } catch (error) {
+      console.log(error)
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 export const FleamarketSlice = createSlice({
   name: "fleamarket",
   initialState: {
     isLoading: false,
     items: [],
+    categories: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -52,6 +69,18 @@ export const FleamarketSlice = createSlice({
         state.items = action.payload.items
       })
       .addCase(searchItemByName.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      .addCase(getItemCategory.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getItemCategory.fulfilled, (state, action) => {
+        state.success = true
+        state.isLoading = false
+        state.categories = action.payload.categories
+      })
+      .addCase(getItemCategory.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload
       })
