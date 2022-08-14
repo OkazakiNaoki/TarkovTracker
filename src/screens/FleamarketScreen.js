@@ -9,21 +9,28 @@ import {
   Collapse,
 } from "react-bootstrap"
 import { useSelector, useDispatch } from "react-redux"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { HeadMeta } from "../components/HeadMeta"
 import { searchItemByName, getItemCategory } from "../reducers/FleamarketSlice"
 import ItemRow from "../components/ItemRow"
+import Paginate from "../components/Paginate"
 
 const FleamarketScreen = () => {
   // router
   const navigate = useNavigate()
-  const { itemCategory, itemName } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams({})
 
   // redux
   const dispatch = useDispatch()
-  const { isLoading, error, success, items, categories } = useSelector(
-    (state) => state.fleamarket
-  )
+  const {
+    isLoading,
+    error,
+    success,
+    items,
+    categories,
+    page: statePage,
+    pages: statePages,
+  } = useSelector((state) => state.fleamarket)
 
   // hooks state
   const [curCategory, setCurCategory] = useState("")
@@ -31,7 +38,7 @@ const FleamarketScreen = () => {
   const [categoryToggle, setCategoryToggle] = useState([])
   const [expandCategory, setExpandCategory] = useState(false)
 
-  // hooks effect
+  // hooks effects
   useEffect(() => {
     if (categories.length === 0) {
       dispatch(getItemCategory({ type: "all" }))
@@ -42,17 +49,29 @@ const FleamarketScreen = () => {
       })
       setCategoryToggle(toggleCat)
     }
-    dispatch(searchItemByName({ category: itemCategory, keyword: itemName }))
-  }, [dispatch, itemCategory, itemName, categories, categoryToggle])
+  }, [categories, categoryToggle])
+  useEffect(() => {
+    dispatch(
+      searchItemByName({
+        category: searchParams.get("category")
+          ? searchParams.get("category")
+          : undefined,
+        keyword: searchParams.get("keyword")
+          ? searchParams.get("keyword")
+          : undefined,
+        page: searchParams.get("page") ? searchParams.get("page") : undefined,
+      })
+    )
+  }, [dispatch, searchParams])
 
   // handler
   const submitHandler = (e) => {
     e.preventDefault()
     if (keyword.trim()) {
       if (curCategory.trim()) {
-        navigate(`/fleamarket/${curCategory}/${keyword}`)
+        navigate(`/fleamarket?category=${curCategory}&keyword=${keyword}`)
       } else {
-        navigate(`/fleamarket/${keyword}`)
+        navigate(`/fleamarket?keyword=${keyword}`)
       }
     }
   }
@@ -133,6 +152,14 @@ const FleamarketScreen = () => {
           </Col>
         ))}
       </Row>
+
+      <Paginate
+        page={statePage}
+        pages={statePages}
+        keyword={keyword}
+        category={curCategory}
+        setSearchParams={setSearchParams}
+      />
     </>
   )
 }

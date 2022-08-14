@@ -4,27 +4,13 @@ import axios from "axios"
 export const searchItemByName = createAsyncThunk(
   "fleamarket/searchItemByName",
   async (params) => {
-    const { category, keyword } = params
+    const { category = "", keyword = "", page = "" } = params
+
     try {
-      if (keyword) {
-        if (category) {
-          const { data } = await axios.get(
-            `/api/items?category=${category}&keyword=${keyword}`
-          )
-          return data
-        } else {
-          const { data } = await axios.get(`/api/items?keyword=${keyword}`)
-          return data
-        }
-      } else {
-        if (category) {
-          const { data } = await axios.get(`/api/items?category=${category}`)
-          return data
-        } else {
-          const { data } = await axios.get(`/api/items`)
-          return data
-        }
-      }
+      const { data } = await axios.get(
+        `/api/items?category=${category}&keyword=${keyword}&page=${page}`
+      )
+      return data
     } catch (error) {
       console.log(error)
       return error.response && error.response.data.message
@@ -67,6 +53,8 @@ export const FleamarketSlice = createSlice({
         state.success = true
         state.isLoading = false
         state.items = action.payload.items
+        state.page = action.payload.page
+        state.pages = action.payload.pages
       })
       .addCase(searchItemByName.rejected, (state, action) => {
         state.isLoading = false
