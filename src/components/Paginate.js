@@ -46,9 +46,33 @@ const Paginate = ({ page, pages, keyword, category, setSearchParams }) => {
   return (
     pages > 1 && (
       <Pagination>
+        <div
+          key="most-forward"
+          onClick={() => {
+            setSearchParams({
+              category: category,
+              keyword: keyword,
+              page: 1,
+            })
+          }}
+        >
+          <Pagination.Item>{"<<"}</Pagination.Item>
+        </div>
         {[...Array(pages).keys()].map((x) => {
           return GetRange(x + 1)
         })}
+        <div
+          key="most-back"
+          onClick={() => {
+            setSearchParams({
+              category: category,
+              keyword: keyword,
+              page: pages,
+            })
+          }}
+        >
+          <Pagination.Item>{">>"}</Pagination.Item>
+        </div>
       </Pagination>
     )
   )

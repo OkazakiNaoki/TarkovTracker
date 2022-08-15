@@ -16,7 +16,11 @@ const ItemRow = (props) => {
   return (
     <>
       <Card className="bg-dark text-white my-3 p-3 rounded">
-        <Card.Title className="two-line-text-trunc" style={{ height: "50px" }}>
+        <Card.Title
+          className="two-line-text-trunc"
+          style={{ height: "50px" }}
+          title={props.item.name}
+        >
           <strong>{props.item.name}</strong>
         </Card.Title>
         <div className="d-flex position-relative my-3 justify-content-center">

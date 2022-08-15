@@ -67,12 +67,10 @@ const FleamarketScreen = () => {
   // handler
   const submitHandler = (e) => {
     e.preventDefault()
-    if (keyword.trim()) {
-      if (curCategory.trim()) {
-        navigate(`/fleamarket?category=${curCategory}&keyword=${keyword}`)
-      } else {
-        navigate(`/fleamarket?keyword=${keyword}`)
-      }
+    if (curCategory.trim()) {
+      navigate(`/fleamarket?category=${curCategory}&keyword=${keyword}`)
+    } else {
+      navigate(`/fleamarket?keyword=${keyword}`)
     }
   }
 
@@ -145,7 +143,6 @@ const FleamarketScreen = () => {
             md={6}
             lg={4}
             xl={3}
-            xxl={2}
             className="d-flex align-items-stretch"
           >
             <ItemRow item={item} />
