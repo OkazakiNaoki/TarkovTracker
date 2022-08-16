@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { Container } from "react-bootstrap"
 import { HomeScreen } from "./screens/HomeScreen"
 import { FleamarketScreen } from "./screens/FleamarketScreen"
+import { ItemScreen } from "./screens/ItemScreen"
 import { Header } from "./components/Header"
 import stripedBg from "../public/static/images/striped_background.png"
 
@@ -20,6 +21,7 @@ function App() {
       >
         <Container>
           <Routes>
+            <Route path="/item/:itemName" element={<ItemScreen />} />
             <Route path="/fleamarket/*" element={<FleamarketScreen />} />
             <Route path="/" element={<HomeScreen />} />
           </Routes>

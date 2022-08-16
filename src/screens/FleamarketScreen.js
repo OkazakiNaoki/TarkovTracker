@@ -77,7 +77,7 @@ const FleamarketScreen = () => {
   return (
     <>
       <HeadMeta title="Fleamarket" />
-      <InputGroup size="lg" className="my-3">
+      <InputGroup size="lg" className="my-3 tarkov-font">
         <Form.Control
           placeholder="Enter item name"
           aria-label="item's name"

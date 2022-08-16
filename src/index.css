@@ -12,23 +12,44 @@ nav {
     min-height: 80px;
 }
 
-.nav-link, .dropdown-item {
+.tarkov-font {
     font-family: Tarkov, serif;
     letter-spacing: 1px;
+}
+
+.nav-link, .dropdown-item {
     font-size: 20px;
 }
 
-.input-group .btn {
-    font-family: Tarkov, serif;
-    letter-spacing: 1px;
+/* For react bootstrap Tabs */
+.nav-tabs {
+    border: 0px;
 }
 
-.card-title, .card-text {
-    font-family: Tarkov, serif;
-    letter-spacing: 1px;
+.nav-tabs .nav-link {
+    color: #555;
+    background-color: rgba(0,0,0,0);
+    border: 0px;
 }
 
-.item-shortname {
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background-color: rgba(0,0,0,0);
+    border-bottom: 3px solid #fff;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #999;
+    background-color: rgba(0,0,0,0);
+    border-bottom: 3px solid #999;
+}
+
+.nav-tabs .nav-link {
+    border-top-left-radius: 0%;
+    border-top-right-radius: 0%;
+}
+
+.text-shadow-10 {
     font-size: 10px;
     text-shadow:
         -1px -1px 0 #000,  

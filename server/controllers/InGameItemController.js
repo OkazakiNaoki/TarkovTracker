@@ -56,6 +56,37 @@ const getItems = asyncHandler(async (req, res) => {
   res.json({ items, page, pages: Math.ceil(count / limit) })
 })
 
+// @desc Get items
+// @route GET /api/items
+// @access public
+const getItem = asyncHandler(async (req, res) => {
+  const keyword = req.query.keyword
+  const id = req.query.id
+  const name = req.query.name
+
+  const aggregateArr = [
+    {
+      $match: {
+        id: id ? id : /(.*?)/,
+        name: id ? /(.*?)/ : name,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        id: 1,
+        name: 1,
+        shortName: 1,
+        categories: 1,
+      },
+    },
+  ]
+
+  const item = await InGameItem.aggregate(aggregateArr)
+
+  res.json(item)
+})
+
 // @desc Get all item categories
 // @route GET /api/items/categories?type=
 // @access public
@@ -151,4 +182,4 @@ const getItemCategories = asyncHandler(async (req, res) => {
   }
 })
 
-export { getItems, getItemCategories }
+export { getItems, getItemCategories, getItem }

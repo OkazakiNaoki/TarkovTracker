@@ -21,7 +21,7 @@ const Header = () => {
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="">
+            <Nav className="tarkov-font">
               <LinkContainer to="/">
                 <Nav.Link className="mx-3">Character</Nav.Link>
               </LinkContainer>
@@ -35,7 +35,7 @@ const Header = () => {
                 <Nav.Link className="mx-3">Flea market</Nav.Link>
               </LinkContainer>
             </Nav>
-            <Nav className="ms-auto">
+            <Nav className="ms-auto tarkov-font">
               <LinkContainer to="/">
                 <Nav.Link className="mx-3">Login</Nav.Link>
               </LinkContainer>

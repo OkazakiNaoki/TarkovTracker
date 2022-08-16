@@ -1,5 +1,6 @@
 import express from "express"
 import dotenv from "dotenv"
+import itemsRoutes from "./routes/InGameItemsRoutes.js"
 import itemRoutes from "./routes/InGameItemRoutes.js"
 import connectDB from "./config/db.js"
 import { dirname, join } from "path"
@@ -18,7 +19,8 @@ app.use(express.json())
 // icon image asset
 app.use("/asset", express.static(join(__dirname, "public/images/item-icons")))
 
-app.use("/api/items", itemRoutes)
+app.use("/api/items", itemsRoutes)
+app.use("/api/item", itemRoutes)
 
 const PORT = process.env.PORT || 3030
 app.listen(
