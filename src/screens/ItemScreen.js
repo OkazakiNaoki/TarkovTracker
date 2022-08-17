@@ -53,7 +53,9 @@ const ItemScreen = ({}) => {
           <Col sm={6}>
             <Row className="g-2 mb-2">
               <Col sm={12} md={6}>
-                <div className="text-light border border-light">property 1</div>
+                <div className="text-light border border-light text-center">
+                  property 1
+                </div>
               </Col>
               <Col sm={12} md={6}>
                 <div className="text-light border border-light">property 2</div>
@@ -82,7 +84,7 @@ const ItemScreen = ({}) => {
       <Tabs
         defaultActiveKey="buyFrom"
         id="justify-tab-example"
-        className="mb-4"
+        className="mb-4 flex-column flex-md-row"
         transition={false}
         justify
       >
