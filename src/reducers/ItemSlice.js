@@ -84,7 +84,7 @@ const ItemSlice = createSlice({
   name: "item",
   initialState: {
     isLoading: false,
-    data: {},
+    data: { properties: [] },
   },
   reducers: {},
   extraReducers: (builder) => {

@@ -15,6 +15,7 @@ const ItemScreen = ({}) => {
 
   // hooks state
   const [imgSrc, setImgSrc] = useState("")
+  const [itemPropertyRow, setItemPropertyRow] = useState([])
 
   // hooks effect
   useEffect(() => {
@@ -22,11 +23,32 @@ const ItemScreen = ({}) => {
   }, [dispatch, params.itemName])
   useEffect(() => {
     setImgSrc(`/asset/${data.id}-icon.png`)
+    calcPropertyPerRow()
   }, [data])
 
   // handler
   const imgLoadErrHandle = () => {
     setImgSrc(placeholderImg)
+  }
+
+  const calcPropertyPerRow = () => {
+    const properties = []
+    const propertyKeys = Object.keys(data.properties)
+    for (let i = 0; i < propertyKeys.length; i += 2) {
+      const propertyRow = []
+      propertyRow.push({
+        key: propertyKeys[i],
+        value: data.properties[propertyKeys[i]],
+      })
+      if (i + 1 < propertyKeys.length) {
+        propertyRow.push({
+          key: propertyKeys[i + 1],
+          value: data.properties[propertyKeys[i + 1]],
+        })
+      }
+      properties.push(propertyRow)
+    }
+    setItemPropertyRow(properties)
   }
 
   return (
@@ -51,32 +73,36 @@ const ItemScreen = ({}) => {
           </Col>
 
           <Col sm={6}>
-            <Row className="g-2 mb-2">
-              <Col sm={12} md={6}>
-                <div className="text-light border border-light text-center">
-                  property 1
-                </div>
-              </Col>
-              <Col sm={12} md={6}>
-                <div className="text-light border border-light">property 2</div>
-              </Col>
-            </Row>
-            <Row className="g-2 mb-2">
-              <Col sm={12} md={6}>
-                <div className="text-light border border-light">property 3</div>
-              </Col>
-              <Col sm={12} md={6}>
-                <div className="text-light border border-light">property 4</div>
-              </Col>
-            </Row>
-            <Row className="g-2 mb-2">
-              <Col sm={12} md={6}>
-                <div className="text-light border border-light">property 5</div>
-              </Col>
-              <Col sm={12} md={6}>
-                <div className="text-light border border-light">property 6</div>
-              </Col>
-            </Row>
+            {itemPropertyRow.map((el, i) => {
+              if (el.length === 2)
+                return (
+                  <Row key={i} className="g-2 mb-2">
+                    <Col sm={12} md={6}>
+                      <div className="text-light border border-light py-2">
+                        <div className="text-center">{el[0].key}</div>
+                        <div className="ps-2">{el[0].value}</div>
+                      </div>
+                    </Col>
+                    <Col sm={12} md={6}>
+                      <div className="text-light border border-light py-2">
+                        <div className="text-center">{el[1].key}</div>
+                        <div className="ps-2">{el[1].value}</div>
+                      </div>
+                    </Col>
+                  </Row>
+                )
+              else
+                return (
+                  <Row key={i} className="g-2 mb-2">
+                    <Col sm={12} md={6}>
+                      <div className="text-light border border-light py-2">
+                        <div className="text-center">{el[0].key}</div>
+                        <div className="ps-2">{el[0].value}</div>
+                      </div>
+                    </Col>
+                  </Row>
+                )
+            })}
           </Col>
         </Row>
       </Container>
