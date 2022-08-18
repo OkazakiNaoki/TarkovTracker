@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler"
 import InGameItem from "../models/InGameItemModel.js"
 import InGameItemCategory from "../models/InGameItemCategoryModel.js"
+import InGameItemProperty from "../models/InGameItemPropertyModel.js"
+import InGaneItemAmmoCaliber from "../models/InGameItemAmmoCaliberModel.js"
 
 // @desc Get items
 // @route GET /api/items
@@ -83,6 +85,60 @@ const getItem = asyncHandler(async (req, res) => {
   ]
 
   const item = await InGameItem.aggregate(aggregateArr)
+
+  res.json(item)
+})
+
+// @desc Get items properties
+// @route GET /api/item/properties
+// @access public
+const getItemProperties = asyncHandler(async (req, res) => {
+  const category = req.query.category
+
+  const aggregateArr = [
+    {
+      $match: {
+        category: category,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category: 1,
+        propertyUnion: 1,
+        properties: 1,
+        additionalProperty: 1,
+        propertyRename: 1,
+      },
+    },
+  ]
+
+  const item = await InGameItemProperty.aggregate(aggregateArr)
+
+  res.json(item)
+})
+
+// @desc Get items properties
+// @route GET /api/item/caliber
+// @access public
+const getItemAmmoCaliber = asyncHandler(async (req, res) => {
+  const caliber = req.query.caliber
+
+  const aggregateArr = [
+    {
+      $match: {
+        caliber: caliber,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        ammunition: 1,
+      },
+    },
+  ]
+
+  const item = await InGaneItemAmmoCaliber.aggregate(aggregateArr)
 
   res.json(item)
 })
@@ -182,4 +238,10 @@ const getItemCategories = asyncHandler(async (req, res) => {
   }
 })
 
-export { getItems, getItemCategories, getItem }
+export {
+  getItems,
+  getItemCategories,
+  getItem,
+  getItemProperties,
+  getItemAmmoCaliber,
+}

@@ -1,60 +1,77 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
+import { Placeholder } from "react-bootstrap"
 
 export const searchItem = createAsyncThunk(
   "item/searchItem",
   async (params) => {
     const { name } = params
     try {
-      const mainData = await axios.get(`/api/item?name=${name}`)
-      const category =
-        mainData.data[0].categories[mainData.data[0].categories.length - 1]
+      // name, ID, category of item
+      const itemData = await axios.get(`/api/item?name=${name}`)
+      const category = itemData.data[0].categories[0].name
+      const id = itemData.data[0].id
+      const mainData = itemData.data[0]
+
+      // property union of item
+      const propRevDataGet = await axios.get(
+        `/api/item/properties?category=${category}`
+      )
+      const propRevData = propRevDataGet.data[0]
+
+      // properties of item
       const config = {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
       }
-      console.log(mainData.data[0].id)
       const body = {
         query: `{
-                items(ids: "${mainData.data[0].id}") {
-                  weight
-                  properties {
-                    ... on ItemProperties${category.name} {
-                        caliber
-                        effectiveDistance
-                        ergonomics
-                        defaultErgonomics
-                        recoilVertical
-                        defaultRecoilVertical
-                        recoilHorizontal
-                        defaultRecoilHorizontal
-                        fireModes
-                        fireRate
-                        sightingRange
-                        repairCost
-                        defaultWeight
+                  items(ids: "${id}") {
+                    ${propRevData.additionalProperty.join(", ")}
+                    properties {
+                      ... on ${propRevData.propertyUnion} {
+                          ${propRevData.properties.join(" ")}
+                      }
                     }
                   }
-                }
-            }`,
+              }`,
       }
       const gql = await axios.post(
         `https://api.tarkov.dev/graphql`,
         body,
         config
       )
-      mainData.data[0].weight = gql.data.data.items[0].weight
-      mainData.data[0].properties = gql.data.data.items[0].properties
-      return mainData.data[0]
-      //   return Promise.all([
-      //     await axios.get(`/api/item?name=${name}`),
-      //     await axios.post(`https://api.tarkov.dev/graphql`, body, config),
-      //   ]).then((v) => {
-      //     v[0].data[0].weight = v[1].data.data.items[0].weight
-      //     return v[0].data[0]
-      //   })
+      const gqlData = gql.data.data.items[0]
+      const revProperties = {}
+      for (let key in gqlData.properties) {
+        if (
+          Array.isArray(gqlData.properties[key]) &&
+          gqlData.properties[key].length > 0 &&
+          typeof gqlData.properties[key][0] === "string"
+        ) {
+          revProperties[propRevData.propertyRename[key]] =
+            gqlData.properties[key].join(", ")
+        } else {
+          revProperties[propRevData.propertyRename[key]] =
+            gqlData.properties[key]
+        }
+      }
+      for (let key in gqlData) {
+        if (key !== "properties") {
+          revProperties[propRevData.propertyRename[key]] = gqlData[key]
+        }
+      }
+      if (revProperties.hasOwnProperty("Ammunition")) {
+        const formatedCaliber = await axios.get(
+          `/api/item/caliber?caliber=${revProperties.Ammunition}`
+        )
+        revProperties.Ammunition = formatedCaliber.data[0].ammunition
+      }
+      mainData.properties = revProperties
+
+      return mainData
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
