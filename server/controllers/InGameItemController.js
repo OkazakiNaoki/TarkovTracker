@@ -50,10 +50,12 @@ const getItems = asyncHandler(async (req, res) => {
       $limit: limit,
     },
   ])
-  const [{ count }] = await InGameItem.aggregate([
+  const noLimitItems = await InGameItem.aggregate([
     ...aggregateArr,
     { $count: "count" },
   ])
+  console.log(noLimitItems)
+  const count = noLimitItems.length !== 0 ? noLimitItems[0].count : 0
 
   res.json({ items, page, pages: Math.ceil(count / limit) })
 })
