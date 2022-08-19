@@ -80,13 +80,23 @@ const ItemScreen = ({}) => {
                     <Col sm={12} md={6}>
                       <div className="text-light border border-light py-2">
                         <div className="text-center">{el[0].key}</div>
-                        <div className="ps-2">{el[0].value}</div>
+                        <div
+                          className="px-3"
+                          style={{ whiteSpace: "break-spaces" }}
+                        >
+                          {el[0].value}
+                        </div>
                       </div>
                     </Col>
                     <Col sm={12} md={6}>
                       <div className="text-light border border-light py-2">
                         <div className="text-center">{el[1].key}</div>
-                        <div className="ps-2">{el[1].value}</div>
+                        <div
+                          className="px-3"
+                          style={{ whiteSpace: "break-spaces" }}
+                        >
+                          {el[1].value}
+                        </div>
                       </div>
                     </Col>
                   </Row>
@@ -97,7 +107,12 @@ const ItemScreen = ({}) => {
                     <Col sm={12} md={6}>
                       <div className="text-light border border-light py-2">
                         <div className="text-center">{el[0].key}</div>
-                        <div className="ps-2">{el[0].value}</div>
+                        <div
+                          className="px-3"
+                          style={{ whiteSpace: "break-spaces" }}
+                        >
+                          {el[0].value}
+                        </div>
                       </div>
                     </Col>
                   </Row>

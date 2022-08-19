@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { Placeholder } from "react-bootstrap"
+import {
+  isArrayAndEmpty,
+  isArrayAndNotEmpty,
+  isStringArray,
+  isObjectArray,
+} from "../helpers/CheckIsArrayOf"
 
 export const searchItem = createAsyncThunk(
   "item/searchItem",
@@ -18,6 +24,10 @@ export const searchItem = createAsyncThunk(
         `/api/item/properties?category=${category}`
       )
       const propRevData = propRevDataGet.data[0]
+      if (!propRevData) {
+        mainData.properties = {}
+        return mainData
+      }
 
       // properties of item
       const config = {
@@ -45,24 +55,32 @@ export const searchItem = createAsyncThunk(
       )
       const gqlData = gql.data.data.items[0]
       const revProperties = {}
+      // main processing part of properties
       for (let key in gqlData.properties) {
-        if (
-          Array.isArray(gqlData.properties[key]) &&
-          gqlData.properties[key].length > 0 &&
-          typeof gqlData.properties[key][0] === "string"
-        ) {
+        if (isArrayAndEmpty(gqlData.properties[key])) {
+          revProperties[propRevData.propertyRename[key]] = "None"
+        } else if (isStringArray(gqlData.properties[key])) {
           revProperties[propRevData.propertyRename[key]] =
             gqlData.properties[key].join(", ")
+        } else if (
+          isObjectArray(gqlData.properties[key]) &&
+          key === "stimEffects"
+        ) {
+          revProperties[propRevData.propertyRename[key]] = getStimEffectsString(
+            gqlData.properties[key]
+          )
         } else {
           revProperties[propRevData.propertyRename[key]] =
             gqlData.properties[key]
         }
       }
+      // add addtional field into properties
       for (let key in gqlData) {
         if (key !== "properties") {
           revProperties[propRevData.propertyRename[key]] = gqlData[key]
         }
       }
+      // rematch value of property fields
       if (revProperties.hasOwnProperty("Ammunition")) {
         const formatedCaliber = await axios.get(
           `/api/item/caliber?caliber=${revProperties.Ammunition}`
@@ -79,6 +97,25 @@ export const searchItem = createAsyncThunk(
     }
   }
 )
+
+const getStimEffectsString = (stimEffects) => {
+  let stimEffectStr = ""
+  for (let i = 0; i < stimEffects.length; i++) {
+    stimEffectStr +=
+      (stimEffects[i].type === "Skill"
+        ? stimEffects[i].skillName
+        : stimEffects[i].type) +
+      " " +
+      (stimEffects[i].value > 0
+        ? "+" + stimEffects[i].value + " "
+        : stimEffects[i].value !== 0
+        ? stimEffects[i].value + " "
+        : "") +
+      stimEffects[i].duration +
+      (i !== stimEffects.length - 1 ? "s,\n" : "s")
+  }
+  return stimEffectStr
+}
 
 const ItemSlice = createSlice({
   name: "item",
