@@ -44,10 +44,7 @@ const FleamarketScreen = () => {
       dispatch(getItemCategory({ type: "all" }))
     }
     if (categoryToggle.length === 0 && categories.length !== 0) {
-      const toggleCat = categories.map((el) => {
-        return { ...el, toggle: false }
-      })
-      setCategoryToggle(toggleCat)
+      initializeCategoryToggle()
     }
   }, [categories, categoryToggle])
   useEffect(() => {
@@ -62,6 +59,13 @@ const FleamarketScreen = () => {
         page: searchParams.get("page") ? searchParams.get("page") : undefined,
       })
     )
+    searchParams.get("category")
+      ? toggleCategoryHandler(searchParams.get("category"), true)
+      : initializeCategoryToggle()
+
+    searchParams.get("keyword")
+      ? setKeyword(searchParams.get("keyword"))
+      : setKeyword("")
   }, [dispatch, searchParams])
 
   // handler
@@ -72,6 +76,30 @@ const FleamarketScreen = () => {
     } else {
       navigate(`/fleamarket?keyword=${keyword}`)
     }
+  }
+
+  const toggleCategoryHandler = (targetCategory, onOff) => {
+    if (categoryToggle.length > 0) {
+      const i = categoryToggle.findIndex((object) => {
+        return object.name === targetCategory
+      })
+      let newArr = categoryToggle.map((el) => {
+        el.toggle = false
+        return el
+      })
+      newArr[i].toggle = onOff
+      newArr[i].toggle ? setCurCategory(newArr[i].name) : setCurCategory("")
+
+      setCategoryToggle(newArr)
+    }
+  }
+
+  const initializeCategoryToggle = () => {
+    const toggleCat = categories.map((el) => {
+      return { ...el, toggle: false }
+    })
+    setCategoryToggle(toggleCat)
+    setCurCategory("")
   }
 
   return (
@@ -85,6 +113,7 @@ const FleamarketScreen = () => {
           onChange={(e) => {
             setKeyword(e.target.value)
           }}
+          value={keyword}
           className="text-center"
         />
         <Button variant="secondary" id="button-search" onClick={submitHandler}>
@@ -111,19 +140,7 @@ const FleamarketScreen = () => {
                 checked={categoryToggle[i].toggle}
                 value="1"
                 onClick={(e) => {
-                  let toggle = el.toggle
-                  let newArr = categoryToggle.map((el) => {
-                    el.toggle = false
-                    return el
-                  })
-                  newArr[i].toggle = !toggle
-                  if (newArr[i].toggle) {
-                    setCurCategory(newArr[i].name)
-                  } else {
-                    setCurCategory("")
-                  }
-
-                  setCategoryToggle(newArr)
+                  toggleCategoryHandler(el.name, !categoryToggle[i].toggle)
                 }}
                 style={{ "--bs-btn-hover-bg": "none" }}
                 className="mx-1 mb-1"

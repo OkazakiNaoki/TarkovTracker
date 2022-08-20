@@ -22,13 +22,13 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="tarkov-font">
-              <LinkContainer to="/">
+              <LinkContainer to="/character">
                 <Nav.Link className="mx-3">Character</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/">
+              <LinkContainer to="/hideout">
                 <Nav.Link className="mx-3">Hideout</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/">
+              <LinkContainer to="/task">
                 <Nav.Link className="mx-3">Tasks</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/fleamarket">
