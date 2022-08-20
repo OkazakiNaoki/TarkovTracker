@@ -39,6 +39,11 @@ const getItems = asyncHandler(async (req, res) => {
         },
       },
     },
+    {
+      $sort: {
+        name: 1,
+      },
+    },
   ]
 
   const items = await InGameItem.aggregate([

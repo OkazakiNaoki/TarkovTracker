@@ -19,3 +19,15 @@ export const isObjectArray = (arr) => {
     return true
   else return false
 }
+
+export const isNumArrayArray = (arr) => {
+  if (
+    Array.isArray(arr) &&
+    arr.length !== 0 &&
+    Array.isArray(arr[0]) &&
+    arr[0].length !== 0 &&
+    typeof arr[0][0] === "number"
+  ) {
+    return true
+  } else return false
+}

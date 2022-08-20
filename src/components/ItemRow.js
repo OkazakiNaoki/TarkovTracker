@@ -16,7 +16,7 @@ const ItemRow = (props) => {
 
   return (
     <>
-      <Card className="bg-dark text-white my-3 p-3 rounded tarkov-font">
+      <Card className="bg-dark text-white my-3 p-3 rounded tarkov-font w-100">
         <Link
           to={`/item/${props.item.name}`}
           style={{ color: "inherit", textDecoration: "inherit" }}

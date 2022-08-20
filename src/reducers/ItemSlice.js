@@ -6,6 +6,7 @@ import {
   isArrayAndNotEmpty,
   isStringArray,
   isObjectArray,
+  isNumArrayArray,
 } from "../helpers/CheckIsArrayOf"
 
 export const searchItem = createAsyncThunk(
@@ -59,6 +60,13 @@ export const searchItem = createAsyncThunk(
       for (let key in gqlData.properties) {
         if (isArrayAndEmpty(gqlData.properties[key])) {
           revProperties[propRevData.propertyRename[key]] = "None"
+        } else if (
+          isNumArrayArray(gqlData.properties[key]) &&
+          key === "zoomLevels"
+        ) {
+          revProperties[propRevData.propertyRename[key]] = getZoomLevelsString(
+            gqlData.properties[key]
+          )
         } else if (isStringArray(gqlData.properties[key])) {
           revProperties[propRevData.propertyRename[key]] =
             gqlData.properties[key].join(", ")
@@ -69,6 +77,19 @@ export const searchItem = createAsyncThunk(
           revProperties[propRevData.propertyRename[key]] = getStimEffectsString(
             gqlData.properties[key]
           )
+        } else if (
+          isObjectArray(gqlData.properties[key]) &&
+          key === "pouches"
+        ) {
+          revProperties[propRevData.propertyRename[key]] = getPouchesString(
+            gqlData.properties[key]
+          )
+        } else if (
+          typeof gqlData.properties[key] === "object" &&
+          key === "material"
+        ) {
+          revProperties[propRevData.propertyRename[key]] =
+            gqlData.properties[key].name
         } else {
           revProperties[propRevData.propertyRename[key]] =
             gqlData.properties[key]
@@ -98,6 +119,15 @@ export const searchItem = createAsyncThunk(
   }
 )
 
+const getZoomLevelsString = (zoomLevels) => {
+  let zoomLevelsStr = ""
+  for (let i = 0; i < zoomLevels[0].length; i++) {
+    zoomLevelsStr +=
+      zoomLevels[0][i] + "x" + (i !== zoomLevels[0].length - 1 ? ", " : "")
+  }
+  return zoomLevelsStr
+}
+
 const getStimEffectsString = (stimEffects) => {
   let stimEffectStr = ""
   for (let i = 0; i < stimEffects.length; i++) {
@@ -115,6 +145,18 @@ const getStimEffectsString = (stimEffects) => {
       (i !== stimEffects.length - 1 ? "s,\n" : "s")
   }
   return stimEffectStr
+}
+
+const getPouchesString = (pouches) => {
+  let pouchesStr = ""
+  for (let i = 0; i < pouches.length; i++) {
+    pouchesStr +=
+      pouches[i].width +
+      "X" +
+      pouches[i].height +
+      (i !== pouches.length - 1 ? ", " : "")
+  }
+  return pouchesStr
 }
 
 const ItemSlice = createSlice({
