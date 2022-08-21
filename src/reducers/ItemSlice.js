@@ -95,6 +95,8 @@ export const searchItem = createAsyncThunk(
             gqlData.properties[key]
         }
       }
+      // price and offer from traders
+      const notProperties = ["buyFor", "sellFor"]
       // add addtional field into properties
       for (let key in gqlData) {
         if (key !== "properties") {

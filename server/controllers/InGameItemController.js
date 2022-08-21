@@ -7,7 +7,7 @@ import InGaneItemAmmoCaliber from "../models/InGameItemAmmoCaliberModel.js"
 // @desc Get items
 // @route GET /api/items
 // @access public
-const getItems = asyncHandler(async (req, res) => {
+export const getItems = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
   const category = req.query.category
   const page = Number(req.query.page) || 1
@@ -68,7 +68,7 @@ const getItems = asyncHandler(async (req, res) => {
 // @desc Get items
 // @route GET /api/items
 // @access public
-const getItem = asyncHandler(async (req, res) => {
+export const getItem = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
   const id = req.query.id
   const name = req.query.name
@@ -99,7 +99,7 @@ const getItem = asyncHandler(async (req, res) => {
 // @desc Get items properties
 // @route GET /api/item/properties
 // @access public
-const getItemProperties = asyncHandler(async (req, res) => {
+export const getItemProperties = asyncHandler(async (req, res) => {
   const category = req.query.category
 
   const aggregateArr = [
@@ -128,7 +128,7 @@ const getItemProperties = asyncHandler(async (req, res) => {
 // @desc Get items properties
 // @route GET /api/item/caliber
 // @access public
-const getItemAmmoCaliber = asyncHandler(async (req, res) => {
+export const getItemAmmoCaliber = asyncHandler(async (req, res) => {
   const caliber = req.query.caliber
 
   const aggregateArr = [
@@ -153,7 +153,7 @@ const getItemAmmoCaliber = asyncHandler(async (req, res) => {
 // @desc Get all item categories
 // @route GET /api/items/categories?type=
 // @access public
-const getItemCategories = asyncHandler(async (req, res) => {
+export const getItemCategories = asyncHandler(async (req, res) => {
   const type = req.query.type
 
   if (type === "root") {
@@ -244,11 +244,3 @@ const getItemCategories = asyncHandler(async (req, res) => {
     res.json({ categories })
   }
 })
-
-export {
-  getItems,
-  getItemCategories,
-  getItem,
-  getItemProperties,
-  getItemAmmoCaliber,
-}
