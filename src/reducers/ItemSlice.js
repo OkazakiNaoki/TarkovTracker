@@ -25,10 +25,14 @@ export const searchItem = createAsyncThunk(
         `/api/item/properties?category=${category}`
       )
       const propRevData = propRevDataGet.data[0]
-      if (!propRevData) {
-        mainData.properties = {}
-        return mainData
-      }
+      const addtionalFieldStr = propRevData
+        ? propRevData.additionalProperty.join(", ")
+        : ""
+      const propertiesStr = propRevData
+        ? `properties {... on ${
+            propRevData.propertyUnion
+          }{${propRevData.properties.join(" ")}}}`
+        : ""
 
       // properties of item
       const config = {
@@ -40,12 +44,49 @@ export const searchItem = createAsyncThunk(
       const body = {
         query: `{
                   items(ids: "${id}") {
-                    ${propRevData.additionalProperty.join(", ")}
-                    properties {
-                      ... on ${propRevData.propertyUnion} {
-                          ${propRevData.properties.join(" ")}
+                    ${addtionalFieldStr}
+                    ${propertiesStr}
+                    sellFor{
+                      vendor{name}
+                      price
+                      currencyItem{id name}
+                    }
+                    buyFor{
+                      vendor{
+                        name
+                        ... on TraderOffer{
+                          minTraderLevel
+                        }
+                      }
+                      price
+                      currencyItem{name id}
+                    }
+                    bartersFor{
+                      trader{name}
+                      requiredItems{item{name id} count}
+                      rewardItems{item{name id} count}
+                    }
+                    usedInTasks{
+                      id name
+                      trader{name}
+                      objectives{
+                        ... on TaskObjectiveItem {
+                          type
+                          item{name id}
+                          count
+                        }
                       }
                     }
+                    receivedFromTasks{
+                        name
+                        trader{name}
+                        finishRewards{
+                          items{
+                            item{id name}
+                            count
+                          }
+                        }
+                      }
                   }
               }`,
       }
@@ -95,11 +136,18 @@ export const searchItem = createAsyncThunk(
             gqlData.properties[key]
         }
       }
-      // price and offer from traders
-      const notProperties = ["buyFor", "sellFor"]
+      const dontRename = [
+        "sellFor",
+        "buyFor",
+        "bartersFor",
+        "usedInTasks",
+        "receivedFromTasks",
+      ]
       // add addtional field into properties
       for (let key in gqlData) {
-        if (key !== "properties") {
+        if (dontRename.includes(key)) {
+          mainData[key] = gqlData[key]
+        } else if (key !== "properties") {
           revProperties[propRevData.propertyRename[key]] = gqlData[key]
         }
       }
@@ -161,11 +209,29 @@ const getPouchesString = (pouches) => {
   return pouchesStr
 }
 
+export const searchHideoutItemReq = createAsyncThunk(
+  "item/searchHideoutItemReq",
+  async (params) => {
+    const { itemId = "", itemName = "" } = params
+    try {
+      const hideoutLevelData = await axios.get(
+        `/api/hideout/levels?itemName=${itemName}&itemId=${itemId}`
+      )
+      return hideoutLevelData.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const ItemSlice = createSlice({
   name: "item",
   initialState: {
     isLoading: false,
-    data: { properties: [] },
+    item: { properties: [] },
+    hideout: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -175,10 +241,21 @@ const ItemSlice = createSlice({
       })
       .addCase(searchItem.fulfilled, (state, action) => {
         state.isLoading = false
-        state.data = action.payload
-        console.log("payload: ", action.payload)
+        state.item = action.payload
+        console.log("item: ", action.payload)
       })
       .addCase(searchItem.rejected, (state, action) => {
+        state.error = action.payload
+      })
+      .addCase(searchHideoutItemReq.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(searchHideoutItemReq.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.hideout = action.payload
+        console.log("hideout: ", action.payload)
+      })
+      .addCase(searchHideoutItemReq.rejected, (state, action) => {
         state.error = action.payload
       })
   },

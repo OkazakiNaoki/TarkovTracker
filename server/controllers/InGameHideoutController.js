@@ -10,13 +10,17 @@ export const getHideoutLevels = asyncHandler(async (req, res) => {
 
   const match = itemId
     ? {
-        "levels.itemRequirements.item.id": {
-          $eq: itemId,
+        "levels.itemRequirements": {
+          $elemMatch: {
+            "item.id": itemId,
+          },
         },
       }
     : {
-        "levels.itemRequirements.item.name": {
-          $eq: itemName,
+        "levels.itemRequirements": {
+          $elemMatch: {
+            "item.name": itemName,
+          },
         },
       }
 
@@ -31,7 +35,6 @@ export const getHideoutLevels = asyncHandler(async (req, res) => {
       },
     },
     { $unwind: "$levels" },
-    { $unwind: "$levels.itemRequirements" },
     {
       $match: match,
     },

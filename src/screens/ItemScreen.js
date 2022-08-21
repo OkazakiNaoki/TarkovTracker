@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react"
 import { Container, Row, Col, Image, Tab, Tabs, Table } from "react-bootstrap"
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
-import { searchItem } from "../reducers/ItemSlice"
+import { searchItem, searchHideoutItemReq } from "../reducers/ItemSlice"
+import {
+  titleCase,
+  insertSpaceIntoCamelCase,
+} from "../helpers/StringCasesFormat"
 import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
 
 const ItemScreen = ({}) => {
@@ -11,7 +15,7 @@ const ItemScreen = ({}) => {
 
   // redux
   const dispatch = useDispatch()
-  const { data } = useSelector((state) => state.item)
+  const { item, hideout } = useSelector((state) => state.item)
 
   // hooks state
   const [imgSrc, setImgSrc] = useState("")
@@ -20,11 +24,12 @@ const ItemScreen = ({}) => {
   // hooks effect
   useEffect(() => {
     dispatch(searchItem({ name: params.itemName }))
+    dispatch(searchHideoutItemReq({ itemName: params.itemName }))
   }, [dispatch, params.itemName])
   useEffect(() => {
-    setImgSrc(`/asset/${data.id}-icon.png`)
+    setImgSrc(`/asset/${item.id}-icon.png`)
     calcPropertyPerRow()
-  }, [data])
+  }, [item])
 
   // handler
   const imgLoadErrHandle = () => {
@@ -33,17 +38,17 @@ const ItemScreen = ({}) => {
 
   const calcPropertyPerRow = () => {
     const properties = []
-    const propertyKeys = Object.keys(data.properties)
+    const propertyKeys = Object.keys(item.properties)
     for (let i = 0; i < propertyKeys.length; i += 2) {
       const propertyRow = []
       propertyRow.push({
         key: propertyKeys[i],
-        value: data.properties[propertyKeys[i]],
+        value: item.properties[propertyKeys[i]],
       })
       if (i + 1 < propertyKeys.length) {
         propertyRow.push({
           key: propertyKeys[i + 1],
-          value: data.properties[propertyKeys[i + 1]],
+          value: item.properties[propertyKeys[i + 1]],
         })
       }
       properties.push(propertyRow)
@@ -54,8 +59,8 @@ const ItemScreen = ({}) => {
   return (
     <>
       <h1 className="pt-5 pb-3 text-light tarkov-font">{params.itemName}</h1>
-      <h6 className="text-light tarkov-font">{data.shortName}</h6>
-      <h6 className="text-light tarkov-font">ID: {data.id}</h6>
+      <h6 className="text-light tarkov-font">{item.shortName}</h6>
+      <h6 className="text-light tarkov-font">ID: {item.id}</h6>
       <Container className="mb-5">
         <Row className="gx-5">
           <Col
@@ -78,7 +83,7 @@ const ItemScreen = ({}) => {
                 return (
                   <Row key={i} className="g-2 mb-2">
                     <Col sm={12} md={6}>
-                      <div className="text-light border border-light py-2">
+                      <div className="text-light border border-light py-2 h-100">
                         <div className="text-center">{el[0].key}</div>
                         <div
                           className="px-3"
@@ -89,7 +94,7 @@ const ItemScreen = ({}) => {
                       </div>
                     </Col>
                     <Col sm={12} md={6}>
-                      <div className="text-light border border-light py-2">
+                      <div className="text-light border border-light py-2 h-100">
                         <div className="text-center">{el[1].key}</div>
                         <div
                           className="px-3"
@@ -105,7 +110,7 @@ const ItemScreen = ({}) => {
                 return (
                   <Row key={i} className="g-2 mb-2">
                     <Col sm={12} md={6}>
-                      <div className="text-light border border-light py-2">
+                      <div className="text-light border border-light py-2 h-100">
                         <div className="text-center">{el[0].key}</div>
                         <div
                           className="px-3"
@@ -139,11 +144,20 @@ const ItemScreen = ({}) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
+              {item.buyFor &&
+                item.buyFor.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>
+                        {el.vendor.name !== "Flea Market"
+                          ? el.vendor.name + " @Lv." + el.vendor.minTraderLevel
+                          : el.vendor.name}
+                      </td>
+                      <td>{el.price}</td>
+                      <td>{el.currencyItem.name}</td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
@@ -157,11 +171,16 @@ const ItemScreen = ({}) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
+              {item.sellFor &&
+                item.sellFor.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{el.vendor.name}</td>
+                      <td>{el.price}</td>
+                      <td>{el.currencyItem.name}</td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
@@ -170,14 +189,29 @@ const ItemScreen = ({}) => {
             <thead>
               <tr>
                 <th>Vendor</th>
-                <th>Item list</th>
+                <th>Give</th>
+                <th>Get</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-              </tr>
+              {item.bartersFor &&
+                item.bartersFor.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{el.trader.name}</td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.requiredItems.reduce((prev, el) => {
+                          return prev + el.item.name + "  x" + el.count + "\n"
+                        }, "")}
+                      </td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.rewardItems.reduce((prev, el) => {
+                          return prev + el.item.name + "  x" + el.count + "\n"
+                        }, "")}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
@@ -208,10 +242,19 @@ const ItemScreen = ({}) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-              </tr>
+              {hideout &&
+                hideout.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{el.name + " @Lv." + el.levels.level}</td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.levels.itemRequirements.reduce((prev, el) => {
+                          return prev + el.item.name + "  x" + el.count + "\n"
+                        }, "")}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
@@ -225,11 +268,32 @@ const ItemScreen = ({}) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
+              {item.usedInTasks &&
+                item.usedInTasks.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{el.name}</td>
+                      <td>{el.trader.name}</td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.objectives.reduce((prev, el) => {
+                          if (Object.keys(el).length !== 0) {
+                            return (
+                              prev +
+                              (el.item.name === params.itemName
+                                ? titleCase(insertSpaceIntoCamelCase(el.type)) +
+                                  " " +
+                                  el.item.name +
+                                  "  x" +
+                                  el.count +
+                                  "\n"
+                                : "")
+                            )
+                          } else return prev
+                        }, "")}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
@@ -243,11 +307,20 @@ const ItemScreen = ({}) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
+              {item.receivedFromTasks &&
+                item.receivedFromTasks.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{el.name}</td>
+                      <td>{el.trader.name}</td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.finishRewards.items.reduce((prev, el) => {
+                          return prev + el.item.name + "  x" + el.count + "\n"
+                        }, "")}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
