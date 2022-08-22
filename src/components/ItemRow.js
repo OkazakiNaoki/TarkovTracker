@@ -18,7 +18,7 @@ const ItemRow = (props) => {
     <>
       <Card className="bg-dark text-white my-3 p-3 rounded tarkov-font w-100">
         <Link
-          to={`/item/${props.item.name}`}
+          to={`/item/${props.item.id}`}
           style={{ color: "inherit", textDecoration: "inherit" }}
         >
           <Card.Title
@@ -30,7 +30,7 @@ const ItemRow = (props) => {
           </Card.Title>
         </Link>
         <div className="d-flex position-relative my-3 justify-content-center">
-          <Link to={`/item/${props.item.name}`}>
+          <Link to={`/item/${props.item.id}`}>
             <img
               src={imgSrc}
               onError={imgLoadErrHandle}

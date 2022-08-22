@@ -27,7 +27,7 @@ function App() {
       >
         <Container>
           <Routes>
-            <Route path="/item/:itemName" element={<ItemScreen />} exact />
+            <Route path="/item/:itemId" element={<ItemScreen />} exact />
             <Route path="/fleamarket/*" element={<FleamarketScreen />} />
             <Route path="/task" element={<TaskScreen />} />
             <Route path="/character" element={<CharacterScreen />} />

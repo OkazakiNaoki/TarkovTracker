@@ -12,12 +12,11 @@ import {
 export const searchItem = createAsyncThunk(
   "item/searchItem",
   async (params) => {
-    const { name } = params
+    const { id } = params
     try {
       // name, ID, category of item
-      const itemData = await axios.get(`/api/item?name=${name}`)
+      const itemData = await axios.get(`/api/item?id=${id}`)
       const category = itemData.data[0].categories[0].name
-      const id = itemData.data[0].id
       const mainData = itemData.data[0]
 
       // property union of item
@@ -65,6 +64,21 @@ export const searchItem = createAsyncThunk(
                       trader{name}
                       requiredItems{item{name id} count}
                       rewardItems{item{name id} count}
+                    }
+                    craftsFor{
+                      station{
+                        name
+                      }
+                      level
+                      duration
+                      requiredItems{
+                        item{id name}
+                        count
+                      }
+                      rewardItems{
+                        item{id name}
+                        count
+                      }
                     }
                     usedInTasks{
                       id name
@@ -142,6 +156,7 @@ export const searchItem = createAsyncThunk(
         "bartersFor",
         "usedInTasks",
         "receivedFromTasks",
+        "craftsFor",
       ]
       // add addtional field into properties
       for (let key in gqlData) {

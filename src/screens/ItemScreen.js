@@ -7,6 +7,7 @@ import {
   titleCase,
   insertSpaceIntoCamelCase,
 } from "../helpers/StringCasesFormat"
+import { getHMSfromS } from "../helpers/TimeFormat"
 import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
 
 const ItemScreen = ({}) => {
@@ -23,9 +24,9 @@ const ItemScreen = ({}) => {
 
   // hooks effect
   useEffect(() => {
-    dispatch(searchItem({ name: params.itemName }))
-    dispatch(searchHideoutItemReq({ itemName: params.itemName }))
-  }, [dispatch, params.itemName])
+    dispatch(searchItem({ id: params.itemId }))
+    dispatch(searchHideoutItemReq({ itemId: params.itemId }))
+  }, [dispatch, params.itemId])
   useEffect(() => {
     setImgSrc(`/asset/${item.id}-icon.png`)
     calcPropertyPerRow()
@@ -58,7 +59,7 @@ const ItemScreen = ({}) => {
 
   return (
     <>
-      <h1 className="pt-5 pb-3 text-light tarkov-font">{params.itemName}</h1>
+      <h1 className="pt-5 pb-3 text-light tarkov-font">{item.name}</h1>
       <h6 className="text-light tarkov-font">{item.shortName}</h6>
       <h6 className="text-light tarkov-font">ID: {item.id}</h6>
       <Container className="mb-5">
@@ -72,7 +73,7 @@ const ItemScreen = ({}) => {
           >
             <Image
               src={imgSrc}
-              alt={params.itemName}
+              alt={params.itemId}
               onError={imgLoadErrHandle}
             ></Image>
           </Col>
@@ -219,17 +220,32 @@ const ItemScreen = ({}) => {
           <Table bordered hover variant="dark" className="p-4">
             <thead>
               <tr>
-                <th>Amount</th>
-                <th>Requirement</th>
+                <th>Module</th>
+                <th>Give</th>
                 <th>Duration</th>
+                <th>Get</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-                <td>3</td>
-              </tr>
+              {item.craftsFor &&
+                item.craftsFor.map((el, i) => {
+                  return (
+                    <tr key={i}>
+                      <td>{el.station.name + " @Lv." + el.level}</td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.requiredItems.reduce((prev, el) => {
+                          return prev + el.item.name + "  x" + el.count + "\n"
+                        }, "")}
+                      </td>
+                      <td>{getHMSfromS(el.duration)}</td>
+                      <td style={{ whiteSpace: "break-spaces" }}>
+                        {el.rewardItems.reduce((prev, el) => {
+                          return prev + el.item.name + "  x" + el.count + "\n"
+                        }, "")}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </Tab>
@@ -279,7 +295,7 @@ const ItemScreen = ({}) => {
                           if (Object.keys(el).length !== 0) {
                             return (
                               prev +
-                              (el.item.name === params.itemName
+                              (el.item.name === item.name
                                 ? titleCase(insertSpaceIntoCamelCase(el.type)) +
                                   " " +
                                   el.item.name +
