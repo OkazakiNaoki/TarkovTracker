@@ -8,10 +8,16 @@ import {
   Tabs,
   Table,
   TabPane,
+  Collapse,
 } from "react-bootstrap"
-import { getTraders } from "../reducers/TraderSlice"
+import {
+  getTraders,
+  getTasksOfTrader,
+  setTaskCollapse,
+} from "../reducers/TraderSlice"
 import placeholderImg from "../../public/static/images/default_avatar.png"
 import { Link } from "react-router-dom"
+import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const TaskScreen = () => {
   // hooks
@@ -19,7 +25,7 @@ const TaskScreen = () => {
   const [curTrader, setCurTrader] = useState("Prapor")
 
   // redux
-  const { traders } = useSelector((state) => state.trader)
+  const { traders, tasks } = useSelector((state) => state.trader)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -34,6 +40,15 @@ const TaskScreen = () => {
       setImgSrc(init)
     }
   }, [traders])
+
+  useEffect(() => {
+    if (traders.length !== 0) {
+      let index = getIndexOfMatchFieldObjArr(traders, "name", curTrader)
+      if (curTrader.length > 0 && Object.keys(tasks[index]).length === 0) {
+        dispatch(getTasksOfTrader({ trader: curTrader }))
+      }
+    }
+  }, [traders, curTrader])
 
   const imgLoadErrHandle = (e) => {
     e.target.src = placeholderImg
@@ -102,17 +117,55 @@ const TaskScreen = () => {
                 <Table bordered hover variant="dark" className="p-4">
                   <thead>
                     <tr>
-                      <th>{el.name}</th>
-                      <th>1</th>
-                      <th>1</th>
+                      <th>Task name</th>
+                      <th>Level requirement</th>
+                      <th>Previous task</th>
+                      <th>Trader level requirement</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>2</td>
-                      <td>3</td>
-                    </tr>
+                    {tasks[i].length !== 0 &&
+                      tasks[i].map((el, j) => {
+                        return [
+                          <tr
+                            key={el.id}
+                            onClick={() => {
+                              dispatch(setTaskCollapse({ i, j }))
+                            }}
+                          >
+                            <td>{el.name}</td>
+                            <td>{el.minPlayerLevel}</td>
+                            <td style={{ whiteSpace: "break-spaces" }}>
+                              {el.taskRequirements.reduce((prev, el) => {
+                                return prev + el.task.name + "\n"
+                              }, "")}
+                            </td>
+                            <td>
+                              {el.traderLevelRequirements.reduce((prev, el) => {
+                                return (
+                                  prev +
+                                  el.trader.name +
+                                  " @Lv." +
+                                  el.level +
+                                  "\n"
+                                )
+                              }, "")}
+                            </td>
+                          </tr>,
+
+                          <tr key={el.id + "_collapse"}>
+                            <td colSpan="4" style={{ padding: "0" }}>
+                              <Collapse in={el.collapse}>
+                                <div>
+                                  <div style={{ minHeight: "200px" }}>
+                                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                  </div>
+                                </div>
+                              </Collapse>
+                            </td>
+                          </tr>,
+                        ]
+                      })}
                   </tbody>
                 </Table>
               </TabPane>

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
+import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 export const getTraders = createAsyncThunk(
   "trader/getTraders",
@@ -34,13 +35,34 @@ export const getTraders = createAsyncThunk(
   }
 )
 
+export const getTasksOfTrader = createAsyncThunk(
+  "trader/getTasksOfTrader",
+  async (params) => {
+    const { trader = "" } = params
+    try {
+      const { data } = await axios.get(`/api/task?trader=${trader}`)
+      return { trader: trader, tasksArr: data }
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const traderSlice = createSlice({
   name: "trader",
   initialState: {
     isLoading: false,
     traders: [],
+    tasks: Array(8).fill([]),
   },
-  reducers: {},
+  reducers: {
+    setTaskCollapse: (state, action) => {
+      const { i, j } = action.payload
+      state.tasks[i][j].collapse = !state.tasks[i][j].collapse
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTraders.pending, (state, action) => {
@@ -54,7 +76,28 @@ const traderSlice = createSlice({
       .addCase(getTraders.rejected, (state, action) => {
         throw Error(action.payload)
       })
+      .addCase(getTasksOfTrader.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getTasksOfTrader.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        let index = getIndexOfMatchFieldObjArr(
+          state.traders,
+          "name",
+          action.payload.trader
+        )
+        const copy = [...action.payload.tasksArr]
+        copy.forEach((el) => {
+          el.collapse = false
+        })
+        state.tasks[index] = copy
+      })
+      .addCase(getTasksOfTrader.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
   },
 })
 
 export default traderSlice.reducer
+export const { setTaskCollapse } = traderSlice.actions
