@@ -14,9 +14,11 @@ import {
   getTraders,
   getTasksOfTrader,
   setTaskCollapse,
+  getTaskDetail,
 } from "../reducers/TraderSlice"
 import placeholderImg from "../../public/static/images/default_avatar.png"
 import { Link } from "react-router-dom"
+import { TaskDetail } from "../components/TaskDetail"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const TaskScreen = () => {
@@ -25,7 +27,7 @@ const TaskScreen = () => {
   const [curTrader, setCurTrader] = useState("Prapor")
 
   // redux
-  const { traders, tasks } = useSelector((state) => state.trader)
+  const { traders, tasks, tasksDetail } = useSelector((state) => state.trader)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -130,6 +132,8 @@ const TaskScreen = () => {
                           <tr
                             key={el.id}
                             onClick={() => {
+                              if (tasksDetail[i][j] === null)
+                                dispatch(getTaskDetail({ id: el.id, i, j }))
                               dispatch(setTaskCollapse({ i, j }))
                             }}
                           >
@@ -158,7 +162,9 @@ const TaskScreen = () => {
                               <Collapse in={el.collapse}>
                                 <div>
                                   <div style={{ minHeight: "200px" }}>
-                                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                                    {tasksDetail[i][j] && (
+                                      <TaskDetail task={tasksDetail[i][j]} />
+                                    )}
                                   </div>
                                 </div>
                               </Collapse>

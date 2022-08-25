@@ -1,4 +1,6 @@
 import asyncHandler from "express-async-handler"
+import InGameTaskDesc from "../models/InGameTaskDescModel.js"
+import InGameTaskImage from "../models/InGameTaskImageModel.js"
 import InGameTasks from "../models/InGameTasksModel.js"
 
 // @desc Get tasks of a trader
@@ -67,4 +69,56 @@ export const getTaskById = asyncHandler(async (req, res) => {
   const task = await InGameTasks.aggregate(aggregateArr)
 
   res.json(task)
+})
+
+// @desc Get task image by task id
+// @route GET /api/task/image
+// @access public
+export const getTaskImage = asyncHandler(async (req, res) => {
+  const id = req.query.id
+
+  const aggregateArr = [
+    {
+      $match: {
+        id: id,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        id: 1,
+        image: 1,
+      },
+    },
+  ]
+
+  const taskImg = await InGameTaskImage.aggregate(aggregateArr)
+
+  res.json(taskImg)
+})
+
+// @desc Get task description by task description id
+// @route GET /api/task/desc
+// @access public
+export const getTaskDesc = asyncHandler(async (req, res) => {
+  const desc_id = req.query.desc_id
+
+  const aggregateArr = [
+    {
+      $match: {
+        id: desc_id,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        id: 1,
+        description: 1,
+      },
+    },
+  ]
+
+  const taskDesc = await InGameTaskDesc.aggregate(aggregateArr)
+
+  res.json(taskDesc)
 })

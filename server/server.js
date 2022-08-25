@@ -21,6 +21,7 @@ app.use(express.json())
 // icon image asset
 app.use("/asset", express.static(join(__dirname, "public/images/item-icons")))
 app.use("/asset", express.static(join(__dirname, "public/images/trader-icons")))
+app.use("/asset", express.static(join(__dirname, "public/images/task-images")))
 
 app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)
