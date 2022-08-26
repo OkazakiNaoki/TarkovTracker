@@ -22,6 +22,10 @@ app.use(express.json())
 app.use("/asset", express.static(join(__dirname, "public/images/item-icons")))
 app.use("/asset", express.static(join(__dirname, "public/images/trader-icons")))
 app.use("/asset", express.static(join(__dirname, "public/images/task-images")))
+app.use(
+  "/asset",
+  express.static(join(__dirname, "public/images/hideout-icons"))
+)
 
 app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)

@@ -44,3 +44,23 @@ export const getHideoutLevels = asyncHandler(async (req, res) => {
 
   res.json(hideout)
 })
+
+// @desc Get all hideout levels
+// @route GET /api/hideout/levels/all
+// @access public
+export const getAllHideoutLevels = asyncHandler(async (req, res) => {
+  const aggregateArr = [
+    {
+      $project: {
+        _id: 0,
+        id: 1,
+        name: 1,
+        levels: 1,
+      },
+    },
+  ]
+
+  const hideout = await InGameHideoutLevels.aggregate(aggregateArr)
+
+  res.json(hideout)
+})
