@@ -6,22 +6,21 @@ export const getAllHideout = createAsyncThunk(
   async (params) => {
     try {
       const { data } = await axios.get(`/api/hideout/levels/all`)
-      return data
-    } catch (error) {
-      return error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message
-    }
-  }
-)
 
-export const getHideoutCraftById = createAsyncThunk(
-  "hideout/getHideoutCraftById",
-  async (params) => {
-    const { id } = params
-    try {
-      const { data } = await axios.get(`/api/hideout/crafts?craftId=${id}`)
-      return { id, data }
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].levels.length; j++) {
+          for (let k = 0; k < data[i].levels[j].crafts.length; k++) {
+            const craftData = await axios.get(
+              `/api/hideout/crafts?craftId=${data[i].levels[j].crafts[k].id}`
+            )
+            data[i].levels[j].crafts[k] = {
+              ...data[i].levels[j].crafts[k],
+              ...craftData.data[0],
+            }
+          }
+        }
+      }
+      return data
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -35,8 +34,6 @@ const hideoutSlice = createSlice({
   initialState: {
     isLoading: false,
     hideout: [],
-    craft: {},
-    craftLoading: {},
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -50,17 +47,6 @@ const hideoutSlice = createSlice({
         state.hideout = action.payload
       })
       .addCase(getAllHideout.rejected, (state, action) => {
-        throw Error(action.payload)
-      })
-      .addCase(getHideoutCraftById.pending, (state, action) => {
-        state.craftLoading[`${action.meta.arg.id}`] = true
-      })
-      .addCase(getHideoutCraftById.fulfilled, (state, action) => {
-        console.log(action.payload)
-        state.craftLoading[`${action.payload.id}`] = false
-        state.craft[`${action.payload.id}`] = action.payload.data
-      })
-      .addCase(getHideoutCraftById.rejected, (state, action) => {
         throw Error(action.payload)
       })
   },

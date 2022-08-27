@@ -1,59 +1,22 @@
 import React, { useState, useEffect } from "react"
-import {
-  Container,
-  Row,
-  Col,
-  Image,
-  Table,
-  Collapse,
-  Tabs,
-  TabPane,
-} from "react-bootstrap"
+import { Container, Tabs, TabPane } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { HideoutIcon } from "../components/HideoutIcon"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
-import { getAllHideout, getHideoutCraftById } from "../reducers/HideoutSlice"
+import { getAllHideout } from "../reducers/HideoutSlice"
 
 const HideoutScreen = () => {
   // redux
-  const { hideout, craft, craftLoading } = useSelector((state) => state.hideout)
+  const { hideout } = useSelector((state) => state.hideout)
   const dispatch = useDispatch()
 
   // hooks
   const [curStation, setCurStation] = useState("5d388e97081959000a123acf")
-  const [craftFetched, setCraftFetched] = useState([])
 
   useEffect(() => {
     if (hideout.length === 0) {
       dispatch(getAllHideout())
     }
   }, [hideout])
-
-  useEffect(() => {
-    if (hideout.length !== 0) {
-      const index = getIndexOfMatchFieldObjArr(hideout, "id", curStation)
-      if (index !== -1 && hideout[index].levels.length > 0) {
-        const levels = hideout[index].levels
-        levels.forEach((level) => {
-          if (level.crafts.length > 0) {
-            level.crafts.forEach((c) => {
-              if (!(c.id in craft)) {
-                dispatch(getHideoutCraftById({ id: c.id }))
-              }
-            })
-          }
-        })
-      }
-    }
-  }, [hideout, curStation])
-
-  useEffect(() => {
-    const idArr = []
-    for (const id in craftLoading) {
-      if (!craftLoading[id]) idArr.push(id)
-    }
-    setCraftFetched(idArr)
-  }, [craftLoading])
 
   return (
     <>
@@ -122,40 +85,34 @@ const HideoutScreen = () => {
                       )}
                       <div>
                         {level.crafts.map((c, i) => {
-                          if (craftFetched.includes(c.id)) {
-                            return (
-                              <div
-                                key={el.name + c.level + "craft-" + i}
-                                className="text-center"
-                              >
-                                {craft[`${c.id}`][0].duration}
-                                {craft[`${c.id}`][0].requiredItems.map(
-                                  (itemReq) => {
-                                    return (
-                                      <div>
-                                        {itemReq.item.name +
-                                          "  x" +
-                                          itemReq.count +
-                                          "\n"}
-                                      </div>
-                                    )
-                                  }
-                                )}
-                                {craft[`${c.id}`][0].rewardItems.map(
-                                  (itemRew) => {
-                                    return (
-                                      <div>
-                                        {itemRew.item.name +
-                                          "  x" +
-                                          itemRew.count +
-                                          "\n"}
-                                      </div>
-                                    )
-                                  }
-                                )}
-                              </div>
-                            )
-                          }
+                          return (
+                            <div
+                              key={el.name + c.level + "craft-" + i}
+                              className="text-center"
+                            >
+                              {c.duration}
+                              {c.requiredItems.map((itemReq, i) => {
+                                return (
+                                  <div key={"itemReq-" + i}>
+                                    {itemReq.item.name +
+                                      "  x" +
+                                      itemReq.count +
+                                      "\n"}
+                                  </div>
+                                )
+                              })}
+                              {c.rewardItems.map((itemRew) => {
+                                return (
+                                  <div key={"itemRew-" + i}>
+                                    {itemRew.item.name +
+                                      "  x" +
+                                      itemRew.count +
+                                      "\n"}
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )
                         })}
                       </div>
                     </div>
