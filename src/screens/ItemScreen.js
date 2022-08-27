@@ -59,9 +59,9 @@ const ItemScreen = ({}) => {
 
   return (
     <>
-      <h1 className="pt-5 pb-3 text-light tarkov-font">{item.name}</h1>
-      <h6 className="text-light tarkov-font">{item.shortName}</h6>
-      <h6 className="text-light tarkov-font">ID: {item.id}</h6>
+      <h1 className="pt-5 pb-3">{item.name}</h1>
+      <h6>{item.shortName}</h6>
+      <h6>ID: {item.id}</h6>
       <Container className="mb-5">
         <Row className="gx-5">
           <Col
@@ -84,7 +84,7 @@ const ItemScreen = ({}) => {
                 return (
                   <Row key={i} className="g-2 mb-2">
                     <Col sm={12} md={6}>
-                      <div className="text-light border border-light py-2 h-100">
+                      <div className="border border-light py-2 h-100">
                         <div className="text-center">{el[0].key}</div>
                         <div
                           className="px-3"
@@ -95,7 +95,7 @@ const ItemScreen = ({}) => {
                       </div>
                     </Col>
                     <Col sm={12} md={6}>
-                      <div className="text-light border border-light py-2 h-100">
+                      <div className="border border-light py-2 h-100">
                         <div className="text-center">{el[1].key}</div>
                         <div
                           className="px-3"
@@ -111,7 +111,7 @@ const ItemScreen = ({}) => {
                 return (
                   <Row key={i} className="g-2 mb-2">
                     <Col sm={12} md={6}>
-                      <div className="text-light border border-light py-2 h-100">
+                      <div className="border border-light py-2 h-100">
                         <div className="text-center">{el[0].key}</div>
                         <div
                           className="px-3"

@@ -3,6 +3,12 @@
     src: url("../public/static/fonts/Jovanny Lemonad - Bender.otf") format("opentype")
 }
 
+body {
+    font-family: Tarkov, serif;
+    letter-spacing: 0.6px;
+    color: white;
+}
+
 main {
     background-color: #000;
     min-height: calc(100vh - 80px);
@@ -10,11 +16,6 @@ main {
 
 nav {
     min-height: 80px;
-}
-
-.tarkov-font {
-    font-family: Tarkov, serif;
-    letter-spacing: 1px;
 }
 
 .nav-link, .dropdown-item {
@@ -63,4 +64,13 @@ nav {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+.ls-1 {
+    letter-spacing: 1px;
+}
+
+/* custom color */
+.sandbeige {
+    color: #b7ad9c;
 }

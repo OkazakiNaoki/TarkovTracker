@@ -16,13 +16,13 @@ const ItemRow = (props) => {
 
   return (
     <>
-      <Card className="bg-dark text-white my-3 p-3 rounded tarkov-font w-100">
+      <Card className="bg-dark text-white my-3 p-3 rounded w-100 ls-1">
         <Link
           to={`/item/${props.item.id}`}
           style={{ color: "inherit", textDecoration: "inherit" }}
         >
           <Card.Title
-            className="two-line-text-trunc"
+            className="two-line-text-trunc sandbeige"
             style={{ height: "50px" }}
             title={props.item.name}
           >
