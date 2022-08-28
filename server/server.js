@@ -4,6 +4,7 @@ import itemsRoutes from "./routes/InGameItemsRoutes.js"
 import itemRoutes from "./routes/InGameItemRoutes.js"
 import hideoutRoutes from "./routes/InGameHideoutRoutes.js"
 import taskRoutes from "./routes/InGameTasksRoutes.js"
+import userRoutes from "./routes/UserRoutes.js"
 import connectDB from "./config/db.js"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
@@ -31,6 +32,7 @@ app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)
 app.use("/api/hideout", hideoutRoutes)
 app.use("/api/task", taskRoutes)
+app.use("/api/user", userRoutes)
 
 const PORT = process.env.PORT || 3030
 app.listen(
