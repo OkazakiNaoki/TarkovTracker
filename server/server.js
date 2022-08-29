@@ -27,6 +27,11 @@ app.use(
   "/asset",
   express.static(join(__dirname, "public/images/hideout-icons"))
 )
+app.use(
+  "/asset",
+  express.static(join(__dirname, "public/images/banner-images"))
+)
+app.use("/asset", express.static(join(__dirname, "public/images/glow-images")))
 
 app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)

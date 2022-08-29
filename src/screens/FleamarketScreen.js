@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import {
+  Container,
   Row,
   Col,
   InputGroup,
@@ -105,75 +106,81 @@ const FleamarketScreen = () => {
   return (
     <>
       <HeadMeta title="Fleamarket" />
-      <InputGroup size="lg" className="my-3">
-        <Form.Control
-          placeholder="Enter item name"
-          aria-label="item's name"
-          aria-describedby="button-search"
-          onChange={(e) => {
-            setKeyword(e.target.value)
-          }}
-          value={keyword}
-          className="text-center"
-        />
-        <Button variant="secondary" id="button-search" onClick={submitHandler}>
-          Search
-        </Button>
-      </InputGroup>
-
-      <Button
-        onClick={() => setExpandCategory(!expandCategory)}
-        aria-controls="collapse-category-button"
-        aria-expanded={expandCategory}
-        className="mb-1"
-      >
-        Category filter
-      </Button>
-      <Collapse in={expandCategory}>
-        <div id="collapse-category-button">
-          {categoryToggle.map((el, i) => {
-            return (
-              <ToggleButton
-                key={el.name}
-                type="checkbox"
-                variant="outline-primary"
-                checked={categoryToggle[i].toggle}
-                value="1"
-                onClick={(e) => {
-                  toggleCategoryHandler(el.name, !categoryToggle[i].toggle)
-                }}
-                style={{ "--bs-btn-hover-bg": "none" }}
-                className="mx-1 mb-1"
-              >
-                {categoryToggle[i].name}
-              </ToggleButton>
-            )
-          })}
-        </div>
-      </Collapse>
-
-      <Row>
-        {items.map((item) => (
-          <Col
-            key={item.id}
-            sm={12}
-            md={6}
-            lg={4}
-            xl={3}
-            className="d-flex align-items-stretch"
+      <Container className="py-5">
+        <InputGroup size="lg" className="py-3">
+          <Form.Control
+            placeholder="Enter item name"
+            aria-label="item's name"
+            aria-describedby="button-search"
+            onChange={(e) => {
+              setKeyword(e.target.value)
+            }}
+            value={keyword}
+            className="text-center"
+          />
+          <Button
+            variant="secondary"
+            id="button-search"
+            onClick={submitHandler}
           >
-            <ItemRow item={item} />
-          </Col>
-        ))}
-      </Row>
+            Search
+          </Button>
+        </InputGroup>
 
-      <Paginate
-        page={statePage}
-        pages={statePages}
-        keyword={keyword}
-        category={curCategory}
-        setSearchParams={setSearchParams}
-      />
+        <Button
+          onClick={() => setExpandCategory(!expandCategory)}
+          aria-controls="collapse-category-button"
+          aria-expanded={expandCategory}
+          className="mb-1"
+        >
+          Category filter
+        </Button>
+        <Collapse in={expandCategory}>
+          <div id="collapse-category-button">
+            {categoryToggle.map((el, i) => {
+              return (
+                <ToggleButton
+                  key={el.name}
+                  type="checkbox"
+                  variant="outline-primary"
+                  checked={categoryToggle[i].toggle}
+                  value="1"
+                  onClick={(e) => {
+                    toggleCategoryHandler(el.name, !categoryToggle[i].toggle)
+                  }}
+                  style={{ "--bs-btn-hover-bg": "none" }}
+                  className="mx-1 mb-1"
+                >
+                  {categoryToggle[i].name}
+                </ToggleButton>
+              )
+            })}
+          </div>
+        </Collapse>
+
+        <Row>
+          {items.map((item) => (
+            <Col
+              key={item.id}
+              sm={12}
+              md={6}
+              lg={4}
+              xl={3}
+              className="d-flex align-items-stretch"
+            >
+              <ItemRow item={item} />
+            </Col>
+          ))}
+        </Row>
+
+        <Paginate
+          page={statePage}
+          pages={statePages}
+          keyword={keyword}
+          category={curCategory}
+          setSearchParams={setSearchParams}
+        />
+      </Container>
     </>
   )
 }

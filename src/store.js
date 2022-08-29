@@ -4,6 +4,7 @@ import ItemReducer from "./reducers/ItemSlice"
 import TraderReducer from "./reducers/TraderSlice"
 import HideoutReducer from "./reducers/HideoutSlice"
 import UserReducer from "./reducers/UserSlice"
+import CharacterReducer from "./reducers/CharacterSlice"
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     trader: TraderReducer,
     hideout: HideoutReducer,
     user: UserReducer,
+    character: CharacterReducer,
   },
   devTools: true,
 })

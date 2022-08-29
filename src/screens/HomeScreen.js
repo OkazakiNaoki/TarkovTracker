@@ -7,6 +7,7 @@ const HomeScreen = () => {
   return (
     <>
       <HeadMeta title="Home page" />
+      <div className="h-100"></div>
     </>
   )
 }

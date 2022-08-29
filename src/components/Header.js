@@ -36,11 +36,11 @@ const Header = () => {
               </LinkContainer>
             </Nav>
             <Nav className="ms-auto">
-              <LinkContainer to="/">
-                <Nav.Link className="mx-3">Login</Nav.Link>
+              <LinkContainer to="/login">
+                <Nav.Link className="mx-3">Log in</Nav.Link>
               </LinkContainer>
               <NavDropdown menuVariant="dark" title="profile" id="username">
-                <LinkContainer to="/">
+                <LinkContainer to="/profile">
                   <NavDropdown.Item>Profile</NavDropdown.Item>
                 </LinkContainer>
                 <NavDropdown.Divider />

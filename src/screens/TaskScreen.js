@@ -58,7 +58,7 @@ const TaskScreen = () => {
 
   return (
     <>
-      <Container className="mb-5">
+      <Container className="py-5">
         <Row className="justify-content-center">
           {imgSrc.length !== 0 &&
             imgSrc.map((el, i) => {
@@ -109,75 +109,78 @@ const TaskScreen = () => {
                 )
             })}
         </Row>
-      </Container>
 
-      <Tabs activeKey={curTrader}>
-        {traders.length !== 0 &&
-          traders.map((el, i) => {
-            return (
-              <TabPane eventKey={el.name} key={el.id}>
-                <Table bordered hover variant="dark" className="p-4">
-                  <thead>
-                    <tr>
-                      <th>Task name</th>
-                      <th>Level requirement</th>
-                      <th>Previous task</th>
-                      <th>Trader level requirement</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasks[i].length !== 0 &&
-                      tasks[i].map((el, j) => {
-                        return [
-                          <tr
-                            key={el.id}
-                            onClick={() => {
-                              if (tasksDetail[i][j] === null)
-                                dispatch(getTaskDetail({ id: el.id, i, j }))
-                              dispatch(setTaskCollapse({ i, j }))
-                            }}
-                          >
-                            <td>{el.name}</td>
-                            <td>{el.minPlayerLevel}</td>
-                            <td style={{ whiteSpace: "break-spaces" }}>
-                              {el.taskRequirements.reduce((prev, el) => {
-                                return prev + el.task.name + "\n"
-                              }, "")}
-                            </td>
-                            <td>
-                              {el.traderLevelRequirements.reduce((prev, el) => {
-                                return (
-                                  prev +
-                                  el.trader.name +
-                                  " @Lv." +
-                                  el.level +
-                                  "\n"
-                                )
-                              }, "")}
-                            </td>
-                          </tr>,
+        <Tabs activeKey={curTrader} className="py-3">
+          {traders.length !== 0 &&
+            traders.map((el, i) => {
+              return (
+                <TabPane eventKey={el.name} key={el.id}>
+                  <Table bordered hover variant="dark" className="p-4">
+                    <thead>
+                      <tr>
+                        <th>Task name</th>
+                        <th>Level requirement</th>
+                        <th>Previous task</th>
+                        <th>Trader level requirement</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tasks[i].length !== 0 &&
+                        tasks[i].map((el, j) => {
+                          return [
+                            <tr
+                              key={el.id}
+                              onClick={() => {
+                                if (tasksDetail[i][j] === null)
+                                  dispatch(getTaskDetail({ id: el.id, i, j }))
+                                dispatch(setTaskCollapse({ i, j }))
+                              }}
+                            >
+                              <td>{el.name}</td>
+                              <td>{el.minPlayerLevel}</td>
+                              <td style={{ whiteSpace: "break-spaces" }}>
+                                {el.taskRequirements.reduce((prev, el) => {
+                                  return prev + el.task.name + "\n"
+                                }, "")}
+                              </td>
+                              <td>
+                                {el.traderLevelRequirements.reduce(
+                                  (prev, el) => {
+                                    return (
+                                      prev +
+                                      el.trader.name +
+                                      " @Lv." +
+                                      el.level +
+                                      "\n"
+                                    )
+                                  },
+                                  ""
+                                )}
+                              </td>
+                            </tr>,
 
-                          <tr key={el.id + "_collapse"}>
-                            <td colSpan="4" style={{ padding: "0" }}>
-                              <Collapse in={el.collapse}>
-                                <div>
-                                  <div style={{ minHeight: "200px" }}>
-                                    {tasksDetail[i][j] && (
-                                      <TaskDetail task={tasksDetail[i][j]} />
-                                    )}
+                            <tr key={el.id + "_collapse"}>
+                              <td colSpan="4" style={{ padding: "0" }}>
+                                <Collapse in={el.collapse}>
+                                  <div>
+                                    <div style={{ minHeight: "200px" }}>
+                                      {tasksDetail[i][j] && (
+                                        <TaskDetail task={tasksDetail[i][j]} />
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              </Collapse>
-                            </td>
-                          </tr>,
-                        ]
-                      })}
-                  </tbody>
-                </Table>
-              </TabPane>
-            )
-          })}
-      </Tabs>
+                                </Collapse>
+                              </td>
+                            </tr>,
+                          ]
+                        })}
+                    </tbody>
+                  </Table>
+                </TabPane>
+              )
+            })}
+        </Tabs>
+      </Container>
     </>
   )
 }
