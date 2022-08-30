@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Container, Row, Col, InputGroup, Form, Button } from "react-bootstrap"
+import { Container, Row, Col, InputGroup, Form, Alert } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 import { login } from "../reducers/UserSlice"
@@ -7,7 +7,7 @@ import { TarkovButton } from "../components/TarkovButton"
 
 const LoginScreen = () => {
   // redux
-  const { user } = useSelector((state) => state.user)
+  const { user, errorMsg } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
   // hooks
@@ -40,6 +40,9 @@ const LoginScreen = () => {
         >
           <Col md={6} align="center">
             <h1 className="mb-5 sandbeige">Log in</h1>
+            {errorMsg.length > 0 && (
+              <Alert variant="secondary">{errorMsg}</Alert>
+            )}
             <Form>
               <InputGroup className="mb-5">
                 <InputGroup.Text id="email-input">E-mail</InputGroup.Text>

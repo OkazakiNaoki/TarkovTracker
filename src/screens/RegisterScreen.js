@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Container, Row, Col, InputGroup, Form } from "react-bootstrap"
+import { Container, Row, Col, InputGroup, Form, Alert } from "react-bootstrap"
 import { TarkovButton } from "../components/TarkovButton"
 import { useNavigate } from "react-router-dom"
 import { register } from "../reducers/UserSlice"
 
 const RegisterScreen = () => {
   // redux
-  const { user } = useSelector((state) => state.user)
+  const { user, errorMsg } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
   // hooks
@@ -33,7 +33,6 @@ const RegisterScreen = () => {
       password === confirmPassword
     ) {
       dispatch(register({ username, email, password }))
-      navigate("/")
     } else {
       username.length === 0
         ? setUsernameInvalidMsg("please fill the column")
@@ -50,6 +49,12 @@ const RegisterScreen = () => {
     }
   }
 
+  useEffect(() => {
+    if (Object.keys(user).length > 0) {
+      navigate("/")
+    }
+  }, [user])
+
   return (
     <Container className="h-100">
       <Row
@@ -58,6 +63,7 @@ const RegisterScreen = () => {
       >
         <Col md={6} align="center">
           <h1 className="mb-5 sandbeige">Create new account</h1>
+          {errorMsg.length > 0 && <Alert variant="secondary">{errorMsg}</Alert>}
           <Form>
             <InputGroup className="mb-5" hasValidation>
               <InputGroup.Text id="name-input">Name</InputGroup.Text>

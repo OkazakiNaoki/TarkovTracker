@@ -23,8 +23,7 @@ export const authUser = asyncHandler(async (req, res) => {
       token: generateToken(user._id),
     })
   } else {
-    res.status(401)
-    throw new Error("No such email or password")
+    res.status(401).send("Account not exist or incorrect password")
   }
 })
 
@@ -53,22 +52,30 @@ export const registerUser = asyncHandler(async (req, res) => {
   const existUser = await User.findOne({ email })
 
   if (existUser) {
-    res.status(400)
-    throw new Error("User email already used")
-  } else {
-    const createdUser = await User.create({ name, email, password })
+    res.status(400).send("Email already used by other user")
+    return
+  } else if (name.length < 8) {
+    res.status(400).send("Username too short")
+    return
+  } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+    res.status(400).send("Email format incorrect")
+    return
+  } else if (password.length < 8) {
+    res.status(400).send("Password too short")
+    return
+  }
 
-    if (createdUser) {
-      res.status(201).json({
-        _id: createdUser._id,
-        name: createdUser.name,
-        email: createdUser.email,
-        token: generateToken(createdUser._id),
-      })
-    } else {
-      res.status(400)
-      throw new Error("User creation failed")
-    }
+  const createdUser = await User.create({ name, email, password })
+
+  if (createdUser) {
+    res.status(201).json({
+      _id: createdUser._id,
+      name: createdUser.name,
+      email: createdUser.email,
+      token: generateToken(createdUser._id),
+    })
+  } else {
+    res.status(400).send("User creation failed")
   }
 })
 

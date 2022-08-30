@@ -16,9 +16,9 @@ export const login = createAsyncThunk("user/login", async (params) => {
     )
     return data
   } catch (error) {
-    return error.response && error.response.data.message
-      ? error.response.data.message
-      : error.message
+    return error.response && error.response.data
+      ? { error: error.response.data }
+      : { error: error.message }
   }
 })
 
@@ -37,9 +37,9 @@ export const register = createAsyncThunk("user/register", async (params) => {
     )
     return data
   } catch (error) {
-    return error.response && error.response.data.message
-      ? error.response.data.message
-      : error.message
+    return error.response && error.response.data
+      ? { error: error.response.data }
+      : { error: error.message }
   }
 })
 
@@ -47,6 +47,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     isLoading: false,
+    errorMsg: "",
     user: {},
   },
   reducers: {
@@ -62,10 +63,15 @@ const userSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         console.log(action.payload)
         state.isLoading = false
-        state.user = action.payload
+        if ("error" in action.payload) {
+          state.errorMsg = action.payload.error
+        } else {
+          state.user = action.payload
+          state.errorMsg = ""
+        }
       })
       .addCase(login.rejected, (state, action) => {
-        throw new Error(action.payload)
+        throw new Error("Error:", action.payload)
       })
       .addCase(register.pending, (state, action) => {
         state.isLoading = true
@@ -73,7 +79,12 @@ const userSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         console.log(action.payload)
         state.isLoading = false
-        state.user = action.payload
+        if ("error" in action.payload) {
+          state.errorMsg = action.payload.error
+        } else {
+          state.user = action.payload
+          state.errorMsg = ""
+        }
       })
       .addCase(register.rejected, (state, action) => {
         throw new Error(action.payload)
