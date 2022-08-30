@@ -1,6 +1,5 @@
 import React from "react"
 import { Routes, Route } from "react-router-dom"
-import { Container } from "react-bootstrap"
 import { createBrowserHistory } from "history"
 import { CustomRouter } from "./routers/CustomRouter"
 import { HomeScreen } from "./screens/HomeScreen"
@@ -12,6 +11,7 @@ import { CharacterScreen } from "./screens/CharacterScreen"
 import TaskScreen from "./screens/TaskScreen"
 import { HideoutScreen } from "./screens/HideoutScreen"
 import { LoginScreen } from "./screens/LoginScreen"
+import { RegisterScreen } from "./screens/RegisterScreen"
 
 const history = createBrowserHistory({ window })
 
@@ -33,6 +33,7 @@ function App() {
           <Route path="/hideout" element={<HideoutScreen />} />
           <Route path="/character" element={<CharacterScreen />} />
           <Route path="/login" element={<LoginScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
           <Route path="/" element={<HomeScreen />} />
         </Routes>
       </main>

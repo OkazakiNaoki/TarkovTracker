@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Image } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import { TarkovButton } from "../components/TarkovButton"
 import buttonImg from "../../public/static/images/button.png"
 
 const CharacterScreen = () => {
@@ -26,23 +27,8 @@ const CharacterScreen = () => {
                 You have not log in yet. Please log in or register first.
               </p>
 
-              <div className="position-relative my-3">
-                <Link to="/login">
-                  <Image src={buttonImg} />
-                  <div className="position-absolute top-50 start-50 translate-middle text-center text-dark fs-2 fw-bold">
-                    Log in
-                  </div>
-                </Link>
-              </div>
-
-              <div className="position-relative my-3">
-                <Link to="/register">
-                  <Image src={buttonImg} />
-                  <div className="position-absolute top-50 start-50 translate-middle text-center text-dark fs-2 fw-bold">
-                    Register
-                  </div>
-                </Link>
-              </div>
+              <TarkovButton useLink={true} to="/login" text="Log in" />
+              <TarkovButton useLink={true} to="/register" text="Register" />
             </div>
           </div>
         )}

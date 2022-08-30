@@ -1,9 +1,35 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Container, Row, Col, InputGroup, Form, Button } from "react-bootstrap"
-import { Link } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { Link, useNavigate } from "react-router-dom"
+import { login } from "../reducers/UserSlice"
+import { TarkovButton } from "../components/TarkovButton"
 
 const LoginScreen = () => {
-  const submitHandle = () => {}
+  // redux
+  const { user } = useSelector((state) => state.user)
+  const dispatch = useDispatch()
+
+  // hooks
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  // route
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (Object.keys(user).length > 0) {
+      setEmail("")
+      setPassword("")
+      navigate("/")
+    }
+  }, [user])
+
+  const submitHandle = (e) => {
+    e.preventDefault()
+    if (email.length > 0 && password.length > 0)
+      dispatch(login({ email, password }))
+  }
 
   return (
     <>
@@ -22,7 +48,9 @@ const LoginScreen = () => {
                   placeholder="Enter your e-mail"
                   aria-label="email"
                   aria-describedby="email-input"
-                  required
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                  }}
                 />
               </InputGroup>
               <InputGroup className="mb-5">
@@ -32,17 +60,16 @@ const LoginScreen = () => {
                   placeholder="Enter your password"
                   aria-label="password"
                   aria-describedby="password-input"
-                  required
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                  }}
                 />
               </InputGroup>
-              <Button
-                variant="secondary"
-                type="submit"
-                className="btn-lg"
-                onClick={submitHandle}
-              >
-                Log in
-              </Button>
+              <TarkovButton
+                useLink={false}
+                text="Log in"
+                clickHandle={submitHandle}
+              />
             </Form>
           </Col>
         </Row>

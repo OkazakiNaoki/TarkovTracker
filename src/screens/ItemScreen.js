@@ -59,11 +59,12 @@ const ItemScreen = ({}) => {
 
   return (
     <>
-      <h1 className="pt-5 pb-3">{item.name}</h1>
-      <h6>{item.shortName}</h6>
-      <h6>ID: {item.id}</h6>
-      <Container className="mb-5">
-        <Row className="gx-5">
+      <Container className="py-5">
+        <h1 className="pb-3">{item.name}</h1>
+        <h6>{item.shortName}</h6>
+        <h6>ID: {item.id}</h6>
+
+        <Row className="gx-5 mb-5">
           <Col
             sm={6}
             className="d-flex align-items-center justify-content-center border border-light"
@@ -126,221 +127,225 @@ const ItemScreen = ({}) => {
             })}
           </Col>
         </Row>
-      </Container>
 
-      <Tabs
-        defaultActiveKey="buyFrom"
-        id="justify-tab-example"
-        className="mb-4 flex-column flex-md-row"
-        transition={false}
-        justify
-      >
-        <Tab eventKey="buyFrom" title="Buy from">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Vendor</th>
-                <th>Price</th>
-                <th>Currency</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.buyFor &&
-                item.buyFor.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>
-                        {el.vendor.name !== "Flea Market"
-                          ? el.vendor.name + " @Lv." + el.vendor.minTraderLevel
-                          : el.vendor.name}
-                      </td>
-                      <td>{el.price}</td>
-                      <td>{el.currencyItem.name}</td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-        <Tab eventKey="sellTo" title="Sell to">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Vendor</th>
-                <th>Price</th>
-                <th>Currency</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.sellFor &&
-                item.sellFor.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>{el.vendor.name}</td>
-                      <td>{el.price}</td>
-                      <td>{el.currencyItem.name}</td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-        <Tab eventKey="barterFrom" title="Barter from">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Vendor</th>
-                <th>Give</th>
-                <th>Get</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.bartersFor &&
-                item.bartersFor.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>{el.trader.name}</td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.requiredItems.reduce((prev, el) => {
-                          return prev + el.item.name + "  x" + el.count + "\n"
-                        }, "")}
-                      </td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.rewardItems.reduce((prev, el) => {
-                          return prev + el.item.name + "  x" + el.count + "\n"
-                        }, "")}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-        <Tab eventKey="craft" title="Craft">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Module</th>
-                <th>Give</th>
-                <th>Duration</th>
-                <th>Get</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.craftsFor &&
-                item.craftsFor.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>{el.station.name + " @Lv." + el.level}</td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.requiredItems.reduce((prev, el) => {
-                          return prev + el.item.name + "  x" + el.count + "\n"
-                        }, "")}
-                      </td>
-                      <td>{getHMSfromS(el.duration)}</td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.rewardItems.reduce((prev, el) => {
-                          return prev + el.item.name + "  x" + el.count + "\n"
-                        }, "")}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-        <Tab eventKey="hideout" title="Hideout">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Module</th>
-                <th>Requirement</th>
-              </tr>
-            </thead>
-            <tbody>
-              {hideout &&
-                hideout.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>{el.name + " @Lv." + el.levels.level}</td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.levels.itemRequirements.reduce((prev, el) => {
-                          return prev + el.item.name + "  x" + el.count + "\n"
-                        }, "")}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-        <Tab eventKey="taskNeed" title="Task need">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Task</th>
-                <th>Vendor</th>
-                <th>Requirement</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.usedInTasks &&
-                item.usedInTasks.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>{el.name}</td>
-                      <td>{el.trader.name}</td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.objectives.reduce((prev, el) => {
-                          if (Object.keys(el).length !== 0) {
-                            return (
-                              prev +
-                              (el.item.name === item.name
-                                ? titleCase(insertSpaceIntoCamelCase(el.type)) +
-                                  " " +
-                                  el.item.name +
-                                  "  x" +
-                                  el.count +
-                                  "\n"
-                                : "")
-                            )
-                          } else return prev
-                        }, "")}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-        <Tab eventKey="taskReward" title="Task reward">
-          <Table bordered hover variant="dark" className="p-4">
-            <thead>
-              <tr>
-                <th>Task</th>
-                <th>Vendor</th>
-                <th>Reward</th>
-              </tr>
-            </thead>
-            <tbody>
-              {item.receivedFromTasks &&
-                item.receivedFromTasks.map((el, i) => {
-                  return (
-                    <tr key={i}>
-                      <td>{el.name}</td>
-                      <td>{el.trader.name}</td>
-                      <td style={{ whiteSpace: "break-spaces" }}>
-                        {el.finishRewards.items.reduce((prev, el) => {
-                          return prev + el.item.name + "  x" + el.count + "\n"
-                        }, "")}
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </Table>
-        </Tab>
-      </Tabs>
+        <Tabs
+          defaultActiveKey="buyFrom"
+          id="justify-tab-example"
+          className="mb-4 flex-column flex-md-row"
+          transition={false}
+          justify
+        >
+          <Tab eventKey="buyFrom" title="Buy from">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Price</th>
+                  <th>Currency</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.buyFor &&
+                  item.buyFor.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>
+                          {el.vendor.name !== "Flea Market"
+                            ? el.vendor.name +
+                              " @Lv." +
+                              el.vendor.minTraderLevel
+                            : el.vendor.name}
+                        </td>
+                        <td>{el.price}</td>
+                        <td>{el.currencyItem.name}</td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+          <Tab eventKey="sellTo" title="Sell to">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Price</th>
+                  <th>Currency</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.sellFor &&
+                  item.sellFor.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>{el.vendor.name}</td>
+                        <td>{el.price}</td>
+                        <td>{el.currencyItem.name}</td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+          <Tab eventKey="barterFrom" title="Barter from">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Vendor</th>
+                  <th>Give</th>
+                  <th>Get</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.bartersFor &&
+                  item.bartersFor.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>{el.trader.name}</td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.requiredItems.reduce((prev, el) => {
+                            return prev + el.item.name + "  x" + el.count + "\n"
+                          }, "")}
+                        </td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.rewardItems.reduce((prev, el) => {
+                            return prev + el.item.name + "  x" + el.count + "\n"
+                          }, "")}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+          <Tab eventKey="craft" title="Craft">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Give</th>
+                  <th>Duration</th>
+                  <th>Get</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.craftsFor &&
+                  item.craftsFor.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>{el.station.name + " @Lv." + el.level}</td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.requiredItems.reduce((prev, el) => {
+                            return prev + el.item.name + "  x" + el.count + "\n"
+                          }, "")}
+                        </td>
+                        <td>{getHMSfromS(el.duration)}</td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.rewardItems.reduce((prev, el) => {
+                            return prev + el.item.name + "  x" + el.count + "\n"
+                          }, "")}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+          <Tab eventKey="hideout" title="Hideout">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Module</th>
+                  <th>Requirement</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hideout &&
+                  hideout.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>{el.name + " @Lv." + el.levels.level}</td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.levels.itemRequirements.reduce((prev, el) => {
+                            return prev + el.item.name + "  x" + el.count + "\n"
+                          }, "")}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+          <Tab eventKey="taskNeed" title="Task need">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Vendor</th>
+                  <th>Requirement</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.usedInTasks &&
+                  item.usedInTasks.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>{el.name}</td>
+                        <td>{el.trader.name}</td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.objectives.reduce((prev, el) => {
+                            if (Object.keys(el).length !== 0) {
+                              return (
+                                prev +
+                                (el.item.name === item.name
+                                  ? titleCase(
+                                      insertSpaceIntoCamelCase(el.type)
+                                    ) +
+                                    " " +
+                                    el.item.name +
+                                    "  x" +
+                                    el.count +
+                                    "\n"
+                                  : "")
+                              )
+                            } else return prev
+                          }, "")}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+          <Tab eventKey="taskReward" title="Task reward">
+            <Table bordered hover variant="dark" className="p-4">
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Vendor</th>
+                  <th>Reward</th>
+                </tr>
+              </thead>
+              <tbody>
+                {item.receivedFromTasks &&
+                  item.receivedFromTasks.map((el, i) => {
+                    return (
+                      <tr key={i}>
+                        <td>{el.name}</td>
+                        <td>{el.trader.name}</td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {el.finishRewards.items.reduce((prev, el) => {
+                            return prev + el.item.name + "  x" + el.count + "\n"
+                          }, "")}
+                        </td>
+                      </tr>
+                    )
+                  })}
+              </tbody>
+            </Table>
+          </Tab>
+        </Tabs>
+      </Container>
     </>
   )
 }
