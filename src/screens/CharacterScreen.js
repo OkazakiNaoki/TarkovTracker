@@ -1,38 +1,144 @@
 import React, { useEffect, useState } from "react"
-import { Image } from "react-bootstrap"
+import {
+  Button,
+  Col,
+  Container,
+  Image,
+  Row,
+  Tabs,
+  Tab,
+  Accordion,
+} from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import { LoginFirst } from "../components/LoginFirst"
 import { TarkovButton } from "../components/TarkovButton"
-import buttonImg from "../../public/static/images/button.png"
+import { setPlayerLevel } from "../reducers/CharacterSlice"
+import { getTraders } from "../reducers/TraderSlice"
+import defaultAvatar from "../../public/static/images/default_avatar.png"
 
 const CharacterScreen = () => {
   // redux
   const { user } = useSelector((state) => state.user)
+  const { traders } = useSelector((state) => state.trader)
+  const { initSetup, playerLevel, faction } = useSelector(
+    (state) => state.character
+  )
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (traders.length === 0) {
+      dispatch(getTraders())
+    }
+  }, [traders])
+
+  useEffect(() => {
+    console.log(playerLevel)
+  }, [playerLevel])
+
+  const setupHandle = () => {}
+
+  const openLevelSettingPanelHandle = () => {
+    console.log("open!")
+  }
+
+  const setLevelHandle = (e) => {
+    if (initSetup) {
+      dispatch(setPlayerLevel(e.target.value))
+    }
+  }
 
   return (
     <>
-      <div className="h-100 position-relative">
-        {Object.keys(user).length === 0 && (
-          <div
-            className="h-100"
-            style={{
-              backgroundImage: `url(/asset/glow_top.png)`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "contain",
-            }}
-          >
-            <div className="position-absolute top-50 start-50 translate-middle w-75 text-center">
-              <p className="py-3 fs-1 sandbeige">
-                You have not log in yet. Please log in or register first.
-              </p>
-
-              <TarkovButton useLink={true} to="/login" text="Log in" />
-              <TarkovButton useLink={true} to="/register" text="Register" />
-            </div>
-          </div>
-        )}
-      </div>
+      {Object.keys(user).length === 0 && <LoginFirst />}
+      {Object.keys(user).length > 0 && (
+        <Container>
+          <Row className="my-5 gx-5 align-items-start">
+            <Col md={3} style={{ border: "1px solid white" }}>
+              <Row className="my-3" align="center">
+                <Col>
+                  <div
+                    className="sandbeige"
+                    role="button"
+                    style={{ fontSize: "90px" }}
+                    onClick={openLevelSettingPanelHandle}
+                  >
+                    <Image
+                      src={`/asset/rank5.png`}
+                      className="d-inline me-3"
+                      style={{ height: "100px" }}
+                    />
+                    {playerLevel}
+                  </div>
+                </Col>
+              </Row>
+              <Row className="my-5">
+                <Col>
+                  {faction ? (
+                    <Image
+                      src={`/asset/icon-${faction}.png`}
+                      className="px-5"
+                    />
+                  ) : (
+                    <TarkovButton
+                      useLink={false}
+                      text="Setup character"
+                      clickHandle={setupHandle}
+                      fs="6"
+                    />
+                  )}
+                </Col>
+              </Row>
+            </Col>
+            <Col>
+              <Tabs
+                defaultActiveKey="task"
+                className="mb-4 flex-column flex-lg-row"
+                transition={false}
+                justify
+              >
+                <Tab eventKey="task" title="Task">
+                  <Accordion
+                    alwaysOpen
+                    style={{
+                      "--bs-accordion-bg": "black",
+                      "--bs-accordion-color": "white",
+                      "--bs-accordion-btn-color": "white",
+                      "--bs-accordion-active-bg": "black",
+                      "--bs-accordion-active-color": "#b7ad9c",
+                    }}
+                  >
+                    {traders.length !== 0 &&
+                      traders.map((el, i) => {
+                        return (
+                          <Accordion.Item
+                            eventKey={`${i}`}
+                            key={`${el.name}-task`}
+                          >
+                            <Accordion.Header>
+                              <Image
+                                src={`/asset/${el.id}.png`}
+                                className="me-3"
+                              />
+                              <div className="fs-4">{el.name}</div>
+                            </Accordion.Header>
+                            <Accordion.Body>TEST TEST</Accordion.Body>
+                          </Accordion.Item>
+                        )
+                      })}
+                  </Accordion>
+                </Tab>
+                <Tab eventKey="hideout" title="Hideout">
+                  <div></div>
+                </Tab>
+                <Tab eventKey="inventory" title="Inventory">
+                  <div></div>
+                </Tab>
+              </Tabs>
+            </Col>
+          </Row>
+        </Container>
+      )}
     </>
   )
 }

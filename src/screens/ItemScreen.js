@@ -130,7 +130,6 @@ const ItemScreen = ({}) => {
 
         <Tabs
           defaultActiveKey="buyFrom"
-          id="justify-tab-example"
           className="mb-4 flex-column flex-md-row"
           transition={false}
           justify

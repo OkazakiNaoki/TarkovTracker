@@ -48,7 +48,13 @@ const userSlice = createSlice({
   initialState: {
     isLoading: false,
     errorMsg: "",
-    user: {},
+    user: {
+      _id: "630b0c2a90f70bf99e1a3cf2",
+      name: "test",
+      email: "1",
+      token:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMGIwYzJhOTBmNzBiZjk5ZTFhM2NmMiIsImlhdCI6MTY2MTkyMzI0MiwiZXhwIjoxNjYyMDA5NjQyfQ.iEZqxQYhfzjXSB3ehxPCntAlc2QgGSMH6lD-D8QxoZw",
+    },
   },
   reducers: {
     resetUser: (state, action) => {

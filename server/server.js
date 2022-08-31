@@ -32,6 +32,11 @@ app.use(
   express.static(join(__dirname, "public/images/banner-images"))
 )
 app.use("/asset", express.static(join(__dirname, "public/images/glow-images")))
+app.use("/asset", express.static(join(__dirname, "public/images/level-icons")))
+app.use(
+  "/asset",
+  express.static(join(__dirname, "public/images/faction-icons"))
+)
 
 app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)

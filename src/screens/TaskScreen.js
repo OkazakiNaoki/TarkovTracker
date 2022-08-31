@@ -15,6 +15,7 @@ import {
   getTasksOfTrader,
   setTaskCollapse,
   getTaskDetail,
+  setTraderIcons,
 } from "../reducers/TraderSlice"
 import placeholderImg from "../../public/static/images/default_avatar.png"
 import { Link } from "react-router-dom"
@@ -23,7 +24,6 @@ import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const TaskScreen = () => {
   // hooks
-  const [imgSrc, setImgSrc] = useState([])
   const [curTrader, setCurTrader] = useState("Prapor")
 
   // redux
@@ -33,13 +33,6 @@ const TaskScreen = () => {
   useEffect(() => {
     if (traders.length === 0) {
       dispatch(getTraders())
-    }
-    if (traders.length !== 0 && imgSrc.length === 0) {
-      const init = []
-      traders.forEach((el) => {
-        init.push(`/asset/${el.id}.png`)
-      })
-      setImgSrc(init)
     }
   }, [traders])
 
@@ -60,9 +53,9 @@ const TaskScreen = () => {
     <>
       <Container className="py-5">
         <Row className="justify-content-center">
-          {imgSrc.length !== 0 &&
-            imgSrc.map((el, i) => {
-              if (i < imgSrc.length / 2)
+          {traders.length !== 0 &&
+            traders.map((el, i) => {
+              if (i < traders.length / 2)
                 return (
                   <Col
                     key={i}
@@ -71,11 +64,11 @@ const TaskScreen = () => {
                   >
                     <a
                       onClick={() => {
-                        setCurTrader(traders[i].name)
+                        setCurTrader(el.name)
                       }}
                     >
                       <Image
-                        src={imgSrc[i]}
+                        src={`/asset/${el.id}.png`}
                         onError={(e) => imgLoadErrHandle(e)}
                         style={{ width: "130px", height: "130px" }}
                       />
@@ -85,9 +78,9 @@ const TaskScreen = () => {
             })}
         </Row>
         <Row className="justify-content-center">
-          {imgSrc.length !== 0 &&
-            imgSrc.map((el, i) => {
-              if (i >= imgSrc.length / 2)
+          {traders.length !== 0 &&
+            traders.map((el, i) => {
+              if (i >= traders.length / 2)
                 return (
                   <Col
                     key={i}
@@ -96,11 +89,11 @@ const TaskScreen = () => {
                   >
                     <a
                       onClick={() => {
-                        setCurTrader(traders[i].name)
+                        setCurTrader(el.name)
                       }}
                     >
                       <Image
-                        src={imgSrc[i]}
+                        src={`/asset/${el.id}.png`}
                         onError={(e) => imgLoadErrHandle(e)}
                         style={{ width: "130px", height: "130px" }}
                       />
