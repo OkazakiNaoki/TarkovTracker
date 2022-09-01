@@ -4,27 +4,31 @@ import InGameTaskImage from "../models/InGameTaskImageModel.js"
 import InGameTasks from "../models/InGameTasksModel.js"
 
 // @desc Get tasks of a trader
-// @route GET /api/task?trader=
+// @route GET /api/task?trader= & playerLvl=
 // @access public
 export const getTasksOfTrader = asyncHandler(async (req, res) => {
   const traderName = req.query.trader
+  const level = req.query.playerLvl
+
+  const match = level
+    ? {
+        $match: {
+          "trader.name": traderName,
+          minPlayerLevel: { $lte: Number(level) },
+        },
+      }
+    : {
+        $match: {
+          "trader.name": traderName,
+        },
+      }
 
   const aggregateArr = [
-    {
-      $match: {
-        "trader.name": traderName,
-      },
-    },
+    match,
     {
       $project: {
         _id: 0,
-        id: 1,
-        name: 1,
-        trader: 1,
-        minPlayerLevel: 1,
-        taskRequirements: 1,
-        traderLevelRequirements: 1,
-        previousTaskChainCount: 1,
+        __v: 0,
       },
     },
     {

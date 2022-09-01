@@ -1,5 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 
+export const getTasksOfTraderWithLevel = createAsyncThunk(
+  "character/getTasksOfTraderWithLevel",
+  async (params) => {
+    const { trader = "", playerLvl = 1 } = params
+    try {
+      const { data } = await axios.get(
+        `/api/task?trader=${trader}&playerLvl=${playerLvl}`
+      )
+      return { trader: trader, tasksArr: data }
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {

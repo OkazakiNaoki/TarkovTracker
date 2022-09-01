@@ -104,7 +104,7 @@ const CharacterScreen = () => {
                       "--bs-accordion-bg": "black",
                       "--bs-accordion-color": "white",
                       "--bs-accordion-btn-color": "white",
-                      "--bs-accordion-active-bg": "black",
+                      "--bs-accordion-active-bg": "#1c1c1c",
                       "--bs-accordion-active-color": "#b7ad9c",
                     }}
                   >
@@ -119,6 +119,7 @@ const CharacterScreen = () => {
                               <Image
                                 src={`/asset/${el.id}.png`}
                                 className="me-3"
+                                style={{ height: "64px", width: "64px" }}
                               />
                               <div className="fs-4">{el.name}</div>
                             </Accordion.Header>
