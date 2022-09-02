@@ -9,6 +9,7 @@ import {
   Tab,
   Accordion,
   Table,
+  ToggleButton,
 } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
@@ -164,6 +165,47 @@ const CharacterScreen = () => {
                 justify
               >
                 <Tab eventKey="task" title="Task">
+                  <div>
+                    <ToggleButton
+                      type="checkbox"
+                      variant="outline-primary"
+                      checked={showCompleteTask}
+                      value="1"
+                      onClick={(e) => {
+                        setShowCompleteTask(!showCompleteTask)
+                      }}
+                      style={{ "--bs-btn-hover-bg": "none" }}
+                      className="btn-sm mx-2 mb-3"
+                    >
+                      Finished
+                    </ToggleButton>
+                    <ToggleButton
+                      type="checkbox"
+                      variant="outline-success"
+                      checked={showOngoingTask}
+                      value="1"
+                      onClick={(e) => {
+                        setShowOngoingTask(!showOngoingTask)
+                      }}
+                      style={{ "--bs-btn-hover-bg": "none" }}
+                      className="btn-sm mx-2 mb-3"
+                    >
+                      Active
+                    </ToggleButton>
+                    <ToggleButton
+                      type="checkbox"
+                      variant="outline-dark"
+                      checked={showNotQualifyTask}
+                      value="1"
+                      onClick={(e) => {
+                        setShowNotQualifyTask(!showNotQualifyTask)
+                      }}
+                      style={{ "--bs-btn-hover-bg": "none" }}
+                      className="btn-sm mx-2 mb-3"
+                    >
+                      Not unlock
+                    </ToggleButton>
+                  </div>
                   <Accordion
                     alwaysOpen
                     style={{
@@ -196,20 +238,43 @@ const CharacterScreen = () => {
                                 <tbody>
                                   {Object.keys(playerTasksInfo).length > 0 &&
                                     playerTasksInfo[`${trader.name}`] &&
-                                    playerTasksInfo[`${trader.name}`][
-                                      "ongoing"
-                                    ].map((task) => {
-                                      if (
-                                        (trader.name === "Jaeger" &&
-                                          unlockedJaeger) ||
-                                        trader.name !== "Jaeger"
-                                      )
-                                        return (
-                                          <tr key={task.id}>
-                                            <td>{task.name}</td>
-                                          </tr>
+                                    Object.keys(
+                                      playerTasksInfo[`${trader.name}`]
+                                    )
+                                      .map((status) => {
+                                        if (
+                                          (status === "ongoing" &&
+                                            showOngoingTask) ||
+                                          (status === "notQualify" &&
+                                            showNotQualifyTask)
                                         )
-                                    })}
+                                          return playerTasksInfo[
+                                            `${trader.name}`
+                                          ][`${status}`].map((task) => {
+                                            if (
+                                              (trader.name === "Jaeger" &&
+                                                unlockedJaeger) ||
+                                              trader.name !== "Jaeger"
+                                            )
+                                              return (
+                                                <tr key={task.id}>
+                                                  <td
+                                                    style={{
+                                                      "--bs-table-bg":
+                                                        status === "complete"
+                                                          ? "#0d6efd"
+                                                          : status === "ongoing"
+                                                          ? "#198754"
+                                                          : "#1c1c1c",
+                                                    }}
+                                                  >
+                                                    {task.name}
+                                                  </td>
+                                                </tr>
+                                              )
+                                          })
+                                      })
+                                      .flat(1)}
                                 </tbody>
                               </Table>
                             </Accordion.Body>
