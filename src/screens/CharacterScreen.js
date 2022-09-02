@@ -8,23 +8,43 @@ import {
   Tabs,
   Tab,
   Accordion,
+  Table,
 } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { LoginFirst } from "../components/LoginFirst"
 import { TarkovButton } from "../components/TarkovButton"
-import { setPlayerLevel } from "../reducers/CharacterSlice"
+import {
+  setPlayerLevel,
+  getTasksOfTraderWithLevel,
+  initPlayerTasks,
+  initializePlayerData,
+} from "../reducers/CharacterSlice"
 import { getTraders } from "../reducers/TraderSlice"
-import defaultAvatar from "../../public/static/images/default_avatar.png"
 
 const CharacterScreen = () => {
+  // hooks
+  const [needTaskRefresh, setNeedTaskRefresh] = useState({})
+  const [showCompleteTask, setShowCompleteTask] = useState(false)
+  const [showOngoingTask, setShowOngoingTask] = useState(true)
+  const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
+
   // redux
   const { user } = useSelector((state) => state.user)
   const { traders } = useSelector((state) => state.trader)
-  const { initSetup, playerLevel, faction } = useSelector(
-    (state) => state.character
-  )
+  const {
+    isLoading,
+    initSetup,
+    playerLevel,
+    playerFaction,
+    playerTasksInfo,
+    unlockedJaeger,
+    traderLoyaltyLevel,
+  } = useSelector((state) => state.character)
   const dispatch = useDispatch()
+
+  // redux debug
+  const charState = useSelector((state) => state.character)
 
   useEffect(() => {
     if (traders.length === 0) {
@@ -33,8 +53,23 @@ const CharacterScreen = () => {
   }, [traders])
 
   useEffect(() => {
-    console.log(playerLevel)
-  }, [playerLevel])
+    if (traders.length !== 0 && Object.keys(needTaskRefresh).length === 0) {
+      const needRefresh = {}
+      for (let i = 0; i < traders.length; i++) {
+        needRefresh[`${traders[i].name}`] = true
+      }
+      setNeedTaskRefresh(needRefresh)
+    }
+  }, [traders, needTaskRefresh])
+
+  useEffect(() => {
+    if (traders.length !== 0 && Object.keys(playerTasksInfo).length === 0) {
+      dispatch(initPlayerTasks(traders.map((trader) => trader.name)))
+    }
+    if (traders.length !== 0 && Object.keys(traderLoyaltyLevel).length === 0) {
+      dispatch(initPlayerTasks(traders.map((trader) => trader.name)))
+    }
+  }, [traders])
 
   const setupHandle = () => {}
 
@@ -48,8 +83,39 @@ const CharacterScreen = () => {
     }
   }
 
+  const getTaskOfTraderHandle = (traderName) => {
+    if (needTaskRefresh[`${traderName}`])
+      dispatch(
+        getTasksOfTraderWithLevel({
+          trader: traderName,
+          playerLvl: playerLevel,
+        })
+      )
+    const newNeedRefresh = { ...needTaskRefresh }
+    newNeedRefresh[`${traderName}`] = false
+    setNeedTaskRefresh(newNeedRefresh)
+  }
+
   return (
     <>
+      <Button
+        onClick={() => {
+          dispatch(
+            initializePlayerData({
+              traderNames: traders.map((trader) => trader.name),
+            })
+          )
+        }}
+      >
+        Initial player test
+      </Button>
+      <Button
+        onClick={() => {
+          console.log(charState)
+        }}
+      >
+        Redux State
+      </Button>
       {Object.keys(user).length === 0 && <LoginFirst />}
       {Object.keys(user).length > 0 && (
         <Container>
@@ -74,9 +140,9 @@ const CharacterScreen = () => {
               </Row>
               <Row className="my-5">
                 <Col>
-                  {faction ? (
+                  {playerFaction ? (
                     <Image
-                      src={`/asset/icon-${faction}.png`}
+                      src={`/asset/icon-${playerFaction}.png`}
                       className="px-5"
                     />
                   ) : (
@@ -109,21 +175,44 @@ const CharacterScreen = () => {
                     }}
                   >
                     {traders.length !== 0 &&
-                      traders.map((el, i) => {
+                      traders.map((trader, i) => {
                         return (
                           <Accordion.Item
                             eventKey={`${i}`}
-                            key={`${el.name}-task`}
+                            key={`${trader.name}-task`}
                           >
-                            <Accordion.Header>
+                            <Accordion.Header
+                              onClick={() => getTaskOfTraderHandle(trader.name)}
+                            >
                               <Image
-                                src={`/asset/${el.id}.png`}
+                                src={`/asset/${trader.id}.png`}
                                 className="me-3"
                                 style={{ height: "64px", width: "64px" }}
                               />
-                              <div className="fs-4">{el.name}</div>
+                              <div className="fs-4">{trader.name}</div>
                             </Accordion.Header>
-                            <Accordion.Body>TEST TEST</Accordion.Body>
+                            <Accordion.Body className="p-0">
+                              <Table variant="dark" className="m-0">
+                                <tbody>
+                                  {Object.keys(playerTasksInfo).length > 0 &&
+                                    playerTasksInfo[`${trader.name}`] &&
+                                    playerTasksInfo[`${trader.name}`][
+                                      "ongoing"
+                                    ].map((task) => {
+                                      if (
+                                        (trader.name === "Jaeger" &&
+                                          unlockedJaeger) ||
+                                        trader.name !== "Jaeger"
+                                      )
+                                        return (
+                                          <tr key={task.id}>
+                                            <td>{task.name}</td>
+                                          </tr>
+                                        )
+                                    })}
+                                </tbody>
+                              </Table>
+                            </Accordion.Body>
                           </Accordion.Item>
                         )
                       })}
