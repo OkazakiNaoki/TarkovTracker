@@ -243,6 +243,8 @@ const CharacterScreen = () => {
                                     )
                                       .map((status) => {
                                         if (
+                                          (status === "complete" &&
+                                            showCompleteTask) ||
                                           (status === "ongoing" &&
                                             showOngoingTask) ||
                                           (status === "notQualify" &&
@@ -257,7 +259,10 @@ const CharacterScreen = () => {
                                               trader.name !== "Jaeger"
                                             )
                                               return (
-                                                <tr key={task.id}>
+                                                <tr
+                                                  key={task.id}
+                                                  onClick={() => {}}
+                                                >
                                                   <td
                                                     style={{
                                                       "--bs-table-bg":

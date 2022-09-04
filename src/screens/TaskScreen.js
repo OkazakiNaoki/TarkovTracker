@@ -13,21 +13,20 @@ import {
 import {
   getTraders,
   getTasksOfTrader,
-  setTaskCollapse,
   getTaskDetail,
-  setTraderIcons,
 } from "../reducers/TraderSlice"
 import placeholderImg from "../../public/static/images/default_avatar.png"
-import { Link } from "react-router-dom"
 import { TaskDetail } from "../components/TaskDetail"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const TaskScreen = () => {
   // hooks
   const [curTrader, setCurTrader] = useState("Prapor")
+  const [collapseDetail, setCollapseDetail] = useState({})
 
   // redux
-  const { traders, tasks, tasksDetail } = useSelector((state) => state.trader)
+  const { isLoading, traders, tasks, tasksDetail, tasksDetailFetched } =
+    useSelector((state) => state.trader)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -38,19 +37,41 @@ const TaskScreen = () => {
 
   useEffect(() => {
     if (traders.length !== 0) {
-      let index = getIndexOfMatchFieldObjArr(traders, "name", curTrader)
-      if (curTrader.length > 0 && Object.keys(tasks[index]).length === 0) {
+      if (!tasks[curTrader]) {
         dispatch(getTasksOfTrader({ trader: curTrader }))
       }
     }
   }, [traders, curTrader])
 
+  useEffect(() => {
+    if (tasks[curTrader] && !(curTrader in collapseDetail)) {
+      const collapse = {}
+      tasks[curTrader].forEach((task) => {
+        collapse[`${task.id}`] = false
+      })
+      setCollapseDetail({ ...collapseDetail, ...collapse })
+    }
+  }, [tasks])
+
   const imgLoadErrHandle = (e) => {
     e.target.src = placeholderImg
   }
 
+  const collapseExpandTaskDetail = (taskId) => {
+    const collapse = { ...collapseDetail }
+    collapse[`${taskId}`] = !collapse[`${taskId}`]
+    setCollapseDetail(collapse)
+  }
+
   return (
     <>
+      <button
+        onClick={() => {
+          console.log(collapseDetail)
+        }}
+      >
+        Show state
+      </button>
       <Container className="py-5">
         <Row className="justify-content-center">
           {traders.length !== 0 &&
@@ -105,9 +126,9 @@ const TaskScreen = () => {
 
         <Tabs activeKey={curTrader} className="py-3">
           {traders.length !== 0 &&
-            traders.map((el, i) => {
+            traders.map((trader, i) => {
               return (
-                <TabPane eventKey={el.name} key={el.id}>
+                <TabPane eventKey={trader.name} key={trader.id}>
                   <Table bordered hover variant="dark" className="p-4">
                     <thead>
                       <tr>
@@ -118,32 +139,45 @@ const TaskScreen = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {tasks[i].length !== 0 &&
-                        tasks[i].map((el, j) => {
+                      {tasks[trader.name] &&
+                        tasks[trader.name].map((task, j) => {
                           return [
                             <tr
-                              key={el.id}
+                              key={task.id}
                               onClick={() => {
-                                if (tasksDetail[i][j] === null)
-                                  dispatch(getTaskDetail({ id: el.id, i, j }))
-                                dispatch(setTaskCollapse({ i, j }))
+                                if (
+                                  !tasksDetailFetched[trader.name].includes(
+                                    task.id
+                                  ) &&
+                                  !isLoading
+                                )
+                                  dispatch(
+                                    getTaskDetail({
+                                      id: task.id,
+                                      traderName: trader.name,
+                                    })
+                                  )
+                                collapseExpandTaskDetail(task.id)
                               }}
                             >
-                              <td>{el.name}</td>
-                              <td>{el.minPlayerLevel}</td>
+                              <td>{task.name}</td>
+                              <td>{task.minPlayerLevel}</td>
                               <td style={{ whiteSpace: "break-spaces" }}>
-                                {el.taskRequirements.reduce((prev, el) => {
-                                  return prev + el.task.name + "\n"
-                                }, "")}
+                                {task.taskRequirements.reduce(
+                                  (prev, taskReq) => {
+                                    return prev + taskReq.task.name + "\n"
+                                  },
+                                  ""
+                                )}
                               </td>
                               <td>
-                                {el.traderLevelRequirements.reduce(
-                                  (prev, el) => {
+                                {task.traderLevelRequirements.reduce(
+                                  (prev, lvlReq) => {
                                     return (
                                       prev +
-                                      el.trader.name +
+                                      lvlReq.trader.name +
                                       " @Lv." +
-                                      el.level +
+                                      lvlReq.level +
                                       "\n"
                                     )
                                   },
@@ -152,13 +186,22 @@ const TaskScreen = () => {
                               </td>
                             </tr>,
 
-                            <tr key={el.id + "_collapse"}>
+                            <tr
+                              key={task.id + "_collapse"}
+                              style={{ "--bs-table-hover-bg": "none" }}
+                            >
                               <td colSpan="4" style={{ padding: "0" }}>
-                                <Collapse in={el.collapse}>
+                                <Collapse in={collapseDetail[`${task.id}`]}>
                                   <div>
                                     <div style={{ minHeight: "200px" }}>
-                                      {tasksDetail[i][j] && (
-                                        <TaskDetail task={tasksDetail[i][j]} />
+                                      {tasksDetailFetched[trader.name].includes(
+                                        task.id
+                                      ) && (
+                                        <TaskDetail
+                                          task={
+                                            tasksDetail[trader.name][task.id]
+                                          }
+                                        />
                                       )}
                                     </div>
                                   </div>

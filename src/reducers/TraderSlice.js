@@ -53,7 +53,7 @@ export const getTasksOfTrader = createAsyncThunk(
 export const getTaskDetail = createAsyncThunk(
   "trader/getTaskDetail",
   async (params) => {
-    const { id = "", i = -1, j = -1 } = params
+    const { id = "", traderName = "" } = params
     try {
       const config = {
         headers: {
@@ -64,12 +64,15 @@ export const getTaskDetail = createAsyncThunk(
       const body = {
         query: `{
             task(id: "${id}"){
+              id
               experience
               objectives{
+                id
                 type
                 description
                 optional
                 ... on TaskObjectiveBuildItem{
+                  id
                   type
                   description
                   optional
@@ -85,6 +88,7 @@ export const getTaskDetail = createAsyncThunk(
                   }
                 }
                 ... on TaskObjectiveExperience{
+                  id
                   type
                   description
                   optional
@@ -98,6 +102,7 @@ export const getTaskDetail = createAsyncThunk(
                   }
                 }
                 ... on TaskObjectiveExtract{
+                  id
                   type
                   description
                   optional
@@ -105,6 +110,7 @@ export const getTaskDetail = createAsyncThunk(
                   zoneNames
                 }
                 ... on TaskObjectiveItem{
+                  id
                   type
                   description
                   optional
@@ -116,18 +122,21 @@ export const getTaskDetail = createAsyncThunk(
                   minDurability
                 }
                 ... on TaskObjectiveMark{
+                  id
                   type
                   description
                   optional
                   markerItem{id name}
                 }
                 ... on TaskObjectivePlayerLevel{
+                  id
                   type
                   description
                   optional
                   playerLevel
                 }
                 ... on TaskObjectiveQuestItem{
+                  id
                   type
                   description
                   optional
@@ -135,6 +144,7 @@ export const getTaskDetail = createAsyncThunk(
                   count
                 }
                 ... on TaskObjectiveShoot{
+                  id
                   type
                   description
                   optional
@@ -169,6 +179,7 @@ export const getTaskDetail = createAsyncThunk(
                   }
                 }
                 ... on TaskObjectiveSkill{
+                  id
                   type
                   description
                   optional
@@ -178,13 +189,15 @@ export const getTaskDetail = createAsyncThunk(
                   }
                 }
                 ... on TaskObjectiveTaskStatus{
+                  id
                   type
                   description
                   optional
                   task{id name}
                   status
                 }
-                      ... on TaskObjectiveTraderLevel{
+                ... on TaskObjectiveTraderLevel{
+                  id
                   type
                   description
                   optional
@@ -228,7 +241,7 @@ export const getTaskDetail = createAsyncThunk(
       gqlData.image = taskImgData.image
       gqlData.description = taskDescData.description
 
-      return { data: gqlData, i, j }
+      return { data: gqlData, taskId: id, traderName }
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -242,8 +255,9 @@ const traderSlice = createSlice({
   initialState: {
     isLoading: false,
     traders: [],
-    tasks: Array(8).fill([]),
-    tasksDetail: Array(8).fill([]),
+    tasks: {},
+    tasksDetail: {},
+    tasksDetailFetched: {},
   },
   reducers: {
     setTaskCollapse: (state, action) => {
@@ -260,6 +274,9 @@ const traderSlice = createSlice({
         // console.log(action.payload)
         state.isLoading = false
         state.traders = action.payload
+        action.payload.forEach((trader) => {
+          state.tasks[`${trader.name}`] = null
+        })
       })
       .addCase(getTraders.rejected, (state, action) => {
         throw Error(action.payload)
@@ -270,17 +287,9 @@ const traderSlice = createSlice({
       .addCase(getTasksOfTrader.fulfilled, (state, action) => {
         // console.log(action.payload)
         state.isLoading = false
-        let index = getIndexOfMatchFieldObjArr(
-          state.traders,
-          "name",
-          action.payload.trader
-        )
-        const copy = [...action.payload.tasksArr]
-        copy.forEach((el) => {
-          el.collapse = false
-        })
-        state.tasks[index] = copy
-        state.tasksDetail[index] = Array(copy.length).fill(null)
+        state.tasks[action.payload.trader] = action.payload.tasksArr
+        state.tasksDetail[action.payload.trader] = {}
+        state.tasksDetailFetched[action.payload.trader] = []
       })
       .addCase(getTasksOfTrader.rejected, (state, action) => {
         throw Error(action.payload)
@@ -291,8 +300,13 @@ const traderSlice = createSlice({
       .addCase(getTaskDetail.fulfilled, (state, action) => {
         console.log(action.payload.data)
         state.isLoading = false
-        state.tasksDetail[action.payload.i][action.payload.j] =
-          action.payload.data
+        state.tasksDetail[action.payload.traderName] = {
+          ...state.tasksDetail[action.payload.traderName],
+          [action.payload.taskId]: action.payload.data,
+        }
+        state.tasksDetailFetched[action.payload.traderName].push(
+          action.payload.taskId
+        )
       })
       .addCase(getTaskDetail.rejected, (state, action) => {
         throw Error(action.payload)
