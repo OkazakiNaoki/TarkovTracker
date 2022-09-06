@@ -17,7 +17,6 @@ import {
 } from "../reducers/TraderSlice"
 import placeholderImg from "../../public/static/images/default_avatar.png"
 import { TaskDetail } from "../components/TaskDetail"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const TaskScreen = () => {
   // hooks
@@ -44,7 +43,7 @@ const TaskScreen = () => {
   }, [traders, curTrader])
 
   useEffect(() => {
-    if (tasks[curTrader] && !(curTrader in collapseDetail)) {
+    if (tasks[curTrader]) {
       const collapse = {}
       tasks[curTrader].forEach((task) => {
         collapse[`${task.id}`] = false
@@ -65,13 +64,6 @@ const TaskScreen = () => {
 
   return (
     <>
-      <button
-        onClick={() => {
-          console.log(collapseDetail)
-        }}
-      >
-        Show state
-      </button>
       <Container className="py-5">
         <Row className="justify-content-center">
           {traders.length !== 0 &&

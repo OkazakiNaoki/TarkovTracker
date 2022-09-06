@@ -10,9 +10,9 @@ import {
   Accordion,
   Table,
   ToggleButton,
+  Collapse,
 } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
-import { Link } from "react-router-dom"
 import { LoginFirst } from "../components/LoginFirst"
 import { TarkovButton } from "../components/TarkovButton"
 import {
@@ -21,18 +21,22 @@ import {
   initPlayerTasks,
   initializePlayerData,
 } from "../reducers/CharacterSlice"
-import { getTraders } from "../reducers/TraderSlice"
+import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
+import { TaskDetail } from "../components/TaskDetail"
 
 const CharacterScreen = () => {
   // hooks
-  const [needTaskRefresh, setNeedTaskRefresh] = useState({})
+  const [playerTaskFetched, setPlayerTaskFetched] = useState({})
   const [showCompleteTask, setShowCompleteTask] = useState(false)
   const [showOngoingTask, setShowOngoingTask] = useState(true)
   const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
+  const [collapseDetail, setCollapseDetail] = useState({})
 
   // redux
   const { user } = useSelector((state) => state.user)
-  const { traders } = useSelector((state) => state.trader)
+  const { traders, tasks, tasksDetail, tasksDetailFetched } = useSelector(
+    (state) => state.trader
+  )
   const {
     isLoading,
     initSetup,
@@ -54,14 +58,14 @@ const CharacterScreen = () => {
   }, [traders])
 
   useEffect(() => {
-    if (traders.length !== 0 && Object.keys(needTaskRefresh).length === 0) {
+    if (traders.length !== 0 && Object.keys(playerTaskFetched).length === 0) {
       const needRefresh = {}
       for (let i = 0; i < traders.length; i++) {
-        needRefresh[`${traders[i].name}`] = true
+        needRefresh[`${traders[i].name}`] = null
       }
-      setNeedTaskRefresh(needRefresh)
+      setPlayerTaskFetched(needRefresh)
     }
-  }, [traders, needTaskRefresh])
+  }, [traders])
 
   useEffect(() => {
     if (traders.length !== 0 && Object.keys(playerTasksInfo).length === 0) {
@@ -72,10 +76,33 @@ const CharacterScreen = () => {
     }
   }, [traders])
 
+  useEffect(() => {
+    const newCollapse = { ...collapseDetail }
+    for (const trader in playerTaskFetched) {
+      if (playerTaskFetched[trader] === null) {
+        for (const status in playerTasksInfo[trader]) {
+          playerTasksInfo[trader][status].forEach((task) => {
+            newCollapse[`${task.id}`] = false
+          })
+        }
+      }
+    }
+    setCollapseDetail(newCollapse)
+  }, [traders, playerTaskFetched])
+
   const setupHandle = () => {}
 
   const openLevelSettingPanelHandle = () => {
     console.log("open!")
+  }
+
+  const expandTaskDetailHandle = (trader, taskId) => {
+    if (!tasksDetailFetched[trader].includes(taskId)) {
+      dispatch(getTaskDetail({ id: taskId, traderName: trader }))
+    }
+    const newCollapse = { ...collapseDetail }
+    newCollapse[taskId] = !newCollapse[taskId]
+    setCollapseDetail(newCollapse)
   }
 
   const setLevelHandle = (e) => {
@@ -85,16 +112,16 @@ const CharacterScreen = () => {
   }
 
   const getTaskOfTraderHandle = (traderName) => {
-    if (needTaskRefresh[`${traderName}`])
+    if (!playerTaskFetched[`${traderName}`])
       dispatch(
         getTasksOfTraderWithLevel({
           trader: traderName,
           playerLvl: playerLevel,
         })
       )
-    const newNeedRefresh = { ...needTaskRefresh }
-    newNeedRefresh[`${traderName}`] = false
-    setNeedTaskRefresh(newNeedRefresh)
+    const newFetched = { ...playerTaskFetched }
+    newFetched[`${traderName}`] = true
+    setPlayerTaskFetched(newFetched)
   }
 
   return (
@@ -221,7 +248,7 @@ const CharacterScreen = () => {
                         return (
                           <Accordion.Item
                             eventKey={`${i}`}
-                            key={`${trader.name}-task`}
+                            key={`${trader.name}_task`}
                           >
                             <Accordion.Header
                               onClick={() => getTaskOfTraderHandle(trader.name)}
@@ -258,10 +285,15 @@ const CharacterScreen = () => {
                                                 unlockedJaeger) ||
                                               trader.name !== "Jaeger"
                                             )
-                                              return (
+                                              return [
                                                 <tr
                                                   key={task.id}
-                                                  onClick={() => {}}
+                                                  onClick={() => {
+                                                    expandTaskDetailHandle(
+                                                      trader.name,
+                                                      task.id
+                                                    )
+                                                  }}
                                                 >
                                                   <td
                                                     style={{
@@ -275,8 +307,46 @@ const CharacterScreen = () => {
                                                   >
                                                     {task.name}
                                                   </td>
-                                                </tr>
-                                              )
+                                                </tr>,
+                                                <tr key={task.id + "_collapse"}>
+                                                  <td
+                                                    colSpan={1}
+                                                    style={{ padding: "0" }}
+                                                  >
+                                                    <Collapse
+                                                      in={
+                                                        (trader.name,
+                                                        collapseDetail[task.id])
+                                                      }
+                                                    >
+                                                      <div>
+                                                        <div
+                                                          style={{
+                                                            minHeight: "200px",
+                                                          }}
+                                                        >
+                                                          {Object.keys(
+                                                            tasksDetailFetched
+                                                          ).length > 0 &&
+                                                            tasksDetailFetched[
+                                                              trader.name
+                                                            ].includes(
+                                                              task.id
+                                                            ) && (
+                                                              <TaskDetail
+                                                                task={
+                                                                  tasksDetail[
+                                                                    trader.name
+                                                                  ][task.id]
+                                                                }
+                                                              />
+                                                            )}
+                                                        </div>
+                                                      </div>
+                                                    </Collapse>
+                                                  </td>
+                                                </tr>,
+                                              ]
                                           })
                                       })
                                       .flat(1)}

@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 export const getTraders = createAsyncThunk(
   "trader/getTraders",
@@ -276,6 +275,8 @@ const traderSlice = createSlice({
         state.traders = action.payload
         action.payload.forEach((trader) => {
           state.tasks[`${trader.name}`] = null
+          state.tasksDetail[`${trader.name}`] = {}
+          state.tasksDetailFetched[`${trader.name}`] = []
         })
       })
       .addCase(getTraders.rejected, (state, action) => {
@@ -288,8 +289,6 @@ const traderSlice = createSlice({
         // console.log(action.payload)
         state.isLoading = false
         state.tasks[action.payload.trader] = action.payload.tasksArr
-        state.tasksDetail[action.payload.trader] = {}
-        state.tasksDetailFetched[action.payload.trader] = []
       })
       .addCase(getTasksOfTrader.rejected, (state, action) => {
         throw Error(action.payload)
