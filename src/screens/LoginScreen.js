@@ -3,7 +3,7 @@ import { Container, Row, Col, InputGroup, Form, Alert } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 import { login } from "../reducers/UserSlice"
-import { TarkovButton } from "../components/TarkovButton"
+import { TarkovStyleButton } from "../components/TarkovStyleButton"
 
 const LoginScreen = () => {
   // redux
@@ -68,11 +68,14 @@ const LoginScreen = () => {
                   }}
                 />
               </InputGroup>
-              <TarkovButton
-                useLink={false}
-                text="Log in"
-                clickHandle={submitHandle}
-              />
+              <div className="d-flex justify-content-center">
+                <TarkovStyleButton
+                  text="Log in"
+                  clickHandle={submitHandle}
+                  height={60}
+                  fs={28}
+                />
+              </div>
             </Form>
           </Col>
         </Row>

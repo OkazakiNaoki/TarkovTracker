@@ -1,7 +1,8 @@
 import React from "react"
 import { Container, Image } from "react-bootstrap"
+import { TarkovStyleButton } from "./TarkovStyleButton"
 
-const TaskDetail = ({ task }) => {
+const TaskDetail = ({ task, completeable = false, finishClickHandles }) => {
   return (
     <>
       <Container className="d-flex align-items-start p-3">
@@ -12,16 +13,21 @@ const TaskDetail = ({ task }) => {
         <p className="ps-3">{task.description}</p>
       </Container>
       <div className="px-4">Objective(s)</div>
-      {task.objectives.map((el, i) => {
+      {task.objectives.map((objective, i) => {
         return (
           <div
             key={"objective-" + i}
-            className="text-center my-2 p-2"
+            className="d-flex justify-content-center my-2 p-2"
             style={{
               backgroundColor: "#2a2c2e",
             }}
           >
-            {el.description}
+            <div className="d-inline-block">{objective.description}</div>
+            {completeable && (
+              <div className="ps-3">
+                <TarkovStyleButton text="TURN IN" height={30} />
+              </div>
+            )}
           </div>
         )
       })}
@@ -34,30 +40,33 @@ const TaskDetail = ({ task }) => {
         }}
       >
         {"+" + task.experience + "EXP\n"}
-        {task.finishRewards.traderStanding.map((el) => {
+        {task.finishRewards.traderStanding.map((finishStanding) => {
           return (
-            el.trader.name + (el.standing > 0 ? " +" : " ") + el.standing + "\n"
-          )
-        })}
-        {task.finishRewards.items.map((el) => {
-          return el.item.name + " (" + el.count + ")\n"
-        })}
-        {task.finishRewards.offerUnlock.map((el) => {
-          return (
-            "Unlock " +
-            el.item.name +
-            " at " +
-            el.trader.name +
-            "@Lv." +
-            el.level +
+            finishStanding.trader.name +
+            (finishStanding.standing > 0 ? " +" : " ") +
+            finishStanding.standing +
             "\n"
           )
         })}
-        {task.finishRewards.skillLevelReward.map((el) => {
-          return "+" + el.level + " " + el.name + " level\n"
+        {task.finishRewards.items.map((finishItem) => {
+          return finishItem.item.name + " (" + finishItem.count + ")\n"
         })}
-        {task.finishRewards.traderUnlock.map((el) => {
-          return "Unlock trader " + el.name + "\n"
+        {task.finishRewards.offerUnlock.map((finishOffer) => {
+          return (
+            "Unlock " +
+            finishOffer.item.name +
+            " at " +
+            finishOffer.trader.name +
+            "@Lv." +
+            finishOffer.level +
+            "\n"
+          )
+        })}
+        {task.finishRewards.skillLevelReward.map((finishSkill) => {
+          return "+" + finishSkill.level + " " + finishSkill.name + " level\n"
+        })}
+        {task.finishRewards.traderUnlock.map((finishTrader) => {
+          return "Unlock trader " + finishTrader.name + "\n"
         })}
       </div>
     </>

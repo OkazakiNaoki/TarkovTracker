@@ -4,6 +4,9 @@ import {
   addCompleteTask,
   updateCompleteTask,
   getCompleteTask,
+  addCompleteTaskObjective,
+  updateCompleteTaskObjective,
+  getCompleteTaskObjective,
 } from "../controllers/PlayerTaskController.js"
 
 import {
@@ -19,6 +22,12 @@ router
   .get(protect, getCompleteTask)
   .post(protect, addCompleteTask)
   .put(protect, updateCompleteTask)
+
+router
+  .route("/task/objective")
+  .post(protect, addCompleteTaskObjective)
+  .put(protect, updateCompleteTaskObjective)
+  .get(protect, getCompleteTaskObjective)
 
 router
   .route("/trader/LL")

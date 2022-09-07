@@ -14,7 +14,6 @@ import {
 } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { LoginFirst } from "../components/LoginFirst"
-import { TarkovButton } from "../components/TarkovButton"
 import {
   setPlayerLevel,
   getTasksOfTraderWithLevel,
@@ -23,6 +22,7 @@ import {
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { TaskDetail } from "../components/TaskDetail"
+import { TarkovStyleButton } from "../components/TarkovStyleButton"
 
 const CharacterScreen = () => {
   // hooks
@@ -34,7 +34,7 @@ const CharacterScreen = () => {
 
   // redux
   const { user } = useSelector((state) => state.user)
-  const { traders, tasks, tasksDetail, tasksDetailFetched } = useSelector(
+  const { traders, tasksDetail, tasksDetailFetched } = useSelector(
     (state) => state.trader
   )
   const {
@@ -148,7 +148,7 @@ const CharacterScreen = () => {
       {Object.keys(user).length > 0 && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
-            <Col md={3} style={{ border: "1px solid white" }}>
+            <Col lg={3} style={{ border: "1px solid white" }}>
               <Row className="my-3" align="center">
                 <Col>
                   <div
@@ -174,11 +174,9 @@ const CharacterScreen = () => {
                       className="px-5"
                     />
                   ) : (
-                    <TarkovButton
-                      useLink={false}
+                    <TarkovStyleButton
                       text="Setup character"
                       clickHandle={setupHandle}
-                      fs="6"
                     />
                   )}
                 </Col>
@@ -296,6 +294,7 @@ const CharacterScreen = () => {
                                                   }}
                                                 >
                                                   <td
+                                                    className="px-5"
                                                     style={{
                                                       "--bs-table-bg":
                                                         status === "complete"
@@ -338,6 +337,9 @@ const CharacterScreen = () => {
                                                                   tasksDetail[
                                                                     trader.name
                                                                   ][task.id]
+                                                                }
+                                                                completeable={
+                                                                  true
                                                                 }
                                                               />
                                                             )}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Container, Row, Col, InputGroup, Form, Alert } from "react-bootstrap"
-import { TarkovButton } from "../components/TarkovButton"
+import { TarkovStyleButton } from "../components/TarkovStyleButton"
 import { useNavigate } from "react-router-dom"
 import { register } from "../reducers/UserSlice"
 
@@ -130,11 +130,14 @@ const RegisterScreen = () => {
                 {confirmPasswordInvalidMsg}
               </Form.Control.Feedback>
             </InputGroup>
-            <TarkovButton
-              useLink={false}
-              text="Register"
-              clickHandle={submitHandle}
-            />
+            <div className="d-flex justify-content-center">
+              <TarkovStyleButton
+                text="Register"
+                clickHandle={submitHandle}
+                height={60}
+                fs={28}
+              />
+            </div>
           </Form>
         </Col>
       </Row>
