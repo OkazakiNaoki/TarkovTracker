@@ -19,6 +19,7 @@ import {
   getTasksOfTraderWithLevel,
   initPlayerTasks,
   initializePlayerData,
+  getCompletedObjectives,
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { TaskDetail } from "../components/TaskDetail"
@@ -45,6 +46,7 @@ const CharacterScreen = () => {
     playerTasksInfo,
     unlockedJaeger,
     traderLoyaltyLevel,
+    playerCompletedObjectives,
   } = useSelector((state) => state.character)
   const dispatch = useDispatch()
 
@@ -89,6 +91,12 @@ const CharacterScreen = () => {
     }
     setCollapseDetail(newCollapse)
   }, [traders, playerTaskFetched])
+
+  useEffect(() => {
+    if (!playerCompletedObjectives) {
+      dispatch(getCompletedObjectives())
+    }
+  }, [playerCompletedObjectives])
 
   const setupHandle = () => {}
 
@@ -177,6 +185,7 @@ const CharacterScreen = () => {
                     <TarkovStyleButton
                       text="Setup character"
                       clickHandle={setupHandle}
+                      fs={24}
                     />
                   )}
                 </Col>
@@ -341,6 +350,7 @@ const CharacterScreen = () => {
                                                                 completeable={
                                                                   true
                                                                 }
+                                                                showCount={true}
                                                               />
                                                             )}
                                                         </div>

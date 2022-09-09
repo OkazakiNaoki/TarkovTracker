@@ -23,6 +23,15 @@ export const initializePlayerData = createAsyncThunk(
       )
       const completeTasksData = completeTasks.data.completeTasks
 
+      // completed objectives of tasks
+      const completeTaskObjectives = await axios.post(
+        `/api/player/task/objective`,
+        { completeObjectives: [] },
+        config
+      )
+      const completeObjectivesData =
+        completeTaskObjectives.data.completeObjectives
+
       // trader LL
       const llInner = {}
       traderNames.forEach((trader) => {
@@ -39,6 +48,7 @@ export const initializePlayerData = createAsyncThunk(
 
       return {
         completeTasks: completeTasksData,
+        completeObjectives: completeObjectivesData,
         traderLL: traderLLData,
       }
     } catch (error) {
@@ -132,6 +142,36 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
   }
 )
 
+export const getCompletedObjectives = createAsyncThunk(
+  "character/getCompletedObjectives",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      // completed
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const completeObjectives = await axios.get(
+        `/api/player/task/objective`,
+        config
+      )
+      const completeObjectivesData = completeObjectives.data.completeObjectives
+
+      return {
+        completeObjectives: completeObjectivesData,
+      }
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -141,6 +181,7 @@ const characterSlice = createSlice({
     playerLevel: 6,
     playerFaction: null,
     playerTasksInfo: {},
+    playerCompletedObjectives: null,
     unlockedJaeger: false,
     traderLoyaltyLevel: {},
   },
@@ -182,6 +223,15 @@ const characterSlice = createSlice({
         }
       })
       .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
+      .addCase(getCompletedObjectives.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getCompletedObjectives.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerCompletedObjectives = action.payload.completeObjectives
+      })
+      .addCase(getCompletedObjectives.rejected, (state, action) => {})
   },
 })
 

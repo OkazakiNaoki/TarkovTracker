@@ -1,8 +1,37 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 import { Container, Image } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
+import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import blueCheck from "../../public/static/images/blue_check.png"
 
-const TaskDetail = ({ task, completeable = false, finishClickHandles }) => {
+const TaskDetail = ({
+  task,
+  showCount = false,
+  completeable = false,
+  finishClickHandles,
+}) => {
+  // hooks
+  const [completeObjective, setCompleteObjective] = useState(null)
+
+  // redux
+  const { playerCompletedObjectives } = useSelector((state) => state.character)
+
+  useEffect(() => {
+    if (!completeObjective) {
+      const index = getIndexOfMatchFieldObjArr(
+        playerCompletedObjectives,
+        "taskId",
+        task.id
+      )
+      if (index !== -1) {
+        setCompleteObjective(playerCompletedObjectives[index]["objectives"])
+      } else {
+        setCompleteObjective([])
+      }
+    }
+  }, [task])
+
   return (
     <>
       <Container className="d-flex align-items-start p-3">
@@ -23,11 +52,18 @@ const TaskDetail = ({ task, completeable = false, finishClickHandles }) => {
             }}
           >
             <div className="d-inline-block">{objective.description}</div>
-            {completeable && (
-              <div className="ps-3">
-                <TarkovStyleButton text="TURN IN" height={30} />
-              </div>
-            )}
+            {showCount && "count" in objective ? (
+              <div className="mx-3 fw-bold">{"0/" + objective.count}</div>
+            ) : null}
+            {completeable &&
+              completeObjective &&
+              (completeObjective.includes(objective.id) ? (
+                <Image src={blueCheck} className="ms-1" />
+              ) : (
+                <div className="ms-1">
+                  <TarkovStyleButton text="TURN IN" height={30} />
+                </div>
+              ))}
           </div>
         )
       })}

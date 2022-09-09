@@ -1,6 +1,19 @@
 import mongoose from "mongoose"
 import User from "./UserModel.js"
 
+const taskAndCompletedObjectives = mongoose.Schema({
+  taskId: {
+    type: String,
+    required: true,
+  },
+  objectives: [
+    {
+      type: String,
+      required: false,
+    },
+  ],
+})
+
 const playerCompleteTaskObjectiveSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -9,7 +22,7 @@ const playerCompleteTaskObjectiveSchema = mongoose.Schema({
   },
   completeObjectives: [
     {
-      type: String,
+      type: taskAndCompletedObjectives,
       required: false,
     },
   ],

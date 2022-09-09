@@ -53,7 +53,7 @@ const userSlice = createSlice({
       name: "test",
       email: "1",
       token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMGIwYzJhOTBmNzBiZjk5ZTFhM2NmMiIsImlhdCI6MTY2MjQ2NjU3NCwiZXhwIjoxNjYyNTUyOTc0fQ.SLeTJpwC005e1E01RUwmCoi60HTNWYSucIG-2dJxGQ0",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMGIwYzJhOTBmNzBiZjk5ZTFhM2NmMiIsImlhdCI6MTY2MjYzNzEyOSwiZXhwIjoxNjkzNzQxMTI5fQ.m7pIhqjtWii343hHIpsJcothQx6wkX9whCAuSo7zxFY",
     },
   },
   reducers: {
