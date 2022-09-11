@@ -1,14 +1,15 @@
 import asyncHandler from "express-async-handler"
 import PlayerCompleteTask from "../models/PlayerCompleteTaskModel.js"
 import PlayerCompleteObjective from "../models/PlayerCompleteTaskObjectivesModel.js"
+import PlayerObjectiveProgress from "../models/PlayerTaskObjectiveProgressModel.js"
 
 // @desc add completed tasks for a player
 // @route POST /api/player/task/complete
 // @access private
 export const addCompleteTask = asyncHandler(async (req, res) => {
-  const completetask = req.body.completetask
+  const completeTasks = req.body.completeTasks
 
-  if (completetask && completetask.length === 0) {
+  if (completeTasks && completeTasks.length === 0) {
     res.status(400).send("Completed task is empty")
     return
   } else {
@@ -16,7 +17,7 @@ export const addCompleteTask = asyncHandler(async (req, res) => {
     if (!existPct) {
       const pct = new PlayerCompleteTask({
         user: req.user._id,
-        completeTasks: completetask,
+        completeTasks: completeTasks,
       })
       const createdPct = await pct.save()
       res.status(201).json(createdPct)
@@ -26,13 +27,13 @@ export const addCompleteTask = asyncHandler(async (req, res) => {
   }
 })
 
-// @desc add completed tasks for a player
+// @desc update completed tasks for a player
 // @route PUT /api/player/task/complete
 // @access private
 export const updateCompleteTask = asyncHandler(async (req, res) => {
-  const completetask = req.body.completetask
+  const completeTasks = req.body.completeTasks
 
-  if (completetask && completetask.length === 0) {
+  if (completeTasks && completeTasks.length === 0) {
     res.status(400).send("Completed task is empty")
     return
   } else {
@@ -40,7 +41,7 @@ export const updateCompleteTask = asyncHandler(async (req, res) => {
     if (!existPct) {
       res.status(404).send("Previous completed task data not found")
     } else {
-      existPct.completeTasks = completetask
+      existPct.completeTasks = completeTasks
       const updatedPct = await existPct.save()
       res.json(updatedPct)
     }
@@ -67,7 +68,7 @@ export const getCompleteTask = asyncHandler(async (req, res) => {
 export const addCompleteTaskObjective = asyncHandler(async (req, res) => {
   const completeObjectives = req.body.completeObjectives
 
-  if (completeObjectives && completeObjectives.length === 0) {
+  if (!completeObjectives) {
     res.status(400).send("Completed task objective is empty")
     return
   } else {
@@ -87,7 +88,7 @@ export const addCompleteTaskObjective = asyncHandler(async (req, res) => {
   }
 })
 
-// @desc add completed objective of a task for a player
+// @desc update completed objective of a task for a player
 // @route PUT /api/player/task/objective
 // @access private
 export const updateCompleteTaskObjective = asyncHandler(async (req, res) => {
@@ -120,6 +121,69 @@ export const getCompleteTaskObjective = asyncHandler(async (req, res) => {
   } else {
     res.json({
       completeObjectives: pco.completeObjectives,
+    })
+  }
+})
+
+// @desc add progress of objective of a task for a player
+// @route POST /api/player/task/objective/progress
+// @access private
+export const addTaskObjectiveProgress = asyncHandler(async (req, res) => {
+  const objectiveProgress = req.body.objectiveProgress
+
+  if (!objectiveProgress) {
+    res.status(400).send("Progress of task objective is empty")
+    return
+  } else {
+    const existOp = await PlayerObjectiveProgress.findOne({
+      user: req.user._id,
+    })
+    if (!existOp) {
+      const op = new PlayerObjectiveProgress({
+        user: req.user._id,
+        objectiveProgress: objectiveProgress,
+      })
+      const createdOp = await op.save()
+      res.status(201).json(createdOp)
+    } else {
+      res.status(400).send("Exist old progress of task objective data")
+    }
+  }
+})
+
+// @desc update progress of objective of a task for a player
+// @route PUT /api/player/task/objective/progress
+// @access private
+export const updateTaskObjectiveProgress = asyncHandler(async (req, res) => {
+  const objectiveProgress = req.body.objectiveProgress
+
+  if (objectiveProgress && objectiveProgress.length === 0) {
+    res.status(400).send("Progress of task objective is empty")
+    return
+  } else {
+    const existOp = await PlayerObjectiveProgress.findOne({
+      user: req.user._id,
+    })
+    if (!existOp) {
+      res.status(404).send("Previous progress of task objective data not found")
+    } else {
+      existOp.objectiveProgress = objectiveProgress
+      const updatedOp = await existOp.save()
+      res.json(updatedOp)
+    }
+  }
+})
+
+// @desc get progress of objective of a tasks of a player
+// @route GET /api/player/task/objective/progress
+// @access private
+export const getTaskObjectiveProgress = asyncHandler(async (req, res) => {
+  const op = await PlayerObjectiveProgress.findOne({ user: req.user._id })
+  if (!op) {
+    res.status(404).send("Previous progress of task objective data not found")
+  } else {
+    res.json({
+      objectiveProgress: op.objectiveProgress,
     })
   }
 })

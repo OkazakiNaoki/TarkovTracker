@@ -7,6 +7,9 @@ import {
   addCompleteTaskObjective,
   updateCompleteTaskObjective,
   getCompleteTaskObjective,
+  addTaskObjectiveProgress,
+  getTaskObjectiveProgress,
+  updateTaskObjectiveProgress,
 } from "../controllers/PlayerTaskController.js"
 
 import {
@@ -22,6 +25,12 @@ router
   .get(protect, getCompleteTask)
   .post(protect, addCompleteTask)
   .put(protect, updateCompleteTask)
+
+router
+  .route("/task/objective/progress")
+  .get(protect, getTaskObjectiveProgress)
+  .post(protect, addTaskObjectiveProgress)
+  .put(protect, updateTaskObjectiveProgress)
 
 router
   .route("/task/objective")

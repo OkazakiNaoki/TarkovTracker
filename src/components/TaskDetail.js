@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Container, Image } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
+import { AddValueModal } from "../components/AddValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import blueCheck from "../../public/static/images/blue_check.png"
 
@@ -10,15 +11,21 @@ const TaskDetail = ({
   showCount = false,
   completeable = false,
   finishClickHandles,
+  taskCompleteHandle,
 }) => {
   // hooks
   const [completeObjective, setCompleteObjective] = useState(null)
+  const [objectiveProgress, setObjectiveProgress] = useState(null)
+  const [closeAddValueModal, setCloseAddValueModal] = useState(null)
 
   // redux
-  const { playerCompletedObjectives } = useSelector((state) => state.character)
+  const { playerCompletedObjectives, playerObjectiveProgress } = useSelector(
+    (state) => state.character
+  )
 
+  // effects
   useEffect(() => {
-    if (!completeObjective) {
+    if (completeable && playerCompletedObjectives) {
       const index = getIndexOfMatchFieldObjArr(
         playerCompletedObjectives,
         "taskId",
@@ -30,10 +37,96 @@ const TaskDetail = ({
         setCompleteObjective([])
       }
     }
-  }, [task])
+  }, [playerCompletedObjectives])
+
+  useEffect(() => {
+    if (completeObjective) {
+      let allComplete = true
+      for (let i = 0; i < task.objectives.length; i++) {
+        if (!completeObjective.includes(task.objectives[i].id)) {
+          allComplete = false
+          break
+        }
+      }
+      if (allComplete) {
+        taskCompleteHandle(task.id)
+      }
+    }
+  }, [completeObjective])
+
+  useEffect(() => {
+    if (!closeAddValueModal && completeable) {
+      const initModalOnOff = {}
+      task.objectives.forEach((objective) => {
+        if ("count" in objective) {
+          initModalOnOff[objective.id] = false
+        }
+      })
+      setCloseAddValueModal(initModalOnOff)
+    }
+  })
+
+  useEffect(() => {
+    if (completeable && playerObjectiveProgress) {
+      const newProgress = {}
+      task.objectives.forEach((objective) => {
+        const index = getIndexOfMatchFieldObjArr(
+          playerObjectiveProgress,
+          "objectiveId",
+          objective.id
+        )
+        if (index !== -1 && "count" in objective) {
+          newProgress[objective.id] = playerObjectiveProgress[index]["progress"]
+        } else if ("count" in objective) {
+          newProgress[objective.id] = 0
+        }
+      })
+      setObjectiveProgress(newProgress)
+    }
+  }, [playerObjectiveProgress])
+
+  // handles
+  const openCloseModal = (objectiveId) => {
+    if (objectiveId in objectiveProgress) {
+      const copy = { ...closeAddValueModal }
+      copy[objectiveId] = !copy[objectiveId]
+      setCloseAddValueModal(copy)
+    } else {
+      console.log("set objective complete")
+    }
+  }
+
+  const confirmTurnInHandle = (newValue, taskId, objectiveId, cap) => {
+    if (newValue === cap) {
+      finishClickHandles(taskId, objectiveId, newValue, true)
+    } else {
+      finishClickHandles(taskId, objectiveId, newValue)
+    }
+  }
 
   return (
     <>
+      {completeable &&
+        objectiveProgress &&
+        task.objectives.map((objective, i) => {
+          return (
+            objective.id in objectiveProgress && (
+              <AddValueModal
+                key={`${objective.id}_modal`}
+                show={closeAddValueModal[objective.id]}
+                value={objectiveProgress[objective.id]}
+                valueCap={objective.count}
+                setValueHandle={(v) => {
+                  confirmTurnInHandle(v, task.id, objective.id, objective.count)
+                  openCloseModal(objective.id)
+                }}
+                closeHandle={() => {
+                  openCloseModal(objective.id)
+                }}
+              />
+            )
+          )
+        })}
       <Container className="d-flex align-items-start p-3">
         <Image
           src={`/asset/${task.image}.png`}
@@ -48,12 +141,22 @@ const TaskDetail = ({
             key={"objective-" + i}
             className="d-flex justify-content-center my-2 p-2"
             style={{
-              backgroundColor: "#2a2c2e",
+              backgroundColor: completeable
+                ? completeObjective &&
+                  (completeObjective.includes(objective.id)
+                    ? "#101d24"
+                    : "#2a2c2e")
+                : "#2a2c2e",
             }}
           >
             <div className="d-inline-block">{objective.description}</div>
-            {showCount && "count" in objective ? (
-              <div className="mx-3 fw-bold">{"0/" + objective.count}</div>
+            {objectiveProgress &&
+            objective.id in objectiveProgress &&
+            showCount &&
+            "count" in objective ? (
+              <div className="mx-3 fw-bold">{`${
+                objectiveProgress[objective.id]
+              }/${objective.count}`}</div>
             ) : null}
             {completeable &&
               completeObjective &&
@@ -61,7 +164,13 @@ const TaskDetail = ({
                 <Image src={blueCheck} className="ms-1" />
               ) : (
                 <div className="ms-1">
-                  <TarkovStyleButton text="TURN IN" height={30} />
+                  <TarkovStyleButton
+                    text="TURN IN"
+                    height={30}
+                    clickHandle={() => {
+                      openCloseModal(objective.id)
+                    }}
+                  />
                 </div>
               ))}
           </div>

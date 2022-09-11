@@ -17,13 +17,20 @@ import { LoginFirst } from "../components/LoginFirst"
 import {
   setPlayerLevel,
   getTasksOfTraderWithLevel,
+  updateCompletedTasks,
   initPlayerTasks,
   initializePlayerData,
   getCompletedObjectives,
+  getObjectiveProgress,
+  updateCompletedObjectives,
+  updateObjectiveProgress,
+  addCompletedObjectives,
+  addObjectiveProgress,
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { TarkovStyleButton } from "../components/TarkovStyleButton"
+import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const CharacterScreen = () => {
   // hooks
@@ -47,12 +54,14 @@ const CharacterScreen = () => {
     unlockedJaeger,
     traderLoyaltyLevel,
     playerCompletedObjectives,
+    playerObjectiveProgress,
   } = useSelector((state) => state.character)
   const dispatch = useDispatch()
 
   // redux debug
   const charState = useSelector((state) => state.character)
 
+  // effects
   useEffect(() => {
     if (traders.length === 0) {
       dispatch(getTraders())
@@ -98,6 +107,13 @@ const CharacterScreen = () => {
     }
   }, [playerCompletedObjectives])
 
+  useEffect(() => {
+    if (!playerObjectiveProgress) {
+      dispatch(getObjectiveProgress())
+    }
+  }, [playerObjectiveProgress])
+
+  // handles
   const setupHandle = () => {}
 
   const openLevelSettingPanelHandle = () => {
@@ -130,6 +146,76 @@ const CharacterScreen = () => {
     const newFetched = { ...playerTaskFetched }
     newFetched[`${traderName}`] = true
     setPlayerTaskFetched(newFetched)
+  }
+
+  const updateObjectiveStatusHandle = (
+    taskId,
+    objectiveId,
+    progress,
+    completed = false
+  ) => {
+    if (completed) {
+      const newCompleteObjectives = JSON.parse(
+        JSON.stringify(playerCompletedObjectives)
+      )
+      const index = getIndexOfMatchFieldObjArr(
+        newCompleteObjectives,
+        "taskId",
+        taskId
+      )
+      if (index !== -1) {
+        newCompleteObjectives[index]["objectives"].push(objectiveId)
+        dispatch(
+          updateCompletedObjectives({
+            completeObjectives: newCompleteObjectives,
+          })
+        )
+      } else {
+        newCompleteObjectives.push({ taskId, objectives: [objectiveId] })
+        dispatch(
+          addCompletedObjectives({
+            completeObjectives: newCompleteObjectives,
+          })
+        )
+      }
+    }
+    const newProgress = JSON.parse(JSON.stringify(playerObjectiveProgress))
+    const index = getIndexOfMatchFieldObjArr(
+      newProgress,
+      "objectiveId",
+      objectiveId
+    )
+    if (index !== -1) {
+      newProgress[index]["progress"] = Number(progress)
+      dispatch(
+        updateObjectiveProgress({
+          objectiveProgress: newProgress,
+        })
+      )
+    } else {
+      newProgress.push({ objectiveId, progress })
+      dispatch(
+        addObjectiveProgress({
+          objectiveProgress: newProgress,
+        })
+      )
+    }
+  }
+
+  const completeTaskHandle = (traderName, taskId) => {
+    const newCompleteTasks = []
+    playerTasksInfo[traderName]["complete"].forEach((task) => {
+      newCompleteTasks.push(task.id)
+    })
+    newCompleteTasks.push(taskId)
+    console.log(newCompleteTasks)
+    dispatch(updateCompletedTasks({ completeTasks: newCompleteTasks }))
+    dispatch(
+      getTasksOfTraderWithLevel({
+        trader: traderName,
+        playerLvl: playerLevel,
+      })
+    )
   }
 
   return (
@@ -351,6 +437,17 @@ const CharacterScreen = () => {
                                                                   true
                                                                 }
                                                                 showCount={true}
+                                                                finishClickHandles={
+                                                                  updateObjectiveStatusHandle
+                                                                }
+                                                                taskCompleteHandle={(
+                                                                  taskId
+                                                                ) => {
+                                                                  completeTaskHandle(
+                                                                    trader.name,
+                                                                    taskId
+                                                                  )
+                                                                }}
                                                               />
                                                             )}
                                                         </div>
