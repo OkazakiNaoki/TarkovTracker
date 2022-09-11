@@ -208,7 +208,6 @@ const CharacterScreen = () => {
       newCompleteTasks.push(task.id)
     })
     newCompleteTasks.push(taskId)
-    console.log(newCompleteTasks)
     dispatch(updateCompletedTasks({ completeTasks: newCompleteTasks }))
     dispatch(
       getTasksOfTraderWithLevel({
@@ -216,6 +215,7 @@ const CharacterScreen = () => {
         playerLvl: playerLevel,
       })
     )
+    expandTaskDetailHandle(traderName, taskId)
   }
 
   return (
@@ -434,7 +434,10 @@ const CharacterScreen = () => {
                                                                   ][task.id]
                                                                 }
                                                                 completeable={
-                                                                  true
+                                                                  status ===
+                                                                  "complete"
+                                                                    ? false
+                                                                    : true
                                                                 }
                                                                 showCount={true}
                                                                 finishClickHandles={

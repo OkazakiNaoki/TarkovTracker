@@ -49,6 +49,7 @@ const TaskDetail = ({
         }
       }
       if (allComplete) {
+        completeable = false
         taskCompleteHandle(task.id)
       }
     }

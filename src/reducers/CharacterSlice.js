@@ -73,17 +73,30 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const completeTasks = await axios.get(`/api/player/task/complete`, config)
-      const completeTasksData = completeTasks.data.completeTasks
-      const completeTasksArr = []
-      for (let i = 0; i < completeTasksData.length; i++) {
-        const task = await axios.get(`/api/task/id?id=${completeTasksData[i]}`)
-        completeTasksArr.push(task.data[0])
-      }
+      const allCompleteTasksId = await axios.get(
+        `/api/player/task/complete`,
+        config
+      )
+      const allCompleteTasksIdData = allCompleteTasksId.data.completeTasks
 
       // all tasks from the trader
       const allTasks = await axios.get(`/api/task?trader=${trader}`)
       const allTasksArr = allTasks.data
+
+      const completeTasksArr = []
+      for (let i = 0; i < allCompleteTasksIdData.length; i++) {
+        const index = getIndexOfMatchFieldObjArr(
+          allTasksArr,
+          "id",
+          allCompleteTasksIdData[i]
+        )
+        if (index > -1) {
+          const task = await axios.get(
+            `/api/task/id?id=${allCompleteTasksIdData[i]}`
+          )
+          completeTasksArr.push(task.data[0])
+        }
+      }
 
       // remove complete one from tasks
       for (let i = 0; i < completeTasksArr.length; i++) {
