@@ -388,8 +388,14 @@ const characterSlice = createSlice({
     traderLoyaltyLevel: {},
   },
   reducers: {
+    setInitSetup: (state, action) => {
+      state.initSetup = true
+    },
     setPlayerLevel: (state, action) => {
       state.playerLevel = action.payload
+    },
+    setPlayerFaction: (state, action) => {
+      state.playerFaction = action.payload
     },
     initPlayerTasks: (state, action) => {
       for (let i = 0; i < action.payload.length; i++) {
@@ -491,4 +497,9 @@ const characterSlice = createSlice({
 })
 
 export default characterSlice.reducer
-export const { setPlayerLevel, initPlayerTasks } = characterSlice.actions
+export const {
+  setInitSetup,
+  setPlayerLevel,
+  setPlayerFaction,
+  initPlayerTasks,
+} = characterSlice.actions

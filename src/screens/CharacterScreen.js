@@ -30,10 +30,13 @@ import {
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { TarkovStyleButton } from "../components/TarkovStyleButton"
+import { PlayerDataSetup } from "../components/PlayerDataSetup"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const CharacterScreen = () => {
   // hooks
+  const [localPlayerLevel, setLocalPlayerLevel] = useState(1)
+  const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
   const [playerTaskFetched, setPlayerTaskFetched] = useState({})
   const [showCompleteTask, setShowCompleteTask] = useState(false)
   const [showOngoingTask, setShowOngoingTask] = useState(true)
@@ -62,6 +65,19 @@ const CharacterScreen = () => {
   const charState = useSelector((state) => state.character)
 
   // effects
+  useEffect(() => {
+    if (initSetup) {
+      for (let i = 1; i <= 16; i++) {
+        if (playerLevel >= 5 * i) {
+          continue
+        } else {
+          setLevelIcon(`/asset/rank${5 * i}.png`)
+          break
+        }
+      }
+    }
+  }, [initSetup])
+
   useEffect(() => {
     if (traders.length === 0) {
       dispatch(getTraders())
@@ -114,12 +130,6 @@ const CharacterScreen = () => {
   }, [playerObjectiveProgress])
 
   // handles
-  const setupHandle = () => {}
-
-  const openLevelSettingPanelHandle = () => {
-    console.log("open!")
-  }
-
   const expandTaskDetailHandle = (trader, taskId) => {
     if (!tasksDetailFetched[trader].includes(taskId)) {
       dispatch(getTaskDetail({ id: taskId, traderName: trader }))
@@ -127,12 +137,6 @@ const CharacterScreen = () => {
     const newCollapse = { ...collapseDetail }
     newCollapse[taskId] = !newCollapse[taskId]
     setCollapseDetail(newCollapse)
-  }
-
-  const setLevelHandle = (e) => {
-    if (initSetup) {
-      dispatch(setPlayerLevel(e.target.value))
-    }
   }
 
   const getTaskOfTraderHandle = (traderName) => {
@@ -218,6 +222,8 @@ const CharacterScreen = () => {
     expandTaskDetailHandle(traderName, taskId)
   }
 
+  const adjustPlayerLevelHandle = () => {}
+
   return (
     <>
       <Button
@@ -239,7 +245,8 @@ const CharacterScreen = () => {
         Redux State
       </Button>
       {Object.keys(user).length === 0 && <LoginFirst />}
-      {Object.keys(user).length > 0 && (
+      {Object.keys(user).length > 0 && !initSetup && <PlayerDataSetup />}
+      {Object.keys(user).length > 0 && initSetup && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
             <Col lg={3} style={{ border: "1px solid white" }}>
@@ -249,10 +256,10 @@ const CharacterScreen = () => {
                     className="sandbeige"
                     role="button"
                     style={{ fontSize: "90px" }}
-                    onClick={openLevelSettingPanelHandle}
+                    onClick={adjustPlayerLevelHandle}
                   >
                     <Image
-                      src={`/asset/rank5.png`}
+                      src={levelIcon}
                       className="d-inline me-3"
                       style={{ height: "100px" }}
                     />
@@ -260,19 +267,10 @@ const CharacterScreen = () => {
                   </div>
                 </Col>
               </Row>
-              <Row className="my-5">
+              <Row className="my-3" align="center">
                 <Col>
-                  {playerFaction ? (
-                    <Image
-                      src={`/asset/icon-${playerFaction}.png`}
-                      className="px-5"
-                    />
-                  ) : (
-                    <TarkovStyleButton
-                      text="Setup character"
-                      clickHandle={setupHandle}
-                      fs={24}
-                    />
+                  {playerFaction && (
+                    <Image src={`/asset/icon_${playerFaction}.png`} />
                   )}
                 </Col>
               </Row>
