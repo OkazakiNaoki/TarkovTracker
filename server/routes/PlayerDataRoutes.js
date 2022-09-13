@@ -17,8 +17,19 @@ import {
   updateTraderLL,
   getTraderLL,
 } from "../controllers/PlayerTraderController.js"
+import {
+  addCharacterData,
+  getCharacterData,
+  updateCharacterData,
+} from "../controllers/PlayerCharacterDataController.js"
 
 const router = express.Router()
+
+router
+  .route("/character")
+  .get(protect, getCharacterData)
+  .post(protect, addCharacterData)
+  .put(protect, updateCharacterData)
 
 router
   .route("/task/complete")
