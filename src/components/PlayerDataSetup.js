@@ -3,11 +3,7 @@ import { Container, Image } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { AddValueModal } from "../components/AddValueModal"
-import {
-  setInitSetup,
-  setPlayerLevel,
-  setPlayerFaction,
-} from "../reducers/CharacterSlice"
+import { setInitSetup, addCharacterData } from "../reducers/CharacterSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
 import usecIcon from "../../public/static/images/icon_usec.png"
 
@@ -49,8 +45,12 @@ const PlayerDataSetup = () => {
   }
   const finishSetupHandle = () => {
     dispatch(setInitSetup())
-    dispatch(setPlayerLevel(localPlayerLevel))
-    dispatch(setPlayerFaction(factionPick))
+    dispatch(
+      addCharacterData({
+        characterLevel: localPlayerLevel,
+        characterFaction: factionPick,
+      })
+    )
   }
 
   return [

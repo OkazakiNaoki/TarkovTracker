@@ -15,7 +15,6 @@ import {
 import { useDispatch, useSelector } from "react-redux"
 import { LoginFirst } from "../components/LoginFirst"
 import {
-  setPlayerLevel,
   getTasksOfTraderWithLevel,
   updateCompletedTasks,
   initPlayerTasks,
@@ -26,22 +25,24 @@ import {
   updateObjectiveProgress,
   addCompletedObjectives,
   addObjectiveProgress,
+  getCharacterData,
+  updateCharacterData,
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { TaskDetail } from "../components/TaskDetail"
-import { TarkovStyleButton } from "../components/TarkovStyleButton"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
+import { AddValueModal } from "../components/AddValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
 const CharacterScreen = () => {
   // hooks
-  const [localPlayerLevel, setLocalPlayerLevel] = useState(1)
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
   const [playerTaskFetched, setPlayerTaskFetched] = useState({})
   const [showCompleteTask, setShowCompleteTask] = useState(false)
   const [showOngoingTask, setShowOngoingTask] = useState(true)
   const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
   const [collapseDetail, setCollapseDetail] = useState({})
+  const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
 
   // redux
   const { user } = useSelector((state) => state.user)
@@ -66,6 +67,9 @@ const CharacterScreen = () => {
 
   // effects
   useEffect(() => {
+    if (initSetup === null) {
+      dispatch(getCharacterData())
+    }
     if (initSetup) {
       for (let i = 1; i <= 16; i++) {
         if (playerLevel >= 5 * i) {
@@ -76,7 +80,7 @@ const CharacterScreen = () => {
         }
       }
     }
-  }, [initSetup])
+  }, [initSetup, playerLevel])
 
   useEffect(() => {
     if (traders.length === 0) {
@@ -222,7 +226,13 @@ const CharacterScreen = () => {
     expandTaskDetailHandle(traderName, taskId)
   }
 
-  const adjustPlayerLevelHandle = () => {}
+  const adjustPlayerLevelHandle = (level) => {
+    dispatch(updateCharacterData({ characterLevel: level }))
+  }
+
+  const openCloseLevelModalHandle = () => {
+    setOpenPlayerLevelModal(!openPlayerLevelModal)
+  }
 
   return (
     <>
@@ -244,8 +254,20 @@ const CharacterScreen = () => {
       >
         Redux State
       </Button>
+      <AddValueModal
+        show={openPlayerLevelModal}
+        value={playerLevel}
+        valueCap={79}
+        setValueHandle={(v) => {
+          adjustPlayerLevelHandle(v)
+          openCloseLevelModalHandle()
+        }}
+        closeHandle={openCloseLevelModalHandle}
+      />
       {Object.keys(user).length === 0 && <LoginFirst />}
-      {Object.keys(user).length > 0 && !initSetup && <PlayerDataSetup />}
+      {Object.keys(user).length > 0 && initSetup !== null && !initSetup && (
+        <PlayerDataSetup />
+      )}
       {Object.keys(user).length > 0 && initSetup && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
@@ -256,7 +278,7 @@ const CharacterScreen = () => {
                     className="sandbeige"
                     role="button"
                     style={{ fontSize: "90px" }}
-                    onClick={adjustPlayerLevelHandle}
+                    onClick={openCloseLevelModalHandle}
                   >
                     <Image
                       src={levelIcon}

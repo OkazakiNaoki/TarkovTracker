@@ -373,13 +373,105 @@ export const addObjectiveProgress = createAsyncThunk(
   }
 )
 
+export const addCharacterData = createAsyncThunk(
+  "character/addCharacterData",
+  async (params, { getState }) => {
+    const characterLevel = params.characterLevel
+    const characterFaction = params.characterFaction
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newCharacterData = await axios.post(
+        `/api/player/character`,
+        {
+          characterData: {
+            characterLevel: characterLevel,
+            characterFaction: characterFaction,
+          },
+        },
+        config
+      )
+      const newCharacterDataData = newCharacterData.data
+
+      return newCharacterDataData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const updateCharacterData = createAsyncThunk(
+  "character/updateCharacterData",
+  async (params, { getState }) => {
+    const characterLevel = params.characterLevel
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newCharacterData = await axios.put(
+        `/api/player/character`,
+        {
+          characterData: {
+            characterLevel: characterLevel,
+            characterFaction: getState().character.playerFaction,
+          },
+        },
+        config
+      )
+      const newCharacterDataData = newCharacterData.data
+
+      return newCharacterDataData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getCharacterData = createAsyncThunk(
+  "character/getCharacterData",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const characterData = await axios.get(`/api/player/character`, config)
+
+      return { status: characterData.status, data: characterData.data }
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
     isLoading: false,
     gameEdition: null,
-    initSetup: false,
-    playerLevel: 6,
+    initSetup: null,
+    playerLevel: 0,
     playerFaction: null,
     playerTasksInfo: {},
     playerCompletedObjectives: null,
@@ -493,6 +585,41 @@ const characterSlice = createSlice({
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
       .addCase(addObjectiveProgress.rejected, (state, action) => {})
+      .addCase(addCharacterData.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(addCharacterData.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerLevel = action.payload.characterLevel
+        state.playerFaction = action.payload.characterFaction
+      })
+      .addCase(addCharacterData.rejected, (state, action) => {})
+      .addCase(updateCharacterData.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(updateCharacterData.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerLevel = action.payload.characterLevel
+        state.playerFaction = action.payload.characterFaction
+      })
+      .addCase(updateCharacterData.rejected, (state, action) => {})
+      .addCase(getCharacterData.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getCharacterData.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        if (typeof action.payload === "object") {
+          state.playerLevel = action.payload.data.characterLevel
+          state.playerFaction = action.payload.data.characterFaction
+          state.initSetup = true
+        } else {
+          state.initSetup = false
+        }
+      })
+      .addCase(getCharacterData.rejected, (state, action) => {})
   },
 })
 
