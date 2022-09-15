@@ -124,13 +124,13 @@ const CharacterScreen = () => {
     if (initSetup && !playerCompletedObjectives) {
       dispatch(getCompletedObjectives())
     }
-  }, [playerCompletedObjectives])
+  }, [initSetup, playerCompletedObjectives])
 
   useEffect(() => {
     if (initSetup && !playerObjectiveProgress) {
       dispatch(getObjectiveProgress())
     }
-  }, [playerObjectiveProgress])
+  }, [initSetup, playerObjectiveProgress])
 
   // handles
   const expandTaskDetailHandle = (trader, taskId) => {
