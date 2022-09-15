@@ -3,7 +3,13 @@ import { Container, Image } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { AddValueModal } from "../components/AddValueModal"
-import { setInitSetup, addCharacterData } from "../reducers/CharacterSlice"
+import {
+  setInitSetup,
+  addCharacterData,
+  addObjectiveProgress,
+  addCompletedObjectives,
+  addCompletedTasks,
+} from "../reducers/CharacterSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
 import usecIcon from "../../public/static/images/icon_usec.png"
 
@@ -44,13 +50,18 @@ const PlayerDataSetup = () => {
     setHoverUsecIcon(!hoverUsecIcon)
   }
   const finishSetupHandle = () => {
-    dispatch(setInitSetup())
-    dispatch(
-      addCharacterData({
-        characterLevel: localPlayerLevel,
-        characterFaction: factionPick,
-      })
-    )
+    if (factionPick) {
+      dispatch(
+        addCharacterData({
+          characterLevel: localPlayerLevel,
+          characterFaction: factionPick,
+        })
+      )
+      dispatch(addCompletedTasks({ completeTasks: [] }))
+      dispatch(addCompletedObjectives({ completeObjectives: [] }))
+      dispatch(addObjectiveProgress({ objectiveProgress: [] }))
+      dispatch(setInitSetup())
+    }
   }
 
   return [

@@ -18,7 +18,6 @@ import {
   getTasksOfTraderWithLevel,
   updateCompletedTasks,
   initPlayerTasks,
-  initializePlayerData,
   getCompletedObjectives,
   getObjectiveProgress,
   updateCompletedObjectives,
@@ -122,13 +121,13 @@ const CharacterScreen = () => {
   }, [traders, playerTaskFetched])
 
   useEffect(() => {
-    if (!playerCompletedObjectives) {
+    if (initSetup && !playerCompletedObjectives) {
       dispatch(getCompletedObjectives())
     }
   }, [playerCompletedObjectives])
 
   useEffect(() => {
-    if (!playerObjectiveProgress) {
+    if (initSetup && !playerObjectiveProgress) {
       dispatch(getObjectiveProgress())
     }
   }, [playerObjectiveProgress])
@@ -173,19 +172,14 @@ const CharacterScreen = () => {
       )
       if (index !== -1) {
         newCompleteObjectives[index]["objectives"].push(objectiveId)
-        dispatch(
-          updateCompletedObjectives({
-            completeObjectives: newCompleteObjectives,
-          })
-        )
       } else {
         newCompleteObjectives.push({ taskId, objectives: [objectiveId] })
-        dispatch(
-          addCompletedObjectives({
-            completeObjectives: newCompleteObjectives,
-          })
-        )
       }
+      dispatch(
+        updateCompletedObjectives({
+          completeObjectives: newCompleteObjectives,
+        })
+      )
     }
     const newProgress = JSON.parse(JSON.stringify(playerObjectiveProgress))
     const index = getIndexOfMatchFieldObjArr(
@@ -195,19 +189,14 @@ const CharacterScreen = () => {
     )
     if (index !== -1) {
       newProgress[index]["progress"] = Number(progress)
-      dispatch(
-        updateObjectiveProgress({
-          objectiveProgress: newProgress,
-        })
-      )
     } else {
       newProgress.push({ objectiveId, progress })
-      dispatch(
-        addObjectiveProgress({
-          objectiveProgress: newProgress,
-        })
-      )
     }
+    dispatch(
+      updateObjectiveProgress({
+        objectiveProgress: newProgress,
+      })
+    )
   }
 
   const completeTaskHandle = (traderName, taskId) => {
@@ -236,17 +225,6 @@ const CharacterScreen = () => {
 
   return (
     <>
-      <Button
-        onClick={() => {
-          dispatch(
-            initializePlayerData({
-              traderNames: traders.map((trader) => trader.name),
-            })
-          )
-        }}
-      >
-        Initial player test
-      </Button>
       <Button
         onClick={() => {
           console.log(charState)

@@ -9,21 +9,16 @@ import PlayerObjectiveProgress from "../models/PlayerTaskObjectiveProgressModel.
 export const addCompleteTask = asyncHandler(async (req, res) => {
   const completeTasks = req.body.completeTasks
 
-  if (completeTasks && completeTasks.length === 0) {
-    res.status(400).send("Completed task is empty")
-    return
+  const existPct = await PlayerCompleteTask.findOne({ user: req.user._id })
+  if (!existPct) {
+    const pct = new PlayerCompleteTask({
+      user: req.user._id,
+      completeTasks: completeTasks,
+    })
+    const createdPct = await pct.save()
+    res.status(201).json(createdPct)
   } else {
-    const existPct = await PlayerCompleteTask.findOne({ user: req.user._id })
-    if (!existPct) {
-      const pct = new PlayerCompleteTask({
-        user: req.user._id,
-        completeTasks: completeTasks,
-      })
-      const createdPct = await pct.save()
-      res.status(201).json(createdPct)
-    } else {
-      res.status(400).send("Exist old completed task data")
-    }
+    res.status(400).send("Exist old completed task data")
   }
 })
 

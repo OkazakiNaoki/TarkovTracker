@@ -2,63 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 
-export const initializePlayerData = createAsyncThunk(
-  "character/initializePlayerData",
-  async (params, { getState }) => {
-    const { traderNames = [] } = params
-    try {
-      const { user } = getState().user
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      }
-
-      // completed tasks
-      const completeTasks = await axios.post(
-        `/api/player/task/complete`,
-        { completeTasks: [] },
-        config
-      )
-      const completeTasksData = completeTasks.data.completeTasks
-
-      // completed objectives of tasks
-      const completeTaskObjectives = await axios.post(
-        `/api/player/task/objective`,
-        { completeObjectives: [] },
-        config
-      )
-      const completeObjectivesData =
-        completeTaskObjectives.data.completeObjectives
-
-      // trader LL
-      const llInner = {}
-      traderNames.forEach((trader) => {
-        llInner[`${trader}`] = 1
-      })
-      const traderLL = await axios.post(
-        `/api/player/trader/LL`,
-        {
-          LL: llInner,
-        },
-        config
-      )
-      const traderLLData = traderLL.data.traderLL
-
-      return {
-        completeTasks: completeTasksData,
-        completeObjectives: completeObjectivesData,
-        traderLL: traderLLData,
-      }
-    } catch (error) {
-      return error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message
-    }
-  }
-)
-
 export const getTasksOfTraderWithLevel = createAsyncThunk(
   "character/getTasksOfTraderWithLevel",
   async (params, { getState }) => {
@@ -155,6 +98,37 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
   }
 )
 
+export const addCompletedTasks = createAsyncThunk(
+  "character/addCompletedTasks",
+  async (params, { getState }) => {
+    const completeTasks = params.completeTasks
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newCompleteTasks = await axios.post(
+        `/api/player/task/complete`,
+        { completeTasks: completeTasks },
+        config
+      )
+      const newCompleteTasksData = newCompleteTasks.data.completeTasks
+
+      return {
+        completeTasks: newCompleteTasksData,
+      }
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 export const updateCompletedTasks = createAsyncThunk(
   "character/updateCompletedTasks",
   async (params, { getState }) => {
@@ -174,7 +148,6 @@ export const updateCompletedTasks = createAsyncThunk(
         config
       )
       const newCompleteTasksData = newCompleteTasks.data.completeTasks
-      console.log(newCompleteTasks)
 
       return {
         completeTasks: newCompleteTasksData,
@@ -261,7 +234,7 @@ export const addCompletedObjectives = createAsyncThunk(
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const newCompleteObjectives = await axios.put(
+      const newCompleteObjectives = await axios.post(
         `/api/player/task/objective`,
         { completeObjectives: completeObjectives },
         config
@@ -273,6 +246,7 @@ export const addCompletedObjectives = createAsyncThunk(
         completeObjectives: newCompleteObjectivesData,
       }
     } catch (error) {
+      console.log(error.response.data)
       return error.response && error.response.data.message
         ? error.response.data.message
         : error.message
@@ -354,7 +328,7 @@ export const addObjectiveProgress = createAsyncThunk(
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const newObjectiveProgress = await axios.put(
+      const newObjectiveProgress = await axios.post(
         `/api/player/task/objective/progress`,
         { objectiveProgress: objectiveProgress },
         config
@@ -483,12 +457,6 @@ const characterSlice = createSlice({
     setInitSetup: (state, action) => {
       state.initSetup = true
     },
-    setPlayerLevel: (state, action) => {
-      state.playerLevel = action.payload
-    },
-    setPlayerFaction: (state, action) => {
-      state.playerFaction = action.payload
-    },
     initPlayerTasks: (state, action) => {
       for (let i = 0; i < action.payload.length; i++) {
         state.playerTasksInfo[`${action.payload[i]}`] = null
@@ -502,14 +470,6 @@ const characterSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(initializePlayerData.pending, (state, action) => {
-        state.isLoading = true
-      })
-      .addCase(initializePlayerData.fulfilled, (state, action) => {
-        console.log(action.payload)
-        state.isLoading = false
-      })
-      .addCase(initializePlayerData.rejected, (state, action) => {})
       .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {
         state.isLoading = true
       })
@@ -624,9 +584,4 @@ const characterSlice = createSlice({
 })
 
 export default characterSlice.reducer
-export const {
-  setInitSetup,
-  setPlayerLevel,
-  setPlayerFaction,
-  initPlayerTasks,
-} = characterSlice.actions
+export const { setInitSetup, initPlayerTasks } = characterSlice.actions

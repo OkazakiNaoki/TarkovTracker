@@ -92,8 +92,6 @@ const TaskDetail = ({
       const copy = { ...closeAddValueModal }
       copy[objectiveId] = !copy[objectiveId]
       setCloseAddValueModal(copy)
-    } else {
-      console.log("set objective complete")
     }
   }
 
