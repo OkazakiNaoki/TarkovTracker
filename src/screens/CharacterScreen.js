@@ -217,6 +217,14 @@ const CharacterScreen = () => {
 
   const adjustPlayerLevelHandle = (level) => {
     dispatch(updateCharacterData({ characterLevel: level }))
+    traders.forEach((trader) => {
+      dispatch(
+        getTasksOfTraderWithLevel({
+          trader: trader.name,
+          playerLvl: level,
+        })
+      )
+    })
   }
 
   const openCloseLevelModalHandle = () => {
