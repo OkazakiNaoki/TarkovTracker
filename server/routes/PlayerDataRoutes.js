@@ -22,6 +22,14 @@ import {
   getCharacterData,
   updateCharacterData,
 } from "../controllers/PlayerCharacterDataController.js"
+import {
+  addHideoutLevel,
+  addHideoutProgress,
+  getHideoutLevel,
+  getHideoutProgress,
+  updateHideoutLevel,
+  updateHideoutProgress,
+} from "../controllers/PlayerHideoutController.js"
 
 const router = express.Router()
 
@@ -54,5 +62,17 @@ router
   .get(protect, getTraderLL)
   .post(protect, addTraderLL)
   .put(protect, updateTraderLL)
+
+router
+  .route("/hideout/progress")
+  .get(protect, getHideoutProgress)
+  .post(protect, addHideoutProgress)
+  .put(protect, updateHideoutProgress)
+
+router
+  .route("/hideout/level")
+  .get(protect, getHideoutLevel)
+  .post(protect, addHideoutLevel)
+  .put(protect, updateHideoutLevel)
 
 export default router
