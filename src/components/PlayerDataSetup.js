@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Container, Image } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { TarkovStyleButton } from "./TarkovStyleButton"
@@ -9,7 +9,10 @@ import {
   addObjectiveProgress,
   addCompletedObjectives,
   addCompletedTasks,
+  addHideoutLevel,
+  addHideoutProgress,
 } from "../reducers/CharacterSlice"
+import { getAllHideout } from "../reducers/HideoutSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
 import usecIcon from "../../public/static/images/icon_usec.png"
 
@@ -24,7 +27,15 @@ const PlayerDataSetup = () => {
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
 
   // redux
+  const { hideout } = useSelector((state) => state.hideout)
   const dispatch = useDispatch()
+
+  // effects
+  useEffect(() => {
+    if (hideout.length === 0) {
+      dispatch(getAllHideout())
+    }
+  }, [hideout])
 
   // handles
   const hoverOnLevelSetupBtn = () => {
@@ -51,6 +62,21 @@ const PlayerDataSetup = () => {
   }
   const finishSetupHandle = () => {
     if (factionPick) {
+      const initHideoutLevel = hideout.map((station) => {
+        return {
+          hideoutId: station.id,
+          level: station.id === "5d484fc0654e76006657e0ab" ? 0 : -1,
+          maxed: false,
+        }
+      })
+      const initHideoutProgress = hideout.map((station) => {
+        return {
+          hideoutId: station.id,
+          progress: [],
+        }
+      })
+      dispatch(addHideoutLevel({ hideoutLevel: initHideoutLevel }))
+      dispatch(addHideoutProgress({ hideoutProgress: initHideoutProgress }))
       dispatch(
         addCharacterData({
           characterLevel: localPlayerLevel,

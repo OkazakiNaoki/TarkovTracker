@@ -7,7 +7,7 @@ const hideoutLevel = mongoose.Schema({
     required: true,
   },
   level: {
-    type: String,
+    type: Number,
     required: true,
   },
   finishTime: {
@@ -26,10 +26,12 @@ const playerHideoutLevelSchema = mongoose.Schema({
     required: true,
     ref: User,
   },
-  hideoutLevel: {
-    type: hideoutLevel,
-    required: true,
-  },
+  hideoutLevel: [
+    {
+      type: hideoutLevel,
+      required: true,
+    },
+  ],
 })
 
 const PlayerHideoutLevel = mongoose.model(

@@ -28,10 +28,12 @@ import {
   updateCharacterData,
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
+import { getAllHideout } from "../reducers/HideoutSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
 import { AddValueModal } from "../components/AddValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { HideoutIcon } from "../components/HideoutIcon"
 
 const CharacterScreen = () => {
   // hooks
@@ -42,12 +44,17 @@ const CharacterScreen = () => {
   const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
   const [collapseDetail, setCollapseDetail] = useState({})
   const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
+  const [currentStationId, setCurrentStationId] = useState(
+    "5d388e97081959000a123acf"
+  )
+  const [currentStation, setCurrentStation] = useState(null)
 
   // redux
   const { user } = useSelector((state) => state.user)
   const { traders, tasksDetail, tasksDetailFetched } = useSelector(
     (state) => state.trader
   )
+  const { hideout } = useSelector((state) => state.hideout)
   const {
     isLoading,
     initSetup,
@@ -131,6 +138,19 @@ const CharacterScreen = () => {
       dispatch(getObjectiveProgress())
     }
   }, [initSetup, playerObjectiveProgress])
+
+  useEffect(() => {
+    if (hideout.length === 0) {
+      dispatch(getAllHideout())
+    }
+  }, [hideout])
+
+  useEffect(() => {
+    if (hideout.length > 0) {
+      const index = getIndexOfMatchFieldObjArr(hideout, "id", currentStationId)
+      setCurrentStation(hideout[index])
+    }
+  }, [hideout, currentStationId])
 
   // handles
   const expandTaskDetailHandle = (trader, taskId) => {
@@ -477,7 +497,121 @@ const CharacterScreen = () => {
                   </Accordion>
                 </Tab>
                 <Tab eventKey="hideout" title="Hideout">
-                  <div></div>
+                  <div>
+                    <div className="d-flex justify-content-center flex-wrap mb-5">
+                      {hideout.map((station) => {
+                        return (
+                          <a
+                            key={station.id}
+                            onClick={() => {
+                              setCurrentStationId(station.id)
+                            }}
+                          >
+                            <HideoutIcon iconName={station.id} />
+                          </a>
+                        )
+                      })}
+                    </div>
+                    <h1 className="sandbeige">
+                      {currentStation && currentStation.name}
+                    </h1>
+                    {currentStation &&
+                      currentStation.levels.map((level, i) => {
+                        return (
+                          <div
+                            key={currentStation.name + level.level}
+                            className="my-3 p-2"
+                            style={{ border: "1px solid white" }}
+                          >
+                            <h2 className="text-center">
+                              {"Level " + level.level}
+                            </h2>
+                            <p className="text-center pb-4">
+                              {level.description}
+                            </p>
+                            <p className="text-center fs-3">
+                              CONSTRUCTION REQUIREMENTS
+                            </p>
+                            <div className="d-flex justify-content-center mb-5">
+                              {level.itemRequirements.map((itemReq) => {
+                                return (
+                                  itemReq.item.name +
+                                  "  x" +
+                                  itemReq.count +
+                                  "\n"
+                                )
+                              })}
+                              {level.skillRequirements.map((skillReq) => {
+                                return (
+                                  skillReq.name +
+                                  " level " +
+                                  skillReq.level +
+                                  "\n"
+                                )
+                              })}
+                              {level.stationLevelRequirements.map(
+                                (stationReq) => {
+                                  return (
+                                    stationReq.station.name +
+                                    " level " +
+                                    stationReq.level +
+                                    "\n"
+                                  )
+                                }
+                              )}
+                              {level.traderRequirements.map((traderReq) => {
+                                return (
+                                  traderReq.trader.name +
+                                  " level " +
+                                  traderReq.level +
+                                  "\n"
+                                )
+                              })}
+                            </div>
+                            {level.crafts.length > 0 && (
+                              <p className="text-center fs-3">PRODUCTION</p>
+                            )}
+                            <div>
+                              {level.crafts.map((c, i) => {
+                                return (
+                                  <div
+                                    key={
+                                      currentStation.name +
+                                      c.level +
+                                      "craft-" +
+                                      i
+                                    }
+                                    className="text-center"
+                                  >
+                                    {c.duration}
+                                    {c.requiredItems.map((itemReq, i) => {
+                                      return (
+                                        <div key={"itemReq-" + i}>
+                                          {itemReq.item.name +
+                                            "  x" +
+                                            itemReq.count +
+                                            "\n"}
+                                        </div>
+                                      )
+                                    })}
+                                    {c.rewardItems.map((itemRew) => {
+                                      return (
+                                        <div key={"itemRew-" + i}>
+                                          {itemRew.item.name +
+                                            "  x" +
+                                            itemRew.count +
+                                            "\n"}
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
                 </Tab>
                 <Tab eventKey="inventory" title="Inventory">
                   <div></div>

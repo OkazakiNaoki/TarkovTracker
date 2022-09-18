@@ -439,19 +439,83 @@ export const getCharacterData = createAsyncThunk(
   }
 )
 
+export const addHideoutLevel = createAsyncThunk(
+  "character/addHideoutLevel",
+  async (params, { getState }) => {
+    const hideoutLevel = params.hideoutLevel
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newHideoutLevel = await axios.post(
+        `/api/player/hideout/level`,
+        {
+          hideoutLevel: hideoutLevel,
+        },
+        config
+      )
+      const newHideoutLevelData = newHideoutLevel.data.hideoutLevel
+
+      return newHideoutLevelData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const addHideoutProgress = createAsyncThunk(
+  "character/addHideoutProgress",
+  async (params, { getState }) => {
+    const hideoutProgress = params.hideoutProgress
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newHideoutProgress = await axios.post(
+        `/api/player/hideout/progress`,
+        {
+          hideoutProgress: hideoutProgress,
+        },
+        config
+      )
+      const newHideoutProgressData = newHideoutProgress.data.hideoutProgress
+
+      return newHideoutProgressData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
     isLoading: false,
-    gameEdition: null,
+    gameEdition: null, // not use yet
     initSetup: null,
     playerLevel: 0,
     playerFaction: null,
     playerTasksInfo: {},
     playerCompletedObjectives: null,
     playerObjectiveProgress: null,
-    unlockedJaeger: false,
-    traderLoyaltyLevel: {},
+    unlockedJaeger: false, // not use yet
+    traderLoyaltyLevel: {}, // not use yet
+    playerHideoutLevel: null,
+    playerHideoutProgress: null,
   },
   reducers: {
     setInitSetup: (state, action) => {
@@ -580,6 +644,24 @@ const characterSlice = createSlice({
         }
       })
       .addCase(getCharacterData.rejected, (state, action) => {})
+      .addCase(addHideoutLevel.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(addHideoutLevel.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerHideoutLevel = action.payload
+      })
+      .addCase(addHideoutLevel.rejected, (state, action) => {})
+      .addCase(addHideoutProgress.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(addHideoutProgress.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerHideoutProgress = action.payload
+      })
+      .addCase(addHideoutProgress.rejected, (state, action) => {})
   },
 })
 
