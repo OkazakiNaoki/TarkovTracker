@@ -470,6 +470,32 @@ export const addHideoutLevel = createAsyncThunk(
   }
 )
 
+export const getHideoutLevel = createAsyncThunk(
+  "character/getHideoutLevel",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const hideoutLevel = await axios.get(`/api/player/hideout/level`, config)
+
+      return {
+        status: hideoutLevel.status,
+        data: hideoutLevel.data.hideoutLevel,
+      }
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  }
+)
+
 export const addHideoutProgress = createAsyncThunk(
   "character/addHideoutProgress",
   async (params, { getState }) => {
@@ -653,6 +679,15 @@ const characterSlice = createSlice({
         state.playerHideoutLevel = action.payload
       })
       .addCase(addHideoutLevel.rejected, (state, action) => {})
+      .addCase(getHideoutLevel.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getHideoutLevel.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerHideoutLevel = action.payload.data
+      })
+      .addCase(getHideoutLevel.rejected, (state, action) => {})
       .addCase(addHideoutProgress.pending, (state, action) => {
         state.isLoading = true
       })

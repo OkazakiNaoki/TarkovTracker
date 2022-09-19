@@ -26,6 +26,7 @@ import {
   addObjectiveProgress,
   getCharacterData,
   updateCharacterData,
+  getHideoutLevel,
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
@@ -34,6 +35,7 @@ import { PlayerDataSetup } from "../components/PlayerDataSetup"
 import { AddValueModal } from "../components/AddValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
+import { HideoutStationDetail } from "../components/HideoutStationDetail"
 
 const CharacterScreen = () => {
   // hooks
@@ -48,6 +50,8 @@ const CharacterScreen = () => {
     "5d388e97081959000a123acf"
   )
   const [currentStation, setCurrentStation] = useState(null)
+  const [levelInfoOfCurrentStation, setLevelInfoOfCurrentStation] =
+    useState(null)
 
   // redux
   const { user } = useSelector((state) => state.user)
@@ -65,6 +69,7 @@ const CharacterScreen = () => {
     traderLoyaltyLevel,
     playerCompletedObjectives,
     playerObjectiveProgress,
+    playerHideoutLevel,
   } = useSelector((state) => state.character)
   const dispatch = useDispatch()
 
@@ -151,6 +156,23 @@ const CharacterScreen = () => {
       setCurrentStation(hideout[index])
     }
   }, [hideout, currentStationId])
+
+  useEffect(() => {
+    if (!playerHideoutLevel) {
+      dispatch(getHideoutLevel())
+    }
+  }, [playerHideoutLevel])
+
+  useEffect(() => {
+    if (playerHideoutLevel) {
+      const index = getIndexOfMatchFieldObjArr(
+        playerHideoutLevel,
+        "hideoutId",
+        currentStationId
+      )
+      setLevelInfoOfCurrentStation(playerHideoutLevel[index])
+    }
+  }, [currentStationId, playerHideoutLevel])
 
   // handles
   const expandTaskDetailHandle = (trader, taskId) => {
@@ -253,6 +275,13 @@ const CharacterScreen = () => {
 
   return (
     <>
+      <Button
+        onClick={() => {
+          console.log(levelInfoOfCurrentStation)
+        }}
+      >
+        local State
+      </Button>
       <Button
         onClick={() => {
           console.log(charState)
@@ -515,101 +544,39 @@ const CharacterScreen = () => {
                     <h1 className="sandbeige">
                       {currentStation && currentStation.name}
                     </h1>
-                    {currentStation &&
+                    {levelInfoOfCurrentStation &&
+                      levelInfoOfCurrentStation.level === -1 &&
+                      currentStation &&
                       currentStation.levels.map((level, i) => {
-                        return (
-                          <div
-                            key={currentStation.name + level.level}
-                            className="my-3 p-2"
-                            style={{ border: "1px solid white" }}
-                          >
-                            <h2 className="text-center">
-                              {"Level " + level.level}
-                            </h2>
-                            <p className="text-center pb-4">
-                              {level.description}
-                            </p>
-                            <p className="text-center fs-3">
-                              CONSTRUCTION REQUIREMENTS
-                            </p>
-                            <div className="d-flex justify-content-center mb-5">
-                              {level.itemRequirements.map((itemReq) => {
-                                return (
-                                  itemReq.item.name +
-                                  "  x" +
-                                  itemReq.count +
-                                  "\n"
-                                )
-                              })}
-                              {level.skillRequirements.map((skillReq) => {
-                                return (
-                                  skillReq.name +
-                                  " level " +
-                                  skillReq.level +
-                                  "\n"
-                                )
-                              })}
-                              {level.stationLevelRequirements.map(
-                                (stationReq) => {
-                                  return (
-                                    stationReq.station.name +
-                                    " level " +
-                                    stationReq.level +
-                                    "\n"
-                                  )
-                                }
-                              )}
-                              {level.traderRequirements.map((traderReq) => {
-                                return (
-                                  traderReq.trader.name +
-                                  " level " +
-                                  traderReq.level +
-                                  "\n"
-                                )
-                              })}
-                            </div>
-                            {level.crafts.length > 0 && (
-                              <p className="text-center fs-3">PRODUCTION</p>
-                            )}
-                            <div>
-                              {level.crafts.map((c, i) => {
-                                return (
-                                  <div
-                                    key={
-                                      currentStation.name +
-                                      c.level +
-                                      "craft-" +
-                                      i
-                                    }
-                                    className="text-center"
-                                  >
-                                    {c.duration}
-                                    {c.requiredItems.map((itemReq, i) => {
-                                      return (
-                                        <div key={"itemReq-" + i}>
-                                          {itemReq.item.name +
-                                            "  x" +
-                                            itemReq.count +
-                                            "\n"}
-                                        </div>
-                                      )
-                                    })}
-                                    {c.rewardItems.map((itemRew) => {
-                                      return (
-                                        <div key={"itemRew-" + i}>
-                                          {itemRew.item.name +
-                                            "  x" +
-                                            itemRew.count +
-                                            "\n"}
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        )
+                        if (i === 0) {
+                          return (
+                            <HideoutStationDetail
+                              key={currentStation.name + level.level}
+                              station={currentStation}
+                              level={level}
+                              nextLevel={currentStation.levels?.[i + 1]}
+                              canConstruct={true}
+                            />
+                          )
+                        }
+                      })}
+                    {levelInfoOfCurrentStation &&
+                      levelInfoOfCurrentStation.level !== -1 &&
+                      currentStation &&
+                      currentStation.levels.map((level, i) => {
+                        if (
+                          level.level ===
+                          levelInfoOfCurrentStation.level + 1
+                        ) {
+                          return (
+                            <HideoutStationDetail
+                              key={currentStation.name + level.level}
+                              station={currentStation}
+                              level={level}
+                              nextLevel={currentStation.levels?.[i + 1]}
+                            />
+                          )
+                        }
                       })}
                   </div>
                 </Tab>
