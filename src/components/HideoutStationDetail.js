@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 
 const HideoutStationDetail = ({
@@ -8,20 +8,28 @@ const HideoutStationDetail = ({
   increaseLevelHandle,
   canConstruct = false,
 }) => {
+  const [showUpgrade, setShowUpgrade] = useState(false)
+
+  const showUpgradeHandle = () => {
+    setShowUpgrade(!showUpgrade)
+  }
+
   return (
     <div className="my-3 p-2" style={{ border: "1px solid white" }}>
       {!canConstruct && (
-        <h2 className="text-center">{"Level " + level.level}</h2>
+        <h2 className="text-center">{"Level 0" + level.level}</h2>
       )}
       <p className="text-center pb-4">{level.description}</p>
-      {canConstruct &&
+      {(canConstruct || showUpgrade) &&
         nextLevel &&
         (nextLevel.itemRequirements.length > 0 ||
           nextLevel.skillRequirements.length > 0 ||
           nextLevel.stationLevelRequirements.length > 0 ||
           nextLevel.traderRequirements.length > 0) && [
           <p key="construct_heading" className="text-center fs-3">
-            CONSTRUCTION REQUIREMENTS
+            {canConstruct
+              ? "CONSTRUCTION REQUIREMENTS"
+              : `LEVEL 0${level.level + 1} UPGRADE REQUIREMENTS`}
           </p>,
           <div
             key="construct_reqs"
@@ -45,6 +53,7 @@ const HideoutStationDetail = ({
         ]}
 
       {!canConstruct &&
+        !showUpgrade &&
         level.crafts.length > 0 && [
           <p key="craft_heading" className="text-center fs-3">
             PRODUCTION
@@ -86,21 +95,28 @@ const HideoutStationDetail = ({
           height={50}
         />
       )}
-      {!canConstruct &&
-        nextLevel && [
-          <TarkovStyleButton
-            key="upgradeable_back"
-            text="BACK"
-            clickHandle={() => {}}
-            height={50}
-          />,
-          <TarkovStyleButton
-            key="upgradeable_upgrade"
-            text="UPGRADE"
-            clickHandle={increaseLevelHandle}
-            height={50}
-          />,
-        ]}
+      {!canConstruct && !showUpgrade && nextLevel && (
+        <TarkovStyleButton
+          key="upgradeable_show_upgrade"
+          text="UPGRADE"
+          clickHandle={showUpgradeHandle}
+          height={50}
+        />
+      )}
+      {showUpgrade && [
+        <TarkovStyleButton
+          key="upgradeable_back"
+          text="BACK"
+          clickHandle={showUpgradeHandle}
+          height={50}
+        />,
+        <TarkovStyleButton
+          key="upgradeable_upgrade"
+          text="UPGRADE"
+          clickHandle={increaseLevelHandle}
+          height={50}
+        />,
+      ]}
     </div>
   )
 }

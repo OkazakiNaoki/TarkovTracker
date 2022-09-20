@@ -10,7 +10,6 @@ import {
   addCompletedObjectives,
   addCompletedTasks,
   addHideoutLevel,
-  addHideoutProgress,
 } from "../reducers/CharacterSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
@@ -69,14 +68,7 @@ const PlayerDataSetup = () => {
           maxed: false,
         }
       })
-      const initHideoutProgress = hideout.map((station) => {
-        return {
-          hideoutId: station.id,
-          progress: [],
-        }
-      })
       dispatch(addHideoutLevel({ hideoutLevel: initHideoutLevel }))
-      dispatch(addHideoutProgress({ hideoutProgress: initHideoutProgress }))
       dispatch(
         addCharacterData({
           characterLevel: localPlayerLevel,

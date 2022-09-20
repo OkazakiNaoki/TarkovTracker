@@ -580,7 +580,7 @@ const CharacterScreen = () => {
                               key={currentStation.name + level.level}
                               station={currentStation}
                               level={level}
-                              nextLevel={currentStation.levels?.[i + 1]}
+                              nextLevel={currentStation.levels?.[i]}
                               increaseLevelHandle={() => {
                                 if (currentStation.levels?.[i]) {
                                   setConfirmModalTitle(

@@ -527,37 +527,6 @@ export const updateHideoutLevel = createAsyncThunk(
   }
 )
 
-export const addHideoutProgress = createAsyncThunk(
-  "character/addHideoutProgress",
-  async (params, { getState }) => {
-    const hideoutProgress = params.hideoutProgress
-    try {
-      const { user } = getState().user
-
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      }
-      const newHideoutProgress = await axios.post(
-        `/api/player/hideout/progress`,
-        {
-          hideoutProgress: hideoutProgress,
-        },
-        config
-      )
-      const newHideoutProgressData = newHideoutProgress.data.hideoutProgress
-
-      return newHideoutProgressData
-    } catch (error) {
-      return error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message
-    }
-  }
-)
-
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -572,7 +541,6 @@ const characterSlice = createSlice({
     unlockedJaeger: false, // not use yet
     traderLoyaltyLevel: {}, // not use yet
     playerHideoutLevel: null,
-    playerHideoutProgress: null,
   },
   reducers: {
     setInitSetup: (state, action) => {
@@ -728,15 +696,6 @@ const characterSlice = createSlice({
         state.playerHideoutLevel = action.payload
       })
       .addCase(updateHideoutLevel.rejected, (state, action) => {})
-      .addCase(addHideoutProgress.pending, (state, action) => {
-        state.isLoading = true
-      })
-      .addCase(addHideoutProgress.fulfilled, (state, action) => {
-        console.log(action.payload)
-        state.isLoading = false
-        state.playerHideoutProgress = action.payload
-      })
-      .addCase(addHideoutProgress.rejected, (state, action) => {})
   },
 })
 
