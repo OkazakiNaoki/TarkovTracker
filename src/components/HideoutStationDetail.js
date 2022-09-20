@@ -5,6 +5,7 @@ const HideoutStationDetail = ({
   station,
   level,
   nextLevel,
+  increaseLevelHandle,
   canConstruct = false,
 }) => {
   return (
@@ -43,41 +44,45 @@ const HideoutStationDetail = ({
           </div>,
         ]}
 
-      {level.crafts.length > 0 && [
-        <p key="craft_heading" className="text-center fs-3">
-          PRODUCTION
-        </p>,
-        <div key="crafts">
-          {level.crafts.map((c, i) => {
-            return (
-              <div
-                key={station.name + c.level + "craft_" + i}
-                className="text-center"
-              >
-                {c.duration}
-                {c.requiredItems.map((itemReq, i) => {
+      {!canConstruct &&
+        level.crafts.length > 0 && [
+          <p key="craft_heading" className="text-center fs-3">
+            PRODUCTION
+          </p>,
+          <div key="crafts">
+            {station.levels.map((lvl) => {
+              return lvl.crafts.map((c, i) => {
+                if (lvl.level <= level.level)
                   return (
-                    <div key={"itemReq_" + i}>
-                      {itemReq.item.name + "  x" + itemReq.count + "\n"}
+                    <div
+                      key={station.name + c.level + "craft_" + i}
+                      className="text-center"
+                    >
+                      {c.duration}
+                      {c.requiredItems.map((itemReq, i) => {
+                        return (
+                          <div key={"itemReq_" + i}>
+                            {itemReq.item.name + "  x" + itemReq.count + "\n"}
+                          </div>
+                        )
+                      })}
+                      {c.rewardItems.map((itemRew) => {
+                        return (
+                          <div key={"itemRew_" + i}>
+                            {itemRew.item.name + "  x" + itemRew.count + "\n"}
+                          </div>
+                        )
+                      })}
                     </div>
                   )
-                })}
-                {c.rewardItems.map((itemRew) => {
-                  return (
-                    <div key={"itemRew_" + i}>
-                      {itemRew.item.name + "  x" + itemRew.count + "\n"}
-                    </div>
-                  )
-                })}
-              </div>
-            )
-          })}
-        </div>,
-      ]}
+              })
+            })}
+          </div>,
+        ]}
       {canConstruct && (
         <TarkovStyleButton
           text="CONSTRUCT"
-          clickHandle={() => {}}
+          clickHandle={increaseLevelHandle}
           height={50}
         />
       )}
@@ -92,7 +97,7 @@ const HideoutStationDetail = ({
           <TarkovStyleButton
             key="upgradeable_upgrade"
             text="UPGRADE"
-            clickHandle={() => {}}
+            clickHandle={increaseLevelHandle}
             height={50}
           />,
         ]}

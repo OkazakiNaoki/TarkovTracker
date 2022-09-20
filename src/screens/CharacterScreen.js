@@ -22,11 +22,10 @@ import {
   getObjectiveProgress,
   updateCompletedObjectives,
   updateObjectiveProgress,
-  addCompletedObjectives,
-  addObjectiveProgress,
   getCharacterData,
   updateCharacterData,
   getHideoutLevel,
+  updateHideoutLevel,
 } from "../reducers/CharacterSlice"
 import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
@@ -36,6 +35,7 @@ import { AddValueModal } from "../components/AddValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
+import { ConfirmModal } from "../components/ConfirmModal"
 
 const CharacterScreen = () => {
   // hooks
@@ -52,6 +52,10 @@ const CharacterScreen = () => {
   const [currentStation, setCurrentStation] = useState(null)
   const [levelInfoOfCurrentStation, setLevelInfoOfCurrentStation] =
     useState(null)
+  const [confirmModalTitle, setConfirmModalTitle] = useState("")
+  const [confirmModalContent, setConfirmModalContent] = useState("")
+  const [openConfirmModal, setOpenConfirmModal] = useState(false)
+  const [confirmFunc, setConfirmFunc] = useState(() => () => {})
 
   // redux
   const { user } = useSelector((state) => state.user)
@@ -273,6 +277,21 @@ const CharacterScreen = () => {
     setOpenPlayerLevelModal(!openPlayerLevelModal)
   }
 
+  const increaseStationLevelHandle = (hideoutId, levelIndex) => {
+    const newHideoutLevel = JSON.parse(JSON.stringify(playerHideoutLevel))
+    const index = getIndexOfMatchFieldObjArr(
+      newHideoutLevel,
+      "hideoutId",
+      hideoutId
+    )
+    newHideoutLevel[index].level = levelIndex
+    dispatch(updateHideoutLevel({ hideoutLevel: newHideoutLevel }))
+  }
+
+  const openCloseConfirmModalHandle = () => {
+    setOpenConfirmModal(!openConfirmModal)
+  }
+
   return (
     <>
       <Button
@@ -298,6 +317,13 @@ const CharacterScreen = () => {
           openCloseLevelModalHandle()
         }}
         closeHandle={openCloseLevelModalHandle}
+      />
+      <ConfirmModal
+        show={openConfirmModal}
+        title={confirmModalTitle}
+        content={confirmModalContent}
+        confirmHandle={confirmFunc}
+        closeHandle={openCloseConfirmModalHandle}
       />
       {Object.keys(user).length === 0 && <LoginFirst />}
       {Object.keys(user).length > 0 && initSetup !== null && !initSetup && (
@@ -555,6 +581,23 @@ const CharacterScreen = () => {
                               station={currentStation}
                               level={level}
                               nextLevel={currentStation.levels?.[i + 1]}
+                              increaseLevelHandle={() => {
+                                if (currentStation.levels?.[i]) {
+                                  setConfirmModalTitle(
+                                    `${currentStation.name} Level ${level.level}`
+                                  )
+                                  setConfirmModalContent(
+                                    "Are you sure you are going to construct?"
+                                  )
+                                  setConfirmFunc(() => () => {
+                                    increaseStationLevelHandle(
+                                      currentStation.id,
+                                      i
+                                    )
+                                  })
+                                  openCloseConfirmModalHandle()
+                                }
+                              }}
                               canConstruct={true}
                             />
                           )
@@ -574,6 +617,25 @@ const CharacterScreen = () => {
                               station={currentStation}
                               level={level}
                               nextLevel={currentStation.levels?.[i + 1]}
+                              increaseLevelHandle={() => {
+                                if (currentStation.levels?.[i + 1]) {
+                                  setConfirmModalTitle(
+                                    `${currentStation.name} Level ${
+                                      level.level
+                                    } > ${level.level + 1}`
+                                  )
+                                  setConfirmModalContent(
+                                    "Are you sure you are going to upgrade?"
+                                  )
+                                  setConfirmFunc(() => () => {
+                                    increaseStationLevelHandle(
+                                      currentStation.id,
+                                      i + 1
+                                    )
+                                  })
+                                  openCloseConfirmModalHandle()
+                                }
+                              }}
                             />
                           )
                         }

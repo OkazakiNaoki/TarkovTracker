@@ -496,6 +496,37 @@ export const getHideoutLevel = createAsyncThunk(
   }
 )
 
+export const updateHideoutLevel = createAsyncThunk(
+  "character/updateHideoutLevel",
+  async (params, { getState }) => {
+    const hideoutLevel = params.hideoutLevel
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newHideoutLevel = await axios.put(
+        `/api/player/hideout/level`,
+        {
+          hideoutLevel: hideoutLevel,
+        },
+        config
+      )
+      const hideoutLevelData = newHideoutLevel.data.hideoutLevel
+
+      return hideoutLevelData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 export const addHideoutProgress = createAsyncThunk(
   "character/addHideoutProgress",
   async (params, { getState }) => {
@@ -688,6 +719,15 @@ const characterSlice = createSlice({
         state.playerHideoutLevel = action.payload.data
       })
       .addCase(getHideoutLevel.rejected, (state, action) => {})
+      .addCase(updateHideoutLevel.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(updateHideoutLevel.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerHideoutLevel = action.payload
+      })
+      .addCase(updateHideoutLevel.rejected, (state, action) => {})
       .addCase(addHideoutProgress.pending, (state, action) => {
         state.isLoading = true
       })
