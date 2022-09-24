@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import hideoutSelectIcon from "../../public/static/images/hideout_selected.png"
+import hideoutSelectedIcon from "../../public/static/images/selected_border.png"
 
-const HideoutIcon = ({ iconName }) => {
+const HideoutIcon = ({ iconName, selected = false }) => {
   const [hoverHidden, setHoverHidden] = useState(true)
 
   return (
@@ -11,10 +12,10 @@ const HideoutIcon = ({ iconName }) => {
       style={{ width: "104px", height: "110px" }}
       role="button"
       onMouseEnter={() => {
-        setHoverHidden(false)
+        if (!selected) setHoverHidden(false)
       }}
       onMouseLeave={() => {
-        setHoverHidden(true)
+        if (!selected) setHoverHidden(true)
       }}
     >
       <Image
@@ -28,7 +29,12 @@ const HideoutIcon = ({ iconName }) => {
       <Image
         src={hideoutSelectIcon}
         className="position-absolute top-50 start-50 translate-middle"
-        hidden={hoverHidden}
+        hidden={!selected && hoverHidden}
+      />
+      <Image
+        src={hideoutSelectedIcon}
+        className="position-absolute top-50 start-50 translate-middle"
+        hidden={!selected}
       />
     </div>
   )

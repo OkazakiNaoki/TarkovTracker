@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler"
 import InGameTaskDesc from "../models/InGameTaskDescModel.js"
 import InGameTaskImage from "../models/InGameTaskImageModel.js"
 import InGameTasks from "../models/InGameTasksModel.js"
+import InGameTaskItemRequirement from "../models/InGameTaskItemRequirementModel.js"
 
 // @desc Get tasks of a trader
 // @route GET /api/task?trader=
@@ -115,4 +116,21 @@ export const getTaskDesc = asyncHandler(async (req, res) => {
   const taskDesc = await InGameTaskDesc.aggregate(aggregateArr)
 
   res.json(taskDesc)
+})
+
+// @desc Get item requirements of all task
+// @route GET /api/task/require/item
+// @access public
+export const getTaskItemRequirements = asyncHandler(async (req, res) => {
+  const aggregateArr = [
+    {
+      $project: {
+        _id: 0,
+      },
+    },
+  ]
+
+  const taskItemReq = await InGameTaskItemRequirement.aggregate(aggregateArr)
+
+  res.json(taskItemReq)
 })

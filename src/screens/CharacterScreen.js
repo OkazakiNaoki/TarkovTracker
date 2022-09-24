@@ -37,6 +37,7 @@ import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
 import { ConfirmModal } from "../components/ConfirmModal"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
+import { QuestItems } from "../components/QuestItems"
 
 const CharacterScreen = () => {
   // hooks
@@ -563,7 +564,10 @@ const CharacterScreen = () => {
                               setCurrentStationId(station.id)
                             }}
                           >
-                            <HideoutIcon iconName={station.id} />
+                            <HideoutIcon
+                              iconName={station.id}
+                              selected={currentStationId === station.id}
+                            />
                           </a>
                         )
                       })}
@@ -644,18 +648,8 @@ const CharacterScreen = () => {
                   </div>
                 </Tab>
                 <Tab eventKey="inventory" title="Inventory">
-                  <div className="d-flex" style={{ backgroundColor: "black" }}>
-                    <ItemSingleGrid />
-                    <ItemSingleGrid
-                      itemId="5c093e3486f77430cb02e593"
-                      shortName="Dogtags"
-                      bgColor="blue"
-                    />
-                    <ItemSingleGrid bgColor="green" />
-                    <ItemSingleGrid bgColor="red" />
-                    <ItemSingleGrid bgColor="yellow" />
-                    <ItemSingleGrid bgColor="orange" />
-                    <ItemSingleGrid bgColor="violet" />
+                  <div>
+                    <QuestItems />
                   </div>
                 </Tab>
               </Tabs>

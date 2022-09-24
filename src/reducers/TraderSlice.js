@@ -249,6 +249,20 @@ export const getTaskDetail = createAsyncThunk(
   }
 )
 
+export const getTaskItemRequirements = createAsyncThunk(
+  "trader/getTaskItemRequirements",
+  async (params) => {
+    try {
+      const { data } = await axios.get(`/api/task/require/item`)
+      return data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const traderSlice = createSlice({
   name: "trader",
   initialState: {
@@ -257,6 +271,7 @@ const traderSlice = createSlice({
     tasks: {},
     tasksDetail: {},
     tasksDetailFetched: {},
+    taskItemRequirement: [],
   },
   reducers: {
     setTaskCollapse: (state, action) => {
@@ -308,6 +323,17 @@ const traderSlice = createSlice({
         )
       })
       .addCase(getTaskDetail.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
+      .addCase(getTaskItemRequirements.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getTaskItemRequirements.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.taskItemRequirement = action.payload
+      })
+      .addCase(getTaskItemRequirements.rejected, (state, action) => {
         throw Error(action.payload)
       })
   },

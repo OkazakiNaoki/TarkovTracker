@@ -6,3 +6,12 @@ export const getIndexOfMatchFieldObjArr = (arr, field, value) => {
   }
   return -1
 }
+
+export const haveAdditionalElementFromCompareArr = (
+  objArr,
+  field,
+  compareArr
+) => {
+  const arr = objArr.map((obj) => obj[field])
+  return arr.some((el) => !compareArr.includes(el))
+}
