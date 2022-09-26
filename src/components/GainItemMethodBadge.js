@@ -6,6 +6,7 @@ const GainItemMethodBadge = ({
   reward = false,
   collect = false,
   badgeEnterHandle,
+  badgeHoverHandle,
 }) => {
   return craft || reward || collect ? (
     <>
@@ -14,6 +15,7 @@ const GainItemMethodBadge = ({
           className="d-inline me-2"
           onMouseEnter={badgeEnterHandle}
           onMouseLeave={badgeEnterHandle}
+          onMouseOver={() => badgeHoverHandle("craft")}
           style={{ width: "fit-content" }}
         >
           <Badge pill bg="primary" style={{ userSelect: "none" }}>
@@ -26,9 +28,10 @@ const GainItemMethodBadge = ({
           className="d-inline me-2"
           onMouseEnter={badgeEnterHandle}
           onMouseLeave={badgeEnterHandle}
+          onMouseOver={() => badgeHoverHandle("reward")}
           style={{ width: "fit-content" }}
         >
-          <Badge pill bg="success">
+          <Badge pill bg="success" style={{ userSelect: "none" }}>
             reward
           </Badge>
         </div>
@@ -38,9 +41,10 @@ const GainItemMethodBadge = ({
           className="d-inline me-2"
           onMouseEnter={badgeEnterHandle}
           onMouseLeave={badgeEnterHandle}
+          onMouseOver={() => badgeHoverHandle("collect")}
           style={{ width: "fit-content" }}
         >
-          <Badge pill bg="warning" text="dark">
+          <Badge pill bg="warning" text="dark" style={{ userSelect: "none" }}>
             collect
           </Badge>
         </div>

@@ -19,6 +19,10 @@ const QuestItem = ({ itemReq }) => {
   const [isCraftable, setIsCraftable] = useState(false)
   const [getFromQuestReward, setGetFromQuestReward] = useState(false)
   const [forCollection, setForCollection] = useState(false)
+  const [craftInfo, setCraftInfo] = useState(null)
+  const [rewardInfo, setRewardInfo] = useState(null)
+  const [hoverOnBadge, setHoverOnBadge] = useState(null)
+  const [currentInfo, setCurrentInfo] = useState(null)
 
   const mouseMoveHandle = (e) => {
     const { clientX, clientY } = e
@@ -33,6 +37,20 @@ const QuestItem = ({ itemReq }) => {
       setDisplayGainItemDetail("none")
     }
   }
+
+  const badgeHoverHandle = (badge) => {
+    setHoverOnBadge(badge)
+  }
+
+  useEffect(() => {
+    if (hoverOnBadge === "craft") {
+      setCurrentInfo(craftInfo)
+    } else if (hoverOnBadge === "reward") {
+      setCurrentInfo(rewardInfo)
+    } else if (hoverOnBadge === "collect") {
+      setCurrentInfo("Kappa!!")
+    }
+  }, [hoverOnBadge])
 
   useEffect(() => {
     if (itemReq.craftableAt.length > 0) {
@@ -51,6 +69,20 @@ const QuestItem = ({ itemReq }) => {
       setForCollection(true)
     }
   }, [itemReq])
+
+  useEffect(() => {
+    const craftStation = itemReq.craftableAt.map((station) => {
+      return station.stationName + " level " + station.level + "\n"
+    })
+    setCraftInfo(craftStation)
+  }, [itemReq, isCraftable])
+
+  useEffect(() => {
+    const taskReward = itemReq.getFromReward.map((task) => {
+      return "x" + task.count + " " + task.trader + "'s " + task.taskName + "\n"
+    })
+    setRewardInfo(taskReward)
+  }, [itemReq, getFromQuestReward])
 
   return (
     <Card className="bg-dark text-white my-3 p-3 rounded w-100 ls-1">
@@ -75,6 +107,7 @@ const QuestItem = ({ itemReq }) => {
           reward={getFromQuestReward}
           collect={forCollection}
           badgeEnterHandle={badgeEnterHandle}
+          badgeHoverHandle={badgeHoverHandle}
         />
       </div>
       <div
@@ -86,9 +119,19 @@ const QuestItem = ({ itemReq }) => {
           userSelect: "none",
           transform: "translateX(10px) translateY(-100%)",
           backgroundColor: "#fff",
+          zIndex: "100001",
         }}
       >
-        addtional info placeholder
+        <div
+          className="py-1 px-2"
+          style={{
+            backgroundColor: "#000",
+            border: "2px solid #585d60",
+            whiteSpace: "break-spaces",
+          }}
+        >
+          {currentInfo}
+        </div>
       </div>
       <Card.Text className="text-center">
         {"- / " +
