@@ -27,6 +27,11 @@ import {
   getHideoutLevel,
   updateHideoutLevel,
 } from "../controllers/PlayerHideoutController.js"
+import {
+  addInventory,
+  getInventory,
+  updateInventory,
+} from "../controllers/PlayerInventoryController.js"
 
 const router = express.Router()
 
@@ -65,5 +70,11 @@ router
   .get(protect, getHideoutLevel)
   .post(protect, addHideoutLevel)
   .put(protect, updateHideoutLevel)
+
+router
+  .route("/inventory")
+  .get(protect, getInventory)
+  .post(protect, addInventory)
+  .put(protect, updateInventory)
 
 export default router

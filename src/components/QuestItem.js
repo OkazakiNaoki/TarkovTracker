@@ -23,6 +23,7 @@ const QuestItem = ({ itemReq }) => {
   const [rewardInfo, setRewardInfo] = useState(null)
   const [hoverOnBadge, setHoverOnBadge] = useState(null)
   const [currentInfo, setCurrentInfo] = useState(null)
+  const [neededQuestInfo, setNeededQuestInfo] = useState(null)
 
   const mouseMoveHandle = (e) => {
     const { clientX, clientY } = e
@@ -31,11 +32,11 @@ const QuestItem = ({ itemReq }) => {
   }
 
   const badgeEnterHandle = () => {
-    if (displayGainItemDetail === "none") {
-      setDisplayGainItemDetail("block")
-    } else {
-      setDisplayGainItemDetail("none")
-    }
+    setDisplayGainItemDetail("block")
+  }
+
+  const badgeLeaveHandle = () => {
+    setDisplayGainItemDetail("none")
   }
 
   const badgeHoverHandle = (badge) => {
@@ -43,7 +44,10 @@ const QuestItem = ({ itemReq }) => {
   }
 
   useEffect(() => {
-    if (hoverOnBadge === "craft") {
+    if (hoverOnBadge === "needed") {
+      console.log(neededQuestInfo)
+      setCurrentInfo(neededQuestInfo)
+    } else if (hoverOnBadge === "craft") {
       setCurrentInfo(craftInfo)
     } else if (hoverOnBadge === "reward") {
       setCurrentInfo(rewardInfo)
@@ -84,6 +88,14 @@ const QuestItem = ({ itemReq }) => {
     setRewardInfo(taskReward)
   }, [itemReq, getFromQuestReward])
 
+  useEffect(() => {
+    const neededQuest = itemReq.requiredByTask.map((req) => {
+      if (!excludeQuest.includes(req.taskId))
+        return req.trader + "'s " + req.taskName + "\n"
+    })
+    setNeededQuestInfo(neededQuest)
+  }, [itemReq])
+
   return (
     <Card className="bg-dark text-white my-3 p-3 rounded w-100 ls-1">
       <Card.Title
@@ -94,19 +106,32 @@ const QuestItem = ({ itemReq }) => {
         <strong>{itemReq.item.itemName}</strong>
       </Card.Title>
       <div className="d-flex position-relative my-3 justify-content-center">
-        <ItemSingleGrid
-          itemId={itemReq.item.itemId}
-          foundInRaid={itemReq.item.foundInRaid}
-          bgColor={itemReq.item.bgColor}
-          shortName={itemReq.item.dogTagLevel ? itemReq.item.dogTagLevel : null}
-        />
+        <div
+          onMouseOver={() => {
+            badgeHoverHandle("needed")
+          }}
+          onMouseEnter={badgeEnterHandle}
+          onMouseLeave={badgeLeaveHandle}
+          onMouseMove={mouseMoveHandle}
+          style={{ width: "64px", height: "64px" }}
+        >
+          <ItemSingleGrid
+            itemId={itemReq.item.itemId}
+            foundInRaid={itemReq.item.foundInRaid}
+            bgColor={itemReq.item.bgColor}
+            shortName={
+              itemReq.item.dogTagLevel ? itemReq.item.dogTagLevel : null
+            }
+          />
+        </div>
       </div>
-      <div onMouseMove={mouseMoveHandle} style={{ width: "fit-content" }}>
+      <div onMouseMove={mouseMoveHandle}>
         <GainItemMethodBadge
           craft={isCraftable}
           reward={getFromQuestReward}
           collect={forCollection}
           badgeEnterHandle={badgeEnterHandle}
+          badgeLeaveHandle={badgeLeaveHandle}
           badgeHoverHandle={badgeHoverHandle}
         />
       </div>
@@ -133,7 +158,7 @@ const QuestItem = ({ itemReq }) => {
           {currentInfo}
         </div>
       </div>
-      <Card.Text className="text-center">
+      <Card.Text className="text-center my-3">
         {"- / " +
           itemReq.requiredByTask.reduce((pre, cur) => {
             if (!excludeQuest.includes(cur.taskId)) {
@@ -141,12 +166,6 @@ const QuestItem = ({ itemReq }) => {
             } else return pre
           }, 0)}
       </Card.Text>
-      <Card.Text>
-        {itemReq.requiredByTask.map((req) => {
-          if (!excludeQuest.includes(req.taskId)) return req.taskName + " *** "
-        })}
-      </Card.Text>
-      <Card.Text>{itemReq.item.itemId}</Card.Text>
     </Card>
   )
 }

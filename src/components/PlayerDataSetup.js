@@ -10,6 +10,7 @@ import {
   addCompletedObjectives,
   addCompletedTasks,
   addHideoutLevel,
+  addInventoryItem,
 } from "../reducers/CharacterSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
@@ -78,6 +79,7 @@ const PlayerDataSetup = () => {
       dispatch(addCompletedTasks({ completeTasks: [] }))
       dispatch(addCompletedObjectives({ completeObjectives: [] }))
       dispatch(addObjectiveProgress({ objectiveProgress: [] }))
+      dispatch(addInventoryItem())
       dispatch(setInitSetup())
     }
   }

@@ -527,6 +527,36 @@ export const updateHideoutLevel = createAsyncThunk(
   }
 )
 
+export const addInventoryItem = createAsyncThunk(
+  "character/addInventoryItem",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const inventory = await axios.post(
+        `/api/player/inventory`,
+        {
+          itemList: [],
+        },
+        config
+      )
+      const inventoryData = inventory.data.ownItemList
+
+      return inventoryData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -541,6 +571,7 @@ const characterSlice = createSlice({
     unlockedJaeger: false, // not use yet
     traderLoyaltyLevel: {}, // not use yet
     playerHideoutLevel: null,
+    playerInventory: null,
   },
   reducers: {
     setInitSetup: (state, action) => {
@@ -696,6 +727,15 @@ const characterSlice = createSlice({
         state.playerHideoutLevel = action.payload
       })
       .addCase(updateHideoutLevel.rejected, (state, action) => {})
+      .addCase(addInventoryItem.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(addInventoryItem.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerInventory = action.payload
+      })
+      .addCase(addInventoryItem.rejected, (state, action) => {})
   },
 })
 
