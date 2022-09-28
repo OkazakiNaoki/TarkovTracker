@@ -50,7 +50,7 @@ export const getInventory = asyncHandler(async (req, res) => {
     res.status(404).send("Previous inventory data not found")
   } else {
     res.json({
-      itemList: pi.ownItemList,
+      ownItemList: pi.ownItemList,
     })
   }
 })

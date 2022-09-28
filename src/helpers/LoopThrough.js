@@ -7,6 +7,20 @@ export const getIndexOfMatchFieldObjArr = (arr, field, value) => {
   return -1
 }
 
+export const getAnotherFieldOfMatchFieldObjArr = (
+  arr,
+  field,
+  value,
+  field2
+) => {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i][field] === value) {
+      return arr[i][field2]
+    }
+  }
+  return null
+}
+
 export const haveAdditionalElementFromCompareArr = (
   objArr,
   field,

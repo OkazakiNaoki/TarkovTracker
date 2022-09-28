@@ -1,8 +1,14 @@
 import React from "react"
 import { useEffect } from "react"
 import { useState } from "react"
-import { Card } from "react-bootstrap"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { Button, Card } from "react-bootstrap"
+import { useDispatch } from "react-redux"
+import {
+  getAnotherFieldOfMatchFieldObjArr,
+  getIndexOfMatchFieldObjArr,
+} from "../helpers/LoopThrough"
+import { updateInventoryItem } from "../reducers/CharacterSlice"
+import { AddValueModal } from "./AddValueModal"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 
@@ -12,7 +18,7 @@ const excludeQuest = [
   "61e6e5e0f5b9633f6719ed95",
 ]
 
-const QuestItem = ({ itemReq }) => {
+const QuestItem = ({ playerInventory, itemReq }) => {
   const [mainX, setMainX] = useState(0)
   const [mainY, setMainY] = useState(0)
   const [displayGainItemDetail, setDisplayGainItemDetail] = useState("none")
@@ -24,6 +30,9 @@ const QuestItem = ({ itemReq }) => {
   const [hoverOnBadge, setHoverOnBadge] = useState(null)
   const [currentInfo, setCurrentInfo] = useState(null)
   const [neededQuestInfo, setNeededQuestInfo] = useState(null)
+  const [itemCount, setItemCount] = useState(0)
+  const [itemNeedTotalCount, setItemNeedTotalCount] = useState(0)
+  const [itemModalOnOff, setItemModalOnOff] = useState(false)
 
   const mouseMoveHandle = (e) => {
     const { clientX, clientY } = e
@@ -43,9 +52,54 @@ const QuestItem = ({ itemReq }) => {
     setHoverOnBadge(badge)
   }
 
+  const openItemCountModal = () => {
+    setItemModalOnOff(!itemModalOnOff)
+  }
+
+  // redux
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (itemNeedTotalCount === 0) {
+      setItemNeedTotalCount(
+        itemReq.requiredByTask.reduce((pre, cur) => {
+          if (!excludeQuest.includes(cur.taskId)) {
+            return pre + cur.count
+          } else return pre
+        }, 0)
+      )
+    }
+  }, [itemNeedTotalCount])
+
+  useEffect(() => {
+    if (playerInventory) {
+      const count = getAnotherFieldOfMatchFieldObjArr(
+        playerInventory,
+        "itemId",
+        itemReq.item.itemId,
+        "count"
+      )
+      if (count !== itemCount) setItemCount(count)
+    }
+  }, [playerInventory])
+
+  useEffect(() => {
+    if (playerInventory) {
+      const newInventory = JSON.parse(JSON.stringify(playerInventory))
+      const index = getIndexOfMatchFieldObjArr(
+        newInventory,
+        "itemId",
+        itemReq.item.itemId
+      )
+      if (index !== -1 && newInventory[index].count !== itemCount) {
+        newInventory[index].count = itemCount
+        dispatch(updateInventoryItem({ itemList: newInventory }))
+      }
+    }
+  }, [itemCount])
+
   useEffect(() => {
     if (hoverOnBadge === "needed") {
-      console.log(neededQuestInfo)
       setCurrentInfo(neededQuestInfo)
     } else if (hoverOnBadge === "craft") {
       setCurrentInfo(craftInfo)
@@ -96,11 +150,26 @@ const QuestItem = ({ itemReq }) => {
     setNeededQuestInfo(neededQuest)
   }, [itemReq])
 
-  return (
-    <Card className="bg-dark text-white my-3 p-3 rounded w-100 ls-1">
+  return [
+    <AddValueModal
+      title={itemReq.item.itemName}
+      key="modal_of_item_count"
+      show={itemModalOnOff}
+      value={itemCount}
+      valueCap={itemNeedTotalCount}
+      setValueHandle={(v) => {
+        setItemCount(v)
+        openItemCountModal()
+      }}
+      closeHandle={openItemCountModal}
+    />,
+    <Card
+      key="quest_item_card"
+      className="bg-dark text-white my-3 rounded w-100 ls-1"
+    >
       <Card.Title
-        className="two-line-text-trunc sandbeige"
-        style={{ height: "50px" }}
+        className="p-3 two-line-text-trunc sandbeige"
+        style={{ height: "68px" }}
         title={itemReq.item.itemName}
       >
         <strong>{itemReq.item.itemName}</strong>
@@ -125,7 +194,7 @@ const QuestItem = ({ itemReq }) => {
           />
         </div>
       </div>
-      <div onMouseMove={mouseMoveHandle}>
+      <div onMouseMove={mouseMoveHandle} className="px-3">
         <GainItemMethodBadge
           craft={isCraftable}
           reward={getFromQuestReward}
@@ -159,15 +228,20 @@ const QuestItem = ({ itemReq }) => {
         </div>
       </div>
       <Card.Text className="text-center my-3">
-        {"- / " +
-          itemReq.requiredByTask.reduce((pre, cur) => {
-            if (!excludeQuest.includes(cur.taskId)) {
-              return pre + cur.count
-            } else return pre
-          }, 0)}
+        {itemCount + " / " + itemNeedTotalCount}
       </Card.Text>
-    </Card>
-  )
+      <div className="d-flex flex-grow-1 justify-content-center">
+        <Button
+          variant="secondary"
+          onClick={openItemCountModal}
+          className="align-self-end w-100"
+          style={{ borderRadius: "0 0 0.374rem 0.374rem" }}
+        >
+          +
+        </Button>
+      </div>
+    </Card>,
+  ]
 }
 
 export { QuestItem }

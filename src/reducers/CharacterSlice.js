@@ -530,6 +530,7 @@ export const updateHideoutLevel = createAsyncThunk(
 export const addInventoryItem = createAsyncThunk(
   "character/addInventoryItem",
   async (params, { getState }) => {
+    const itemList = params.itemList
     try {
       const { user } = getState().user
 
@@ -542,13 +543,70 @@ export const addInventoryItem = createAsyncThunk(
       const inventory = await axios.post(
         `/api/player/inventory`,
         {
-          itemList: [],
+          itemList: itemList,
         },
         config
       )
       const inventoryData = inventory.data.ownItemList
 
       return inventoryData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getInventoryItem = createAsyncThunk(
+  "character/getInventoryItem",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const inventory = await axios.get(`/api/player/inventory`, config)
+
+      return {
+        status: inventory.status,
+        data: inventory.data.ownItemList,
+      }
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  }
+)
+
+export const updateInventoryItem = createAsyncThunk(
+  "character/updateInventoryItem",
+  async (params, { getState }) => {
+    const itemList = params.itemList
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newInventory = await axios.put(
+        `/api/player/inventory`,
+        {
+          itemList: itemList,
+        },
+        config
+      )
+      const newInventoryData = newInventory.data.ownItemList
+
+      return newInventoryData
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -736,6 +794,23 @@ const characterSlice = createSlice({
         state.playerInventory = action.payload
       })
       .addCase(addInventoryItem.rejected, (state, action) => {})
+      .addCase(getInventoryItem.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getInventoryItem.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.playerInventory = action.payload.data
+      })
+      .addCase(getInventoryItem.rejected, (state, action) => {})
+      .addCase(updateInventoryItem.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(updateInventoryItem.fulfilled, (state, action) => {
+        console.log(action.payload)
+        state.isLoading = false
+        state.playerInventory = action.payload
+      })
+      .addCase(updateInventoryItem.rejected, (state, action) => {})
   },
 })
 

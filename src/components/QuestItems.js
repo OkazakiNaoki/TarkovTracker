@@ -5,6 +5,7 @@ import { Row, Col } from "react-bootstrap"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import { QuestItem } from "./QuestItem"
 import { haveAdditionalElementFromCompareArr } from "../helpers/LoopThrough"
+import { getInventoryItem } from "../reducers/CharacterSlice"
 
 const excludeQuest = [
   "61e6e60223374d168a4576a6",
@@ -15,6 +16,7 @@ const excludeQuest = [
 const QuestItems = () => {
   // redux
   const { taskItemRequirement } = useSelector((state) => state.trader)
+  const { playerInventory } = useSelector((state) => state.character)
   const dispatch = useDispatch()
 
   // effects
@@ -23,6 +25,12 @@ const QuestItems = () => {
       dispatch(getTaskItemRequirements())
     }
   }, [taskItemRequirement])
+
+  useEffect(() => {
+    if (!playerInventory) {
+      dispatch(getInventoryItem())
+    }
+  }, [playerInventory])
 
   return (
     <Row>
@@ -45,7 +53,7 @@ const QuestItems = () => {
               xl={3}
               className="d-flex align-items-stretch"
             >
-              <QuestItem itemReq={req} />
+              <QuestItem playerInventory={playerInventory} itemReq={req} />
             </Col>
           )
       })}

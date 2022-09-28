@@ -15,6 +15,7 @@ import {
 import { getAllHideout } from "../reducers/HideoutSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
 import usecIcon from "../../public/static/images/icon_usec.png"
+import { getTaskItemRequirements } from "../reducers/TraderSlice"
 
 const PlayerDataSetup = () => {
   // hooks
@@ -28,6 +29,7 @@ const PlayerDataSetup = () => {
 
   // redux
   const { hideout } = useSelector((state) => state.hideout)
+  const { taskItemRequirement } = useSelector((state) => state.trader)
   const dispatch = useDispatch()
 
   // effects
@@ -36,6 +38,12 @@ const PlayerDataSetup = () => {
       dispatch(getAllHideout())
     }
   }, [hideout])
+
+  useEffect(() => {
+    if (taskItemRequirement.length === 0) {
+      dispatch(getTaskItemRequirements())
+    }
+  }, [taskItemRequirement])
 
   // handles
   const hoverOnLevelSetupBtn = () => {
@@ -79,7 +87,15 @@ const PlayerDataSetup = () => {
       dispatch(addCompletedTasks({ completeTasks: [] }))
       dispatch(addCompletedObjectives({ completeObjectives: [] }))
       dispatch(addObjectiveProgress({ objectiveProgress: [] }))
-      dispatch(addInventoryItem())
+      const initPlayerInventory = []
+      taskItemRequirement.forEach((req) => {
+        initPlayerInventory.push({
+          itemId: req.item.itemId,
+          itemName: req.item.itemName,
+          count: 0,
+        })
+      })
+      dispatch(addInventoryItem({ itemList: initPlayerInventory }))
       dispatch(setInitSetup())
     }
   }
