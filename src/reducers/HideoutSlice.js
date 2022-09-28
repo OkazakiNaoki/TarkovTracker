@@ -42,7 +42,6 @@ const hideoutSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getAllHideout.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.hideout = action.payload
       })

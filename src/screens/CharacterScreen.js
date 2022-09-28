@@ -298,13 +298,6 @@ const CharacterScreen = () => {
     <>
       <Button
         onClick={() => {
-          console.log(levelInfoOfCurrentStation)
-        }}
-      >
-        local State
-      </Button>
-      <Button
-        onClick={() => {
           console.log(charState)
         }}
       >

@@ -12,7 +12,6 @@ export const searchItemByName = createAsyncThunk(
       )
       return data
     } catch (error) {
-      console.log(error)
       return error.response && error.response.data.message
         ? error.response.data.message
         : error.message
@@ -28,7 +27,6 @@ export const getItemCategory = createAsyncThunk(
       const { data } = await axios.get(`/api/items/categories?type=${type}`)
       return data
     } catch (error) {
-      console.log(error)
       return error.response && error.response.data.message
         ? error.response.data.message
         : error.message

@@ -246,7 +246,6 @@ export const addCompletedObjectives = createAsyncThunk(
         completeObjectives: newCompleteObjectivesData,
       }
     } catch (error) {
-      console.log(error.response.data)
       return error.response && error.response.data.message
         ? error.response.data.message
         : error.message
@@ -652,7 +651,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getTasksOfTraderWithLevel.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerTasksInfo[`${action.payload.trader}`] = {
           complete: action.payload.completeTasks,
@@ -665,7 +663,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(updateCompletedTasks.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
       })
       .addCase(updateCompletedTasks.rejected, (state, action) => {})
@@ -673,7 +670,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getCompletedObjectives.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
@@ -682,7 +678,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(updateCompletedObjectives.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
@@ -691,7 +686,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(addCompletedObjectives.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
@@ -700,7 +694,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getObjectiveProgress.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
@@ -709,7 +702,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(updateObjectiveProgress.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
@@ -718,7 +710,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(addObjectiveProgress.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
@@ -727,7 +718,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(addCharacterData.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerLevel = action.payload.characterLevel
         state.playerFaction = action.payload.characterFaction
@@ -737,7 +727,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(updateCharacterData.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerLevel = action.payload.characterLevel
         state.playerFaction = action.payload.characterFaction
@@ -747,7 +736,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getCharacterData.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         if (typeof action.payload === "object") {
           state.playerLevel = action.payload.data.characterLevel
@@ -762,7 +750,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(addHideoutLevel.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerHideoutLevel = action.payload
       })
@@ -771,7 +758,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getHideoutLevel.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerHideoutLevel = action.payload.data
       })
@@ -780,7 +766,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(updateHideoutLevel.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerHideoutLevel = action.payload
       })
@@ -789,7 +774,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(addInventoryItem.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerInventory = action.payload
       })
@@ -806,7 +790,6 @@ const characterSlice = createSlice({
         state.isLoading = true
       })
       .addCase(updateInventoryItem.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.playerInventory = action.payload
       })

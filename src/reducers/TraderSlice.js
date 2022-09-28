@@ -285,7 +285,6 @@ const traderSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getTraders.fulfilled, (state, action) => {
-        // console.log(action.payload)
         state.isLoading = false
         state.traders = action.payload
         action.payload.forEach((trader) => {
@@ -301,7 +300,6 @@ const traderSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getTasksOfTrader.fulfilled, (state, action) => {
-        // console.log(action.payload)
         state.isLoading = false
         state.tasks[action.payload.trader] = action.payload.tasksArr
       })
@@ -312,7 +310,6 @@ const traderSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getTaskDetail.fulfilled, (state, action) => {
-        console.log(action.payload.data)
         state.isLoading = false
         state.tasksDetail[action.payload.traderName] = {
           ...state.tasksDetail[action.payload.traderName],
@@ -329,7 +326,6 @@ const traderSlice = createSlice({
         state.isLoading = true
       })
       .addCase(getTaskItemRequirements.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         state.taskItemRequirement = action.payload
       })

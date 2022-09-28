@@ -67,7 +67,6 @@ const userSlice = createSlice({
         state.isLoading = true
       })
       .addCase(login.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         if ("error" in action.payload) {
           state.errorMsg = action.payload.error
@@ -83,7 +82,6 @@ const userSlice = createSlice({
         state.isLoading = true
       })
       .addCase(register.fulfilled, (state, action) => {
-        console.log(action.payload)
         state.isLoading = false
         if ("error" in action.payload) {
           state.errorMsg = action.payload.error
