@@ -70,15 +70,6 @@ const FleamarketScreen = () => {
   }, [dispatch, searchParams])
 
   // handler
-  const submitHandler = (e) => {
-    e.preventDefault()
-    if (curCategory.trim()) {
-      navigate(`/fleamarket?category=${curCategory}&keyword=${keyword}`)
-    } else {
-      navigate(`/fleamarket?keyword=${keyword}`)
-    }
-  }
-
   const toggleCategoryHandler = (targetCategory, onOff) => {
     if (categoryToggle.length > 0) {
       const i = categoryToggle.findIndex((object) => {
@@ -103,6 +94,16 @@ const FleamarketScreen = () => {
     setCurCategory("")
   }
 
+  const enterPressHandle = (e) => {
+    if (e.keyCode == 13) {
+      if (curCategory.trim()) {
+        navigate(`/fleamarket?category=${curCategory}&keyword=${keyword}`)
+      } else {
+        navigate(`/fleamarket?keyword=${keyword}`)
+      }
+    }
+  }
+
   return (
     <>
       <HeadMeta title="Fleamarket" />
@@ -115,16 +116,21 @@ const FleamarketScreen = () => {
             onChange={(e) => {
               setKeyword(e.target.value)
             }}
+            onKeyDown={enterPressHandle}
             value={keyword}
             className="text-center"
           />
-          <Button
-            variant="secondary"
-            id="button-search"
-            onClick={submitHandler}
-          >
-            Search
-          </Button>
+          {keyword !== "" && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setKeyword("")
+                navigate(`/fleamarket`)
+              }}
+            >
+              X
+            </Button>
+          )}
         </InputGroup>
 
         <Button

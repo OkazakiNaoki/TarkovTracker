@@ -174,6 +174,9 @@ const QuestItem = ({ playerInventory, itemReq }) => {
       >
         <strong>{itemReq.item.itemName}</strong>
       </Card.Title>
+      <div className="px-3" style={{ fontSize: "8px" }}>
+        {itemReq.item.shortName}
+      </div>
       <div className="d-flex position-relative my-3 justify-content-center">
         <div
           onMouseOver={() => {
