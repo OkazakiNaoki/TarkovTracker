@@ -19,6 +19,16 @@ const inGameItemSchema = mongoose.Schema({
       required: true,
     },
   ],
+  handbookCategories: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
+  isPreset: {
+    type: Boolean,
+    required: true,
+  },
 })
 
 const InGameItem = mongoose.model("InGameItem", inGameItemSchema)

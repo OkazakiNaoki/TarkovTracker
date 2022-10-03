@@ -4,11 +4,12 @@ import axios from "axios"
 export const searchItemByName = createAsyncThunk(
   "fleamarket/searchItemByName",
   async (params) => {
-    const { category = "", keyword = "", page = "" } = params
-
+    const { handbook = "", keyword = "", page = "" } = params
     try {
       const { data } = await axios.get(
-        `/api/items?category=${category}&keyword=${keyword}&page=${page}`
+        `/api/items?handbook=${encodeURIComponent(
+          handbook
+        )}&keyword=${encodeURIComponent(keyword)}&page=${page}`
       )
       return data
     } catch (error) {
@@ -34,12 +35,28 @@ export const getItemCategory = createAsyncThunk(
   }
 )
 
+export const getItemHandbook = createAsyncThunk(
+  "fleamarket/getItemHandbook",
+  async (params) => {
+    const { type } = params
+    try {
+      const { data } = await axios.get(`/api/items/handbook?type=${type}`)
+      return data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 export const FleamarketSlice = createSlice({
   name: "fleamarket",
   initialState: {
     isLoading: false,
     items: [],
     categories: [],
+    handbook: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -67,6 +84,18 @@ export const FleamarketSlice = createSlice({
         state.categories = action.payload.categories
       })
       .addCase(getItemCategory.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload
+      })
+      .addCase(getItemHandbook.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(getItemHandbook.fulfilled, (state, action) => {
+        state.success = true
+        state.isLoading = false
+        state.handbook = action.payload.handbook
+      })
+      .addCase(getItemHandbook.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload
       })

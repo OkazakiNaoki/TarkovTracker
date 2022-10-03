@@ -1,7 +1,7 @@
 import React from "react"
 import { Pagination } from "react-bootstrap"
 
-const Paginate = ({ page, pages, keyword, category, setSearchParams }) => {
+const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
   const GetRange = (pageNum) => {
     let limit = 10
     let half = 5
@@ -32,7 +32,7 @@ const Paginate = ({ page, pages, keyword, category, setSearchParams }) => {
         key={pageNum}
         onClick={() => {
           setSearchParams({
-            category: category,
+            handbook: handbook,
             keyword: keyword,
             page: pageNum,
           })
@@ -50,7 +50,7 @@ const Paginate = ({ page, pages, keyword, category, setSearchParams }) => {
           key="most-forward"
           onClick={() => {
             setSearchParams({
-              category: category,
+              handbook: handbook,
               keyword: keyword,
               page: 1,
             })
@@ -65,7 +65,7 @@ const Paginate = ({ page, pages, keyword, category, setSearchParams }) => {
           key="most-back"
           onClick={() => {
             setSearchParams({
-              category: category,
+              handbook: handbook,
               keyword: keyword,
               page: pages,
             })

@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler"
 import InGameItem from "../models/InGameItemModel.js"
 import InGameItemCategory from "../models/InGameItemCategoryModel.js"
+import InGameItemHandbook from "../models/InGameItemHandbookModel.js"
 import InGameItemProperty from "../models/InGameItemPropertyModel.js"
 import InGaneItemAmmoCaliber from "../models/InGameItemAmmoCaliberModel.js"
 
@@ -9,7 +10,7 @@ import InGaneItemAmmoCaliber from "../models/InGameItemAmmoCaliberModel.js"
 // @access public
 export const getItems = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
-  const category = req.query.category
+  const handbook = req.query.handbook
   const page = Number(req.query.page) || 1
 
   let limit = 12
@@ -27,15 +28,13 @@ export const getItems = asyncHandler(async (req, res) => {
         id: 1,
         name: 1,
         shortName: 1,
-        categories: 1,
+        handbookCategories: 1,
       },
     },
     {
       $match: {
-        categories: {
-          $elemMatch: {
-            name: category ? category : /(.*?)/,
-          },
+        handbookCategories: {
+          $in: [handbook ? handbook : /(.*?)/],
         },
       },
     },
@@ -242,5 +241,58 @@ export const getItemCategories = asyncHandler(async (req, res) => {
       },
     ])
     res.json({ categories })
+  }
+})
+
+// @desc Get all item handbook categories
+// @route GET /api/items/handbook?type=
+// @access public
+export const getItemHandbook = asyncHandler(async (req, res) => {
+  const type = req.query.type
+
+  if (type === "root") {
+    const handbook = await InGameItemHandbook.aggregate([
+      {
+        $match: {
+          handbookCategoryParent: {
+            $eq: null,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+        },
+      },
+    ])
+    res.json({ handbook })
+  } else if (type === "child") {
+    const handbook = await InGameItemHandbook.aggregate([
+      {
+        $match: {
+          handbookCategoryParent: {
+            $ne: null,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+        },
+      },
+    ])
+    res.json({ handbook })
+  } else if (type === "all") {
+    const handbook = await InGameItemHandbook.aggregate([
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+        },
+      },
+    ])
+    res.json({ handbook })
   }
 })
