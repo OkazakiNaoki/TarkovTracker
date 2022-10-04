@@ -9,14 +9,29 @@ import {
   ToggleButton,
   Collapse,
   Dropdown,
+  Image,
 } from "react-bootstrap"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
+import {
+  CheckSquareFill,
+  Square,
+  CheckSquare,
+  ChevronRight,
+  ChevronDown,
+  PlusSquare,
+  DashSquare,
+  Folder2,
+  Folder2Open,
+  FileEarmark,
+} from "react-bootstrap-icons"
+import CheckboxTree from "react-checkbox-tree"
 import { HeadMeta } from "../components/HeadMeta"
 import {
   searchItemByName,
   getItemCategory,
   getItemHandbook,
+  setHandbookTree,
 } from "../reducers/FleamarketSlice"
 import ItemRow from "../components/ItemRow"
 import Paginate from "../components/Paginate"
@@ -34,6 +49,7 @@ const FleamarketScreen = () => {
     success,
     items,
     handbook,
+    handbookTree,
     page: statePage,
     pages: statePages,
   } = useSelector((state) => state.fleamarket)
@@ -42,8 +58,12 @@ const FleamarketScreen = () => {
   const [curCategory, setCurCategory] = useState("")
   const [keyword, setKeyword] = useState("")
   const [handbookToggle, setHandbookToggle] = useState([])
+  const [handbookCheck, setHandbookCheck] = useState([])
   const [expandHandbook, setExpandHandbook] = useState(false)
   const [showCategorySetting, setShowCategorySetting] = useState(false)
+  const [treeExpand, setTreeExpand] = useState([])
+  const [treeCheck, setTreeCheck] = useState([])
+  const [copyHandbookTree, setCopyHandbookTree] = useState([])
 
   // hooks effects
   useEffect(() => {
@@ -53,10 +73,26 @@ const FleamarketScreen = () => {
   }, [handbook])
 
   useEffect(() => {
-    if (handbookToggle.length === 0 && handbook.length !== 0) {
-      initializeHandbookToggle()
+    if (handbook.length !== 0 && handbookTree.length === 0) {
+      dispatch(setHandbookTree())
     }
-  }, [handbook, handbookToggle])
+  }, [handbook])
+
+  useEffect(() => {
+    if (handbookTree.length !== 0 && copyHandbookTree.length === 0) {
+      const copyTree = JSON.parse(JSON.stringify(handbookTree))
+      const newTree = copyTree.map((tree) => {
+        return setIconCompInHandbookNodes(tree)
+      })
+      setCopyHandbookTree(newTree)
+    }
+  }, [handbookTree])
+
+  useEffect(() => {
+    if (handbookCheck.length === 0 && handbook.length !== 0) {
+      initializeHandbookCheck()
+    }
+  }, [handbook, handbookCheck])
 
   useEffect(() => {
     dispatch(
@@ -72,7 +108,7 @@ const FleamarketScreen = () => {
     )
     searchParams.get("handbook")
       ? toggleHandbookHandle(searchParams.get("handbook"), true)
-      : initializeHandbookToggle()
+      : initializeHandbookCheck()
 
     searchParams.get("keyword")
       ? setKeyword(searchParams.get("keyword"))
@@ -98,11 +134,11 @@ const FleamarketScreen = () => {
     }
   }
 
-  const initializeHandbookToggle = () => {
-    const toggleCat = handbook.map((category) => {
-      return { categoryName: category.handbookCategoryName, toggle: false }
+  const initializeHandbookCheck = () => {
+    const checkCat = handbook.map((category) => {
+      return { categoryName: category.handbookCategoryName, check: false }
     })
-    setHandbookToggle(toggleCat)
+    setHandbookCheck(checkCat)
     setCurCategory("")
   }
 
@@ -120,8 +156,26 @@ const FleamarketScreen = () => {
     }
   }
 
+  const setIconCompInHandbookNodes = (node) => {
+    const copyNode = {
+      ...node,
+      icon: node.icon ? <Image src={`/asset/${node.icon}`} /> : <div></div>,
+    }
+    copyNode.children = copyNode.children.map((child) => {
+      return setIconCompInHandbookNodes(child)
+    })
+    return copyNode
+  }
+
   return (
     <>
+      <Button
+        onClick={() => {
+          console.log(treeCheck)
+        }}
+      >
+        show checkbox tree
+      </Button>
       <HeadMeta title="Fleamarket" />
       <Container className="py-5">
         <InputGroup size="lg" className="py-3">
@@ -165,20 +219,41 @@ const FleamarketScreen = () => {
                 setShowCategorySetting(!showCategorySetting)
               }}
             />
-            <Dropdown.Menu>
-              <Form className="m-3">
-                <Form.Group className="mb-3" controlId="Handbook 1">
-                  <Form.Label>Email address</Form.Label>
-                  <Form.Check type="checkbox" label="Handbook 1" />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="Handbook 2">
-                  <Form.Check type="checkbox" label="Handbook 2" />
-                </Form.Group>
+            <Dropdown.Menu variant="dark">
+              <div className="m-3">
+                <div className="pe-5">
+                  <CheckboxTree
+                    nodes={copyHandbookTree}
+                    checked={treeCheck}
+                    expanded={treeExpand}
+                    onCheck={(checked) => setTreeCheck(checked)}
+                    onExpand={(expanded) => setTreeExpand(expanded)}
+                    showExpandAll={true}
+                    icons={{
+                      check: <CheckSquareFill />,
+                      uncheck: <Square />,
+                      halfCheck: <CheckSquare />,
+                      expandClose: <ChevronRight />,
+                      expandOpen: <ChevronDown />,
+                      expandAll: <PlusSquare />,
+                      collapseAll: <DashSquare />,
+                      parentClose: <Folder2 />,
+                      parentOpen: <Folder2Open />,
+                      leaf: <FileEarmark />,
+                    }}
+                  />
+                </div>
                 <hr />
-                <Button variant="primary" type="submit">
-                  Submit
+                <Button
+                  variant="primary"
+                  type="submit"
+                  onClick={() => {
+                    setShowCategorySetting(!showCategorySetting)
+                  }}
+                >
+                  OK
                 </Button>
-              </Form>
+              </div>
             </Dropdown.Menu>
           </Dropdown>
         </InputGroup>

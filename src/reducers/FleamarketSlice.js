@@ -57,8 +57,32 @@ export const FleamarketSlice = createSlice({
     items: [],
     categories: [],
     handbook: [],
+    handbookTree: [],
   },
-  reducers: {},
+  reducers: {
+    setHandbookTree: (state, action) => {
+      const copyHandbook = {}
+      const tree = []
+      state.handbook.forEach((cat) => {
+        copyHandbook[cat.handbookCategoryId] = {
+          value: cat.handbookCategoryName,
+          label: cat.handbookCategoryName,
+          icon: cat.handbookCategoryIcon,
+          children: [],
+        }
+      })
+      state.handbook.forEach((cat) => {
+        if (cat.handbookCategoryParent) {
+          copyHandbook[cat.handbookCategoryParent].children.push(
+            copyHandbook[cat.handbookCategoryId]
+          )
+        } else {
+          tree.push(copyHandbook[cat.handbookCategoryId])
+        }
+      })
+      state.handbookTree = tree
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(searchItemByName.pending, (state, action) => {
@@ -103,3 +127,4 @@ export const FleamarketSlice = createSlice({
 })
 
 export default FleamarketSlice.reducer
+export const { setHandbookTree } = FleamarketSlice.actions
