@@ -4,12 +4,10 @@ import axios from "axios"
 export const searchItemByName = createAsyncThunk(
   "fleamarket/searchItemByName",
   async (params) => {
-    const { handbook = "", keyword = "", page = "" } = params
+    const { handbook = null, keyword = "", page = "" } = params
     try {
       const { data } = await axios.get(
-        `/api/items?handbook=${encodeURIComponent(
-          handbook
-        )}&keyword=${encodeURIComponent(keyword)}&page=${page}`
+        `/api/items?handbook=${handbook}&keyword=${keyword}&page=${page}`
       )
       return data
     } catch (error) {

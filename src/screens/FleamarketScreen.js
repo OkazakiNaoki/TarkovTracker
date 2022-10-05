@@ -130,6 +130,20 @@ const FleamarketScreen = () => {
     return copyNode
   }
 
+  const clickCheckboxTreeOkHandle = () => {
+    setSearchParams({
+      handbook: JSON.stringify(treeCheck),
+      keyword: keyword,
+    })
+    setShowCategorySetting(!showCategorySetting)
+  }
+
+  const resetSearchHandle = () => {
+    setTreeCheck([])
+    setKeyword("")
+    navigate(`/fleamarket`)
+  }
+
   return (
     <>
       <HeadMeta title="Fleamarket" />
@@ -147,13 +161,7 @@ const FleamarketScreen = () => {
             className="text-center"
           />
           {keyword !== "" && (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setKeyword("")
-                navigate(`/fleamarket`)
-              }}
-            >
+            <Button variant="secondary" onClick={resetSearchHandle}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -203,9 +211,7 @@ const FleamarketScreen = () => {
                 <Button
                   variant="primary"
                   type="submit"
-                  onClick={() => {
-                    setShowCategorySetting(!showCategorySetting)
-                  }}
+                  onClick={clickCheckboxTreeOkHandle}
                 >
                   OK
                 </Button>
