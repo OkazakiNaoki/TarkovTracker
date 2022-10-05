@@ -6,8 +6,6 @@ import {
   InputGroup,
   Form,
   Button,
-  ToggleButton,
-  Collapse,
   Dropdown,
   Image,
 } from "react-bootstrap"
@@ -29,7 +27,6 @@ import CheckboxTree from "react-checkbox-tree"
 import { HeadMeta } from "../components/HeadMeta"
 import {
   searchItemByName,
-  getItemCategory,
   getItemHandbook,
   setHandbookTree,
 } from "../reducers/FleamarketSlice"
@@ -55,11 +52,7 @@ const FleamarketScreen = () => {
   } = useSelector((state) => state.fleamarket)
 
   // hooks state
-  const [curCategory, setCurCategory] = useState("")
   const [keyword, setKeyword] = useState("")
-  const [handbookToggle, setHandbookToggle] = useState([])
-  const [handbookCheck, setHandbookCheck] = useState([])
-  const [expandHandbook, setExpandHandbook] = useState(false)
   const [showCategorySetting, setShowCategorySetting] = useState(false)
   const [treeExpand, setTreeExpand] = useState([])
   const [treeCheck, setTreeCheck] = useState([])
@@ -89,12 +82,6 @@ const FleamarketScreen = () => {
   }, [handbookTree])
 
   useEffect(() => {
-    if (handbookCheck.length === 0 && handbook.length !== 0) {
-      initializeHandbookCheck()
-    }
-  }, [handbook, handbookCheck])
-
-  useEffect(() => {
     dispatch(
       searchItemByName({
         handbook: searchParams.get("handbook")
@@ -106,9 +93,6 @@ const FleamarketScreen = () => {
         page: searchParams.get("page") ? searchParams.get("page") : undefined,
       })
     )
-    searchParams.get("handbook")
-      ? toggleHandbookHandle(searchParams.get("handbook"), true)
-      : initializeHandbookCheck()
 
     searchParams.get("keyword")
       ? setKeyword(searchParams.get("keyword"))
@@ -116,42 +100,17 @@ const FleamarketScreen = () => {
   }, [dispatch, searchParams])
 
   // handle
-  const toggleHandbookHandle = (categoryName, onOff) => {
-    if (handbookToggle.length > 0) {
-      const index = handbookToggle.findIndex((category) => {
-        return category.categoryName === categoryName
-      })
-      let newToggleArr = handbookToggle.map((category) => {
-        category.toggle = false
-        return category
-      })
-      newToggleArr[index].toggle = onOff
-      newToggleArr[index].toggle
-        ? setCurCategory(categoryName)
-        : setCurCategory("")
-
-      setHandbookToggle(newToggleArr)
-    }
-  }
-
-  const initializeHandbookCheck = () => {
-    const checkCat = handbook.map((category) => {
-      return { categoryName: category.handbookCategoryName, check: false }
-    })
-    setHandbookCheck(checkCat)
-    setCurCategory("")
-  }
-
   const enterPressHandle = (e) => {
     if (e.keyCode == 13) {
-      if (curCategory.trim()) {
-        navigate(
-          `/fleamarket?handbook=${encodeURIComponent(
-            curCategory
-          )}&keyword=${encodeURIComponent(keyword)}`
-        )
+      if (treeCheck.length > 0) {
+        setSearchParams({
+          handbook: JSON.stringify(treeCheck),
+          keyword: keyword,
+        })
       } else {
-        navigate(`/fleamarket?keyword=${encodeURIComponent(keyword)}`)
+        setSearchParams({
+          keyword: keyword,
+        })
       }
     }
   }
@@ -161,21 +120,18 @@ const FleamarketScreen = () => {
       ...node,
       icon: node.icon ? <Image src={`/asset/${node.icon}`} /> : <div></div>,
     }
-    copyNode.children = copyNode.children.map((child) => {
-      return setIconCompInHandbookNodes(child)
-    })
+    if (copyNode.children.length > 0) {
+      copyNode.children = copyNode.children.map((child) => {
+        return setIconCompInHandbookNodes(child)
+      })
+    } else {
+      delete copyNode.children
+    }
     return copyNode
   }
 
   return (
     <>
-      <Button
-        onClick={() => {
-          console.log(treeCheck)
-        }}
-      >
-        show checkbox tree
-      </Button>
       <HeadMeta title="Fleamarket" />
       <Container className="py-5">
         <InputGroup size="lg" className="py-3">
@@ -258,40 +214,6 @@ const FleamarketScreen = () => {
           </Dropdown>
         </InputGroup>
 
-        <Button
-          onClick={() => setExpandHandbook(!expandHandbook)}
-          aria-controls="collapse-handbook-button"
-          aria-expanded={expandHandbook}
-          className="mb-1"
-        >
-          Handbook filter
-        </Button>
-        <Collapse in={expandHandbook}>
-          <div id="collapse-handbook-button">
-            {handbookToggle.map((category) => {
-              return (
-                <ToggleButton
-                  key={category.categoryName}
-                  type="checkbox"
-                  variant="outline-primary"
-                  checked={category.toggle}
-                  value="1"
-                  onClick={(e) => {
-                    toggleHandbookHandle(
-                      category.categoryName,
-                      !category.toggle
-                    )
-                  }}
-                  style={{ "--bs-btn-hover-bg": "none" }}
-                  className="mx-1 mb-1"
-                >
-                  {category.categoryName}
-                </ToggleButton>
-              )
-            })}
-          </div>
-        </Collapse>
-
         <Row>
           {items.map((item) => (
             <Col
@@ -311,7 +233,7 @@ const FleamarketScreen = () => {
           page={statePage}
           pages={statePages}
           keyword={keyword}
-          handbook={curCategory}
+          handbook={treeCheck}
           setSearchParams={setSearchParams}
         />
       </Container>

@@ -32,7 +32,7 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
         key={pageNum}
         onClick={() => {
           setSearchParams({
-            handbook: handbook,
+            handbook: JSON.stringify(handbook),
             keyword: keyword,
             page: pageNum,
           })
@@ -50,7 +50,7 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
           key="most-forward"
           onClick={() => {
             setSearchParams({
-              handbook: handbook,
+              handbook: JSON.stringify(handbook),
               keyword: keyword,
               page: 1,
             })
@@ -65,7 +65,7 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
           key="most-back"
           onClick={() => {
             setSearchParams({
-              handbook: handbook,
+              handbook: JSON.stringify(handbook),
               keyword: keyword,
               page: pages,
             })

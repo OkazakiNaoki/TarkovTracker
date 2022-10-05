@@ -13,6 +13,8 @@ export const getItems = asyncHandler(async (req, res) => {
   const handbook = req.query.handbook
   const page = Number(req.query.page) || 1
 
+  const handbookArr = handbook ? JSON.parse(handbook) : null
+
   let limit = 12
   let skip = limit * (page - 1)
 
@@ -34,7 +36,7 @@ export const getItems = asyncHandler(async (req, res) => {
     {
       $match: {
         handbookCategories: {
-          $in: [handbook ? handbook : /(.*?)/],
+          $in: handbookArr ? [...handbookArr] : [/(.*?)/],
         },
       },
     },
