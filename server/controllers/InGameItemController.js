@@ -31,6 +31,9 @@ export const getItems = asyncHandler(async (req, res) => {
         name: 1,
         shortName: 1,
         handbookCategories: 1,
+        width: 1,
+        height: 1,
+        backgroundColor: 1,
       },
     },
     {

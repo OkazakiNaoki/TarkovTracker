@@ -32,6 +32,7 @@ import {
 } from "../reducers/FleamarketSlice"
 import ItemRow from "../components/ItemRow"
 import Paginate from "../components/Paginate"
+import { ItemMultiGrid } from "../components/ItemMultiGrid"
 
 const FleamarketScreen = () => {
   // router

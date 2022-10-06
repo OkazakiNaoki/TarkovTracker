@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Card, Container } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
+import { ItemMultiGrid } from "./ItemMultiGrid"
 
 const ItemRow = (props) => {
   const [imgSrc, setImgSrc] = useState("")
@@ -30,19 +31,23 @@ const ItemRow = (props) => {
           </Card.Title>
         </Link>
         <div className="d-flex position-relative my-3 justify-content-center">
-          <Link to={`/item/${props.item.id}`}>
-            <img
-              src={imgSrc}
-              onError={imgLoadErrHandle}
-              alt="item icon"
-              className="img-fluid"
+          <Link
+            to={`/item/${props.item.id}`}
+            style={{
+              "--bs-link-color": "none",
+              "--bs-link-hover-color": "none",
+            }}
+          >
+            <ItemMultiGrid
+              itemId={props.item.id}
+              shortName={props.item.shortName}
+              bgColor={props.item.backgroundColor}
+              width={props.item.width}
+              height={props.item.height}
+              resize={1}
             />
           </Link>
-          <Card.Text className="position-absolute top-0 end-0 text-shadow-10">
-            {props.item.shortName}
-          </Card.Text>
         </div>
-        <Card.Text>{props.item.id}</Card.Text>
       </Card>
     </>
   )

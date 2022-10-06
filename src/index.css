@@ -24,7 +24,7 @@ nav {
     font-size: 20px;
 }
 
-/* For react bootstrap Tabs */
+/* Bootstrap: Tabs */
 .nav-tabs {
     border: 0px;
 }
@@ -83,6 +83,14 @@ nav {
 
 .ls-1 {
     letter-spacing: 1px;
+}
+
+/* Bootstrap: 7 cols per row */
+@media (min-width: 576px){
+    .row-cols-sm-7>* {
+        flex: 0 0 auto;
+        width: 14.285714285714285714285714285714%;
+    }
 }
 
 /* custom color */

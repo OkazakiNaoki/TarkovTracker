@@ -29,6 +29,18 @@ const inGameItemSchema = mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  width: {
+    type: Number,
+    required: true,
+  },
+  height: {
+    type: Number,
+    required: true,
+  },
+  backgroundColor: {
+    type: String,
+    required: true,
+  },
 })
 
 const InGameItem = mongoose.model("InGameItem", inGameItemSchema)
