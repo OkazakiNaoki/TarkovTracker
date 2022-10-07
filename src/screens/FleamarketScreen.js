@@ -33,6 +33,7 @@ import {
 import ItemRow from "../components/ItemRow"
 import Paginate from "../components/Paginate"
 import { ItemMultiGrid } from "../components/ItemMultiGrid"
+import { TarkovSpinner } from "../components/TarkovSpinner"
 
 const FleamarketScreen = () => {
   // router
@@ -147,6 +148,7 @@ const FleamarketScreen = () => {
 
   return (
     <>
+      <TarkovSpinner loading={true} />
       <HeadMeta title="Fleamarket" />
       <Container className="py-5">
         <InputGroup size="lg" className="py-3">

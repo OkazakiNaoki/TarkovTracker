@@ -97,3 +97,12 @@ nav {
 .sandbeige {
     color: #b7ad9c;
 }
+
+@keyframes spinnerSpin {
+    from {
+        transform: rotate(0deg) translateX(-1px) translateY(-1px);
+    }
+    to {
+        transform: rotate(360deg) translateX(-1px) translateY(-1px);
+    }
+}

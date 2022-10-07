@@ -247,25 +247,34 @@ const ItemSlice = createSlice({
     isLoading: false,
     item: { properties: [] },
     hideout: [],
+    loadingQueue: 0,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(searchItem.pending, (state, action) => {
+        state.loadingQueue += 1
         state.isLoading = true
       })
       .addCase(searchItem.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.item = action.payload
       })
       .addCase(searchItem.rejected, (state, action) => {
         state.error = action.payload
       })
       .addCase(searchHideoutItemReq.pending, (state, action) => {
+        state.loadingQueue += 1
         state.isLoading = true
       })
       .addCase(searchHideoutItemReq.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.hideout = action.payload
       })
       .addCase(searchHideoutItemReq.rejected, (state, action) => {

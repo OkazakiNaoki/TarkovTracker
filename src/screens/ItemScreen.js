@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react"
-import { Container, Row, Col, Image, Tab, Tabs, Table } from "react-bootstrap"
+import {
+  Container,
+  Row,
+  Col,
+  Image,
+  Tab,
+  Tabs,
+  Table,
+  Button,
+  Placeholder,
+} from "react-bootstrap"
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { searchItem, searchHideoutItemReq } from "../reducers/ItemSlice"
@@ -9,6 +19,8 @@ import {
 } from "../helpers/StringCasesFormat"
 import { getHMSfromS } from "../helpers/TimeFormat"
 import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
+import { TarkovSpinner } from "../components/TarkovSpinner"
+import { TableRowLoading } from "../components/TableRowLoading"
 
 const ItemScreen = ({}) => {
   // router
@@ -16,7 +28,7 @@ const ItemScreen = ({}) => {
 
   // redux
   const dispatch = useDispatch()
-  const { item, hideout } = useSelector((state) => state.item)
+  const { item, hideout, isLoading } = useSelector((state) => state.item)
 
   // hooks state
   const [imgSrc, setImgSrc] = useState("")
@@ -26,10 +38,13 @@ const ItemScreen = ({}) => {
   useEffect(() => {
     dispatch(searchItem({ id: params.itemId }))
     dispatch(searchHideoutItemReq({ itemId: params.itemId }))
-  }, [dispatch, params.itemId])
+  }, [params.itemId])
+
   useEffect(() => {
-    setImgSrc(`/asset/${item.id}-icon-128.png`)
-    calcPropertyPerRow()
+    if (item) {
+      setImgSrc(`/asset/${item.id}-icon-128.png`)
+      calcPropertyPerRow()
+    }
   }, [item])
 
   // handler
@@ -60,9 +75,34 @@ const ItemScreen = ({}) => {
   return (
     <>
       <Container className="py-5">
-        <h1 className="pb-3">{item.name}</h1>
-        <h6>{item.shortName}</h6>
-        <h6>ID: {item.id}</h6>
+        <h1 className="pb-3 sandbeige">
+          {isLoading ? (
+            <Placeholder animation="wave">
+              <Placeholder xs={8} size="lg" />
+            </Placeholder>
+          ) : (
+            item.name
+          )}
+        </h1>
+        <h6>
+          {isLoading ? (
+            <Placeholder animation="wave">
+              <Placeholder xs={2} size="lg" />
+            </Placeholder>
+          ) : (
+            item.shortName
+          )}
+        </h6>
+        <h6>
+          ID:{" "}
+          {isLoading ? (
+            <Placeholder animation="wave">
+              <Placeholder xs={4} size="lg" />
+            </Placeholder>
+          ) : (
+            item.id
+          )}
+        </h6>
 
         <Row className="gx-5 mb-5">
           <Col
@@ -72,60 +112,88 @@ const ItemScreen = ({}) => {
               height: "300px",
             }}
           >
-            <Image
-              src={imgSrc}
-              alt={params.itemId}
-              onError={imgLoadErrHandle}
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
-            ></Image>
+            {isLoading ? (
+              <TarkovSpinner />
+            ) : (
+              <Image
+                src={imgSrc}
+                alt={params.itemId}
+                onError={imgLoadErrHandle}
+                style={{ maxWidth: "100%", maxHeight: "100%" }}
+              ></Image>
+            )}
           </Col>
 
           <Col sm={6}>
-            {itemPropertyRow.map((el, i) => {
-              if (el.length === 2)
-                return (
-                  <Row key={i} className="g-2 mb-2">
-                    <Col sm={12} md={6}>
-                      <div className="border border-light py-2 h-100">
-                        <div className="text-center">{el[0].key}</div>
-                        <div
-                          className="px-3"
-                          style={{ whiteSpace: "break-spaces" }}
-                        >
-                          {el[0].value}
-                        </div>
+            {isLoading && (
+              <Row className="g-2 mb-2">
+                {new Array(6).fill().map((el, i) => (
+                  <Col key={`dummp_col_${i}`} sm={12} md={6}>
+                    <div className="border border-light py-2 h-100">
+                      <div className="text-center">
+                        <Placeholder animation="wave">
+                          <Placeholder xs={2} size="lg" />
+                        </Placeholder>
                       </div>
-                    </Col>
-                    <Col sm={12} md={6}>
-                      <div className="border border-light py-2 h-100">
-                        <div className="text-center">{el[1].key}</div>
-                        <div
-                          className="px-3"
-                          style={{ whiteSpace: "break-spaces" }}
-                        >
-                          {el[1].value}
-                        </div>
+                      <div
+                        className="px-3"
+                        style={{ whiteSpace: "break-spaces" }}
+                      >
+                        <Placeholder animation="wave">
+                          <Placeholder xs={4} size="lg" />
+                        </Placeholder>
                       </div>
-                    </Col>
-                  </Row>
-                )
-              else
-                return (
-                  <Row key={i} className="g-2 mb-2">
-                    <Col sm={12} md={6}>
-                      <div className="border border-light py-2 h-100">
-                        <div className="text-center">{el[0].key}</div>
-                        <div
-                          className="px-3"
-                          style={{ whiteSpace: "break-spaces" }}
-                        >
-                          {el[0].value}
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            )}
+            {!isLoading &&
+              itemPropertyRow.map((el, i) => {
+                if (el.length === 2)
+                  return (
+                    <Row key={i} className="g-2 mb-2">
+                      <Col sm={12} md={6}>
+                        <div className="border border-light py-2 h-100">
+                          <div className="text-center">{el[0].key}</div>
+                          <div
+                            className="px-3"
+                            style={{ whiteSpace: "break-spaces" }}
+                          >
+                            {el[0].value}
+                          </div>
                         </div>
-                      </div>
-                    </Col>
-                  </Row>
-                )
-            })}
+                      </Col>
+                      <Col sm={12} md={6}>
+                        <div className="border border-light py-2 h-100">
+                          <div className="text-center">{el[1].key}</div>
+                          <div
+                            className="px-3"
+                            style={{ whiteSpace: "break-spaces" }}
+                          >
+                            {el[1].value}
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                  )
+                else
+                  return (
+                    <Row key={i} className="g-2 mb-2">
+                      <Col sm={12} md={6}>
+                        <div className="border border-light py-2 h-100">
+                          <div className="text-center">{el[0].key}</div>
+                          <div
+                            className="px-3"
+                            style={{ whiteSpace: "break-spaces" }}
+                          >
+                            {el[0].value}
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
+                  )
+              })}
           </Col>
         </Row>
 
@@ -145,7 +213,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {item.buyFor &&
+                {isLoading && <TableRowLoading colSize={3} />}
+                {!isLoading &&
+                  item.buyFor &&
                   item.buyFor.map((el, i) => {
                     return (
                       <tr key={i}>
@@ -174,7 +244,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {item.sellFor &&
+                {isLoading && <TableRowLoading colSize={3} />}
+                {!isLoading &&
+                  item.sellFor &&
                   item.sellFor.map((el, i) => {
                     return (
                       <tr key={i}>
@@ -197,7 +269,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {item.bartersFor &&
+                {isLoading && <TableRowLoading colSize={3} />}
+                {!isLoading &&
+                  item.bartersFor &&
                   item.bartersFor.map((el, i) => {
                     return (
                       <tr key={i}>
@@ -229,7 +303,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {item.craftsFor &&
+                {isLoading && <TableRowLoading colSize={4} />}
+                {!isLoading &&
+                  item.craftsFor &&
                   item.craftsFor.map((el, i) => {
                     return (
                       <tr key={i}>
@@ -260,7 +336,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {hideout &&
+                {isLoading && <TableRowLoading colSize={2} />}
+                {!isLoading &&
+                  hideout &&
                   hideout.map((el, i) => {
                     return (
                       <tr key={i}>
@@ -286,7 +364,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {item.usedInTasks &&
+                {isLoading && <TableRowLoading colSize={3} />}
+                {!isLoading &&
+                  item.usedInTasks &&
                   item.usedInTasks.map((el, i) => {
                     return (
                       <tr key={i}>
@@ -327,7 +407,9 @@ const ItemScreen = ({}) => {
                 </tr>
               </thead>
               <tbody>
-                {item.receivedFromTasks &&
+                {isLoading && <TableRowLoading colSize={3} />}
+                {!isLoading &&
+                  item.receivedFromTasks &&
                   item.receivedFromTasks.map((el, i) => {
                     return (
                       <tr key={i}>
