@@ -264,6 +264,10 @@ const ItemSlice = createSlice({
         state.item = action.payload
       })
       .addCase(searchItem.rejected, (state, action) => {
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.error = action.payload
       })
       .addCase(searchHideoutItemReq.pending, (state, action) => {
@@ -278,6 +282,10 @@ const ItemSlice = createSlice({
         state.hideout = action.payload
       })
       .addCase(searchHideoutItemReq.rejected, (state, action) => {
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.error = action.payload
       })
   },

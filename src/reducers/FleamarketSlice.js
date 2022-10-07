@@ -52,6 +52,7 @@ export const FleamarketSlice = createSlice({
   name: "fleamarket",
   initialState: {
     isLoading: false,
+    loadingQueue: 0,
     items: [],
     categories: [],
     handbook: [],
@@ -84,41 +85,62 @@ export const FleamarketSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(searchItemByName.pending, (state, action) => {
+        state.loadingQueue += 1
         state.isLoading = true
       })
       .addCase(searchItemByName.fulfilled, (state, action) => {
         state.success = true
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.items = action.payload.items
         state.page = action.payload.page
         state.pages = action.payload.pages
       })
       .addCase(searchItemByName.rejected, (state, action) => {
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.error = action.payload
       })
       .addCase(getItemCategory.pending, (state, action) => {
+        state.loadingQueue += 1
         state.isLoading = true
       })
       .addCase(getItemCategory.fulfilled, (state, action) => {
         state.success = true
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.categories = action.payload.categories
       })
       .addCase(getItemCategory.rejected, (state, action) => {
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.error = action.payload
       })
       .addCase(getItemHandbook.pending, (state, action) => {
+        state.loadingQueue += 1
         state.isLoading = true
       })
       .addCase(getItemHandbook.fulfilled, (state, action) => {
         state.success = true
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.handbook = action.payload.handbook
       })
       .addCase(getItemHandbook.rejected, (state, action) => {
-        state.isLoading = false
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
         state.error = action.payload
       })
   },

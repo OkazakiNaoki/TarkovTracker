@@ -103,7 +103,7 @@ const FleamarketScreen = () => {
 
   // handle
   const enterPressHandle = (e) => {
-    if (e.keyCode == 13) {
+    if (!isLoading && e.keyCode == 13) {
       if (treeCheck.length > 0) {
         setSearchParams({
           handbook: JSON.stringify(treeCheck),
@@ -148,7 +148,6 @@ const FleamarketScreen = () => {
 
   return (
     <>
-      <TarkovSpinner loading={true} />
       <HeadMeta title="Fleamarket" />
       <Container className="py-5">
         <InputGroup size="lg" className="py-3">
@@ -183,7 +182,7 @@ const FleamarketScreen = () => {
               variant="secondary"
               id="category-setting-dropdown-split-btn"
               onClick={() => {
-                setShowCategorySetting(!showCategorySetting)
+                isLoading ? null : setShowCategorySetting(!showCategorySetting)
               }}
             />
             <Dropdown.Menu variant="dark">
@@ -224,18 +223,33 @@ const FleamarketScreen = () => {
         </InputGroup>
 
         <Row>
-          {items.map((item) => (
-            <Col
-              key={item.id}
-              sm={12}
-              md={6}
-              lg={4}
-              xl={3}
-              className="d-flex align-items-stretch"
-            >
-              <ItemRow item={item} />
-            </Col>
-          ))}
+          {isLoading
+            ? new Array(12).fill().map((el, i) => {
+                return (
+                  <Col
+                    key={`dummy_col_${i}`}
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    xl={3}
+                    className="d-flex align-items-stretch"
+                  >
+                    <ItemRow loading={true} />
+                  </Col>
+                )
+              })
+            : items.map((item) => (
+                <Col
+                  key={item.id}
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  xl={3}
+                  className="d-flex align-items-stretch"
+                >
+                  <ItemRow item={item} />
+                </Col>
+              ))}
         </Row>
 
         <Paginate
