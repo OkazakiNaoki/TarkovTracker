@@ -133,7 +133,7 @@ const FleamarketScreen = () => {
 
   const clickCheckboxTreeOkHandle = () => {
     setSearchParams({
-      handbook: JSON.stringify(treeCheck),
+      handbook: treeCheck.length > 0 ? JSON.stringify(treeCheck) : "",
       keyword: keyword,
     })
     setShowCategorySetting(!showCategorySetting)

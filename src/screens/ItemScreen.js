@@ -28,7 +28,7 @@ const ItemScreen = ({}) => {
     dispatch(searchHideoutItemReq({ itemId: params.itemId }))
   }, [dispatch, params.itemId])
   useEffect(() => {
-    setImgSrc(`/asset/${item.id}-icon.png`)
+    setImgSrc(`/asset/${item.id}-icon-128.png`)
     calcPropertyPerRow()
   }, [item])
 
@@ -67,7 +67,7 @@ const ItemScreen = ({}) => {
         <Row className="gx-5 mb-5">
           <Col
             sm={6}
-            className="d-flex align-items-center justify-content-center border border-light"
+            className="d-flex align-items-center justify-content-center border border-light p-3"
             style={{
               height: "300px",
             }}
@@ -76,6 +76,7 @@ const ItemScreen = ({}) => {
               src={imgSrc}
               alt={params.itemId}
               onError={imgLoadErrHandle}
+              style={{ maxWidth: "100%", maxHeight: "100%" }}
             ></Image>
           </Col>
 

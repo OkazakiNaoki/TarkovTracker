@@ -74,7 +74,7 @@ const ItemMultiGrid = ({
         <div className="w-100">
           {itemId && (
             <Image
-              src={`/asset/${itemId}-icon.png`}
+              src={`/asset/${itemId}-icon-128.png`}
               className="ms-auto me-auto"
               style={{
                 objectFit: "contain",
