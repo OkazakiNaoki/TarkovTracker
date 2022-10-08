@@ -104,7 +104,7 @@ const TaskDetail = ({
   }
 
   return (
-    <>
+    <div>
       {completeable &&
         objectiveProgress &&
         task.objectives.map((objective, i) => {
@@ -176,44 +176,46 @@ const TaskDetail = ({
         )
       })}
       <div className="px-4">Rewards</div>
-      <div
-        className="text-center m-2 px-5"
-        style={{
-          backgroundColor: "#090a0b",
-          whiteSpace: "break-spaces",
-        }}
-      >
-        {"+" + task.experience + "EXP\n"}
-        {task.finishRewards.traderStanding.map((finishStanding) => {
-          return (
-            finishStanding.trader.name +
-            (finishStanding.standing > 0 ? " +" : " ") +
-            finishStanding.standing +
-            "\n"
-          )
-        })}
-        {task.finishRewards.items.map((finishItem) => {
-          return finishItem.item.name + " (" + finishItem.count + ")\n"
-        })}
-        {task.finishRewards.offerUnlock.map((finishOffer) => {
-          return (
-            "Unlock " +
-            finishOffer.item.name +
-            " at " +
-            finishOffer.trader.name +
-            "@Lv." +
-            finishOffer.level +
-            "\n"
-          )
-        })}
-        {task.finishRewards.skillLevelReward.map((finishSkill) => {
-          return "+" + finishSkill.level + " " + finishSkill.name + " level\n"
-        })}
-        {task.finishRewards.traderUnlock.map((finishTrader) => {
-          return "Unlock trader " + finishTrader.name + "\n"
-        })}
+      <div className="p-2">
+        <div
+          className="text-center px-5"
+          style={{
+            backgroundColor: "#090a0b",
+            whiteSpace: "break-spaces",
+          }}
+        >
+          {"+" + task.experience + "EXP\n"}
+          {task.finishRewards.traderStanding.map((finishStanding) => {
+            return (
+              finishStanding.trader.name +
+              (finishStanding.standing > 0 ? " +" : " ") +
+              finishStanding.standing +
+              "\n"
+            )
+          })}
+          {task.finishRewards.items.map((finishItem) => {
+            return finishItem.item.name + " (" + finishItem.count + ")\n"
+          })}
+          {task.finishRewards.offerUnlock.map((finishOffer) => {
+            return (
+              "Unlock " +
+              finishOffer.item.name +
+              " at " +
+              finishOffer.trader.name +
+              "@Lv." +
+              finishOffer.level +
+              "\n"
+            )
+          })}
+          {task.finishRewards.skillLevelReward.map((finishSkill) => {
+            return "+" + finishSkill.level + " " + finishSkill.name + " level\n"
+          })}
+          {task.finishRewards.traderUnlock.map((finishTrader) => {
+            return "Unlock trader " + finishTrader.name + "\n"
+          })}
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 

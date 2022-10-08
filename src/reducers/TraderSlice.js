@@ -266,7 +266,9 @@ export const getTaskItemRequirements = createAsyncThunk(
 const traderSlice = createSlice({
   name: "trader",
   initialState: {
-    isLoading: false,
+    isLoading: true,
+    isLoadingTrader: true,
+    isLoadingTasks: true,
     traders: [],
     tasks: {},
     tasksDetail: {},
@@ -282,10 +284,10 @@ const traderSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getTraders.pending, (state, action) => {
-        state.isLoading = true
+        state.isLoadingTrader = true
       })
       .addCase(getTraders.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.isLoadingTrader = false
         state.traders = action.payload
         action.payload.forEach((trader) => {
           state.tasks[`${trader.name}`] = null
@@ -294,23 +296,24 @@ const traderSlice = createSlice({
         })
       })
       .addCase(getTraders.rejected, (state, action) => {
+        state.isLoadingTrader = false
         throw Error(action.payload)
       })
       .addCase(getTasksOfTrader.pending, (state, action) => {
-        state.isLoading = true
+        state.isLoadingTasks = true
       })
       .addCase(getTasksOfTrader.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.isLoadingTasks = false
         state.tasks[action.payload.trader] = action.payload.tasksArr
       })
       .addCase(getTasksOfTrader.rejected, (state, action) => {
+        state.isLoadingTasks = false
         throw Error(action.payload)
       })
       .addCase(getTaskDetail.pending, (state, action) => {
-        state.isLoading = true
+        state.isLoadingTaskDetail = true
       })
       .addCase(getTaskDetail.fulfilled, (state, action) => {
-        state.isLoading = false
         state.tasksDetail[action.payload.traderName] = {
           ...state.tasksDetail[action.payload.traderName],
           [action.payload.taskId]: action.payload.data,

@@ -46,6 +46,7 @@ const hideoutSlice = createSlice({
         state.hideout = action.payload
       })
       .addCase(getAllHideout.rejected, (state, action) => {
+        state.isLoading = false
         throw Error(action.payload)
       })
   },

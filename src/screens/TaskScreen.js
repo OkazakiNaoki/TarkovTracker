@@ -17,6 +17,8 @@ import {
 } from "../reducers/TraderSlice"
 import placeholderImg from "../../public/static/images/default_avatar.png"
 import { TaskDetail } from "../components/TaskDetail"
+import { TarkovSpinner } from "../components/TarkovSpinner"
+import { TableRowLoading } from "../components/TableRowLoading"
 
 const TaskScreen = () => {
   // hooks
@@ -24,8 +26,16 @@ const TaskScreen = () => {
   const [collapseDetail, setCollapseDetail] = useState({})
 
   // redux
-  const { isLoading, traders, tasks, tasksDetail, tasksDetailFetched } =
-    useSelector((state) => state.trader)
+  const {
+    isLoadingTrader,
+    isLoadingTasks,
+    isLoadingTaskDetail,
+    isLoading,
+    traders,
+    tasks,
+    tasksDetail,
+    tasksDetailFetched,
+  } = useSelector((state) => state.trader)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -65,10 +75,34 @@ const TaskScreen = () => {
   return (
     <>
       <Container className="py-5">
-        <Row className="justify-content-center">
-          {traders.length !== 0 &&
-            traders.map((el, i) => {
-              if (i < traders.length / 2)
+        <div
+          className="d-flex justify-content-center"
+          style={{ flexWrap: "wrap" }}
+        >
+          <Row
+            xs={4}
+            style={{
+              width: isLoadingTrader ? "520px" : "640px",
+            }}
+          >
+            {isLoadingTrader &&
+              new Array(8).fill().map((el, i) => {
+                return (
+                  <Col
+                    key={`dummy_col_${i}`}
+                    className="d-flex justify-content-center align-items-center"
+                    style={{
+                      width: "130px",
+                      height: "130px",
+                      border: "1px solid white",
+                    }}
+                  >
+                    <TarkovSpinner />
+                  </Col>
+                )
+              })}
+            {traders.length !== 0 &&
+              traders.map((el, i) => {
                 return (
                   <Col
                     key={i}
@@ -88,36 +122,30 @@ const TaskScreen = () => {
                     </a>
                   </Col>
                 )
-            })}
-        </Row>
-        <Row className="justify-content-center">
-          {traders.length !== 0 &&
-            traders.map((el, i) => {
-              if (i >= traders.length / 2)
-                return (
-                  <Col
-                    key={i}
-                    className="col-auto"
-                    style={{ border: "1px solid white" }}
-                  >
-                    <a
-                      onClick={() => {
-                        setCurTrader(el.name)
-                      }}
-                    >
-                      <Image
-                        src={`/asset/${el.id}.png`}
-                        onError={(e) => imgLoadErrHandle(e)}
-                        style={{ width: "130px", height: "130px" }}
-                      />
-                    </a>
-                  </Col>
-                )
-            })}
-        </Row>
+              })}
+          </Row>
+        </div>
 
         <Tabs activeKey={curTrader} className="py-3">
-          {traders.length !== 0 &&
+          {isLoadingTasks && (
+            <TabPane eventKey={curTrader}>
+              <Table bordered hover variant="dark" className="p-4 w-100">
+                <thead>
+                  <tr>
+                    <th>Task name</th>
+                    <th>Level requirement</th>
+                    <th>Previous task</th>
+                    <th>Trader level requirement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TableRowLoading colSize={4} height={300} />
+                </tbody>
+              </Table>
+            </TabPane>
+          )}
+          {!isLoadingTasks &&
+            traders.length !== 0 &&
             traders.map((trader, i) => {
               return (
                 <TabPane eventKey={trader.name} key={trader.id}>
@@ -140,15 +168,15 @@ const TaskScreen = () => {
                                 if (
                                   !tasksDetailFetched[trader.name].includes(
                                     task.id
-                                  ) &&
-                                  !isLoading
-                                )
+                                  )
+                                ) {
                                   dispatch(
                                     getTaskDetail({
                                       id: task.id,
                                       traderName: trader.name,
                                     })
                                   )
+                                }
                                 collapseExpandTaskDetail(task.id)
                               }}
                             >
@@ -185,7 +213,17 @@ const TaskScreen = () => {
                               <td colSpan="4" style={{ padding: "0" }}>
                                 <Collapse in={collapseDetail[`${task.id}`]}>
                                   <div>
-                                    <div style={{ minHeight: "200px" }}>
+                                    <div style={{ backgroundColor: "black" }}>
+                                      {!tasksDetailFetched[
+                                        trader.name
+                                      ].includes(task.id) && (
+                                        <div
+                                          className="d-flex justify-content-center align-items-center"
+                                          style={{ height: "100px" }}
+                                        >
+                                          <TarkovSpinner />
+                                        </div>
+                                      )}
                                       {tasksDetailFetched[trader.name].includes(
                                         task.id
                                       ) && (
