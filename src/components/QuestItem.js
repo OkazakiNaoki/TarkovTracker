@@ -1,7 +1,7 @@
 import React from "react"
 import { useEffect } from "react"
 import { useState } from "react"
-import { Button, Card } from "react-bootstrap"
+import { Button, Card, Placeholder } from "react-bootstrap"
 import { useDispatch } from "react-redux"
 import {
   getAnotherFieldOfMatchFieldObjArr,
@@ -9,6 +9,7 @@ import {
 } from "../helpers/LoopThrough"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
 import { AddValueModal } from "./AddValueModal"
+import { DivLoading } from "./DivLoading"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 
@@ -60,6 +61,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    // calculate total requirement amount of quest item
     if (itemNeedTotalCount === 0) {
       setItemNeedTotalCount(
         itemReq.requiredByTask.reduce((pre, cur) => {
@@ -84,6 +86,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   }, [playerInventory])
 
   useEffect(() => {
+    // update player's inventory once own amount of quest item changed
     if (playerInventory) {
       const newInventory = JSON.parse(JSON.stringify(playerInventory))
       const index = getIndexOfMatchFieldObjArr(
@@ -111,6 +114,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   }, [hoverOnBadge])
 
   useEffect(() => {
+    // setup label of quest item
     if (itemReq.craftableAt.length > 0) {
       setIsCraftable(true)
     }
@@ -129,6 +133,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   }, [itemReq])
 
   useEffect(() => {
+    // set text for infobox (craft)
     const craftStation = itemReq.craftableAt.map((station) => {
       return station.stationName + " level " + station.level + "\n"
     })
@@ -136,6 +141,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   }, [itemReq, isCraftable])
 
   useEffect(() => {
+    // set text for infobox (reward)
     const taskReward = itemReq.getFromReward.map((task) => {
       return "x" + task.count + " " + task.trader + "'s " + task.taskName + "\n"
     })
@@ -143,6 +149,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   }, [itemReq, getFromQuestReward])
 
   useEffect(() => {
+    // set text for infobox (needed)
     const neededQuest = itemReq.requiredByTask.map((req) => {
       if (!excludeQuest.includes(req.taskId))
         return req.trader + "'s " + req.taskName + "\n"
@@ -197,7 +204,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
           />
         </div>
       </div>
-      <div onMouseMove={mouseMoveHandle} className="px-3">
+      <div onMouseMove={itemReq ? mouseMoveHandle : null} className="px-3">
         <GainItemMethodBadge
           craft={isCraftable}
           reward={getFromQuestReward}
@@ -234,14 +241,16 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         {itemCount + " / " + itemNeedTotalCount}
       </Card.Text>
       <div className="d-flex flex-grow-1 justify-content-center">
-        <Button
-          variant="secondary"
-          onClick={openItemCountModal}
-          className="align-self-end w-100"
-          style={{ borderRadius: "0 0 0.374rem 0.374rem" }}
-        >
-          +
-        </Button>
+        {playerInventory && (
+          <Button
+            variant="secondary"
+            onClick={openItemCountModal}
+            className="align-self-end w-100"
+            style={{ borderRadius: "0 0 0.374rem 0.374rem" }}
+          >
+            +
+          </Button>
+        )}
       </div>
     </Card>,
   ]

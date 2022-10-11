@@ -38,6 +38,8 @@ import { HideoutStationDetail } from "../components/HideoutStationDetail"
 import { ConfirmModal } from "../components/ConfirmModal"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { QuestItems } from "../components/QuestItems"
+import { TarkovSpinner } from "../components/TarkovSpinner"
+import { DivLoading } from "../components/DivLoading"
 
 const CharacterScreen = () => {
   // hooks
@@ -66,7 +68,6 @@ const CharacterScreen = () => {
   )
   const { hideout } = useSelector((state) => state.hideout)
   const {
-    isLoading,
     initSetup,
     playerLevel,
     playerFaction,
@@ -334,26 +335,40 @@ const CharacterScreen = () => {
                     className="sandbeige"
                     role="button"
                     style={{ fontSize: "90px" }}
-                    onClick={openCloseLevelModalHandle}
+                    onClick={
+                      levelIcon && playerLevel
+                        ? openCloseLevelModalHandle
+                        : null
+                    }
                   >
-                    <Image
-                      src={levelIcon}
-                      className="d-inline me-3"
-                      style={{ height: "100px" }}
-                    />
-                    {playerLevel}
+                    {levelIcon && playerLevel ? (
+                      [
+                        <Image
+                          key="level_icon"
+                          src={levelIcon}
+                          className="d-inline me-3"
+                          style={{ height: "100px" }}
+                        />,
+                        playerLevel,
+                      ]
+                    ) : (
+                      <DivLoading />
+                    )}
                   </div>
                 </Col>
               </Row>
               <Row className="my-3" align="center">
                 <Col>
-                  {playerFaction && (
+                  {playerFaction ? (
                     <Image src={`/asset/icon_${playerFaction}.png`} />
+                  ) : (
+                    <DivLoading />
                   )}
                 </Col>
               </Row>
             </Col>
             <Col>
+              {/* TASK */}
               <Tabs
                 defaultActiveKey="task"
                 className="mb-4 flex-column flex-lg-row"
@@ -412,6 +427,7 @@ const CharacterScreen = () => {
                       "--bs-accordion-active-color": "#b7ad9c",
                     }}
                   >
+                    {traders.length === 0 && <DivLoading />}
                     {traders.length !== 0 &&
                       traders.map((trader, i) => {
                         return (
@@ -432,7 +448,32 @@ const CharacterScreen = () => {
                             <Accordion.Body className="p-0">
                               <Table variant="dark" className="m-0">
                                 <tbody>
-                                  {Object.keys(playerTasksInfo).length > 0 &&
+                                  {(!playerCompletedObjectives ||
+                                    !playerObjectiveProgress) && (
+                                    <tr>
+                                      <td>
+                                        <div className="d-flex p-3 fs-4 justify-content-center align-items-center">
+                                          <TarkovSpinner />
+                                          Loading player task records...
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  )}
+                                  {playerCompletedObjectives &&
+                                    playerObjectiveProgress &&
+                                    Object.keys(playerTasksInfo).length > 0 &&
+                                    !playerTasksInfo[`${trader.name}`] && (
+                                      <tr>
+                                        <td>
+                                          <div className="p-3 fs-4 text-center">
+                                            Empty
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  {playerCompletedObjectives &&
+                                    playerObjectiveProgress &&
+                                    Object.keys(playerTasksInfo).length > 0 &&
                                     playerTasksInfo[`${trader.name}`] &&
                                     Object.keys(
                                       playerTasksInfo[`${trader.name}`]
@@ -479,10 +520,7 @@ const CharacterScreen = () => {
                                                   </td>
                                                 </tr>,
                                                 <tr key={task.id + "_collapse"}>
-                                                  <td
-                                                    colSpan={1}
-                                                    style={{ padding: "0" }}
-                                                  >
+                                                  <td className="p-0">
                                                     <Collapse
                                                       in={
                                                         (trader.name,
@@ -490,11 +528,19 @@ const CharacterScreen = () => {
                                                       }
                                                     >
                                                       <div>
-                                                        <div
-                                                          style={{
-                                                            minHeight: "200px",
-                                                          }}
-                                                        >
+                                                        <div>
+                                                          {Object.keys(
+                                                            tasksDetailFetched
+                                                          ).length > 0 &&
+                                                            !tasksDetailFetched[
+                                                              trader.name
+                                                            ].includes(
+                                                              task.id
+                                                            ) && (
+                                                              <DivLoading
+                                                                height={100}
+                                                              />
+                                                            )}
                                                           {Object.keys(
                                                             tasksDetailFetched
                                                           ).length > 0 &&
@@ -546,6 +592,8 @@ const CharacterScreen = () => {
                       })}
                   </Accordion>
                 </Tab>
+
+                {/* Hideout */}
                 <Tab eventKey="hideout" title="Hideout">
                   <div>
                     <div className="d-flex justify-content-center flex-wrap mb-5">
@@ -568,6 +616,7 @@ const CharacterScreen = () => {
                     <h1 className="sandbeige">
                       {currentStation && currentStation.name}
                     </h1>
+                    {!levelInfoOfCurrentStation && <DivLoading height={300} />}
                     {levelInfoOfCurrentStation &&
                       levelInfoOfCurrentStation.level === -1 &&
                       currentStation &&
@@ -640,6 +689,8 @@ const CharacterScreen = () => {
                       })}
                   </div>
                 </Tab>
+
+                {/* Quest item */}
                 <Tab eventKey="inventory" title="Inventory">
                   <div>
                     <QuestItems />

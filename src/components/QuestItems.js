@@ -14,6 +14,7 @@ import { QuestItem } from "./QuestItem"
 import { haveAdditionalElementFromCompareArr } from "../helpers/LoopThrough"
 import { getInventoryItem } from "../reducers/CharacterSlice"
 import { useState } from "react"
+import { DivLoading } from "./DivLoading"
 
 const excludeQuest = [
   "61e6e60223374d168a4576a6",
@@ -94,6 +95,7 @@ const QuestItems = () => {
       />
     </InputGroup>,
     <Row key="quest_item_cols">
+      {taskItemRequirement.length === 0 && <DivLoading height={300} />}
       {taskItemRequirement.map((req) => {
         if (
           questItemList &&
@@ -116,7 +118,7 @@ const QuestItems = () => {
               md={6}
               lg={4}
               xl={3}
-              className="d-flex align-items-stretch"
+              className="d-flex justify-content-center align-items-stretch"
             >
               <QuestItem playerInventory={playerInventory} itemReq={req} />
             </Col>

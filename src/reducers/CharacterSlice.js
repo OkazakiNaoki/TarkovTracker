@@ -617,7 +617,6 @@ export const updateInventoryItem = createAsyncThunk(
 const characterSlice = createSlice({
   name: "character",
   initialState: {
-    isLoading: false,
     gameEdition: null, // not use yet
     initSetup: null,
     playerLevel: 0,
@@ -647,11 +646,8 @@ const characterSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {})
       .addCase(getTasksOfTraderWithLevel.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerTasksInfo[`${action.payload.trader}`] = {
           complete: action.payload.completeTasks,
           ongoing: action.payload.ongoingTasks,
@@ -659,84 +655,53 @@ const characterSlice = createSlice({
         }
       })
       .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
-      .addCase(updateCompletedTasks.pending, (state, action) => {
-        state.isLoading = true
-      })
-      .addCase(updateCompletedTasks.fulfilled, (state, action) => {
-        state.isLoading = false
-      })
+      .addCase(updateCompletedTasks.pending, (state, action) => {})
+      .addCase(updateCompletedTasks.fulfilled, (state, action) => {})
       .addCase(updateCompletedTasks.rejected, (state, action) => {})
-      .addCase(getCompletedObjectives.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(getCompletedObjectives.pending, (state, action) => {})
       .addCase(getCompletedObjectives.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
       .addCase(getCompletedObjectives.rejected, (state, action) => {})
-      .addCase(updateCompletedObjectives.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(updateCompletedObjectives.pending, (state, action) => {})
       .addCase(updateCompletedObjectives.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
       .addCase(updateCompletedObjectives.rejected, (state, action) => {})
-      .addCase(addCompletedObjectives.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(addCompletedObjectives.pending, (state, action) => {})
       .addCase(addCompletedObjectives.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
       .addCase(addCompletedObjectives.rejected, (state, action) => {})
-      .addCase(getObjectiveProgress.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(getObjectiveProgress.pending, (state, action) => {})
       .addCase(getObjectiveProgress.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
       .addCase(getObjectiveProgress.rejected, (state, action) => {})
-      .addCase(updateObjectiveProgress.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(updateObjectiveProgress.pending, (state, action) => {})
       .addCase(updateObjectiveProgress.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
       .addCase(updateObjectiveProgress.rejected, (state, action) => {})
-      .addCase(addObjectiveProgress.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(addObjectiveProgress.pending, (state, action) => {})
       .addCase(addObjectiveProgress.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerObjectiveProgress = action.payload.objectiveProgress
       })
       .addCase(addObjectiveProgress.rejected, (state, action) => {})
-      .addCase(addCharacterData.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(addCharacterData.pending, (state, action) => {})
       .addCase(addCharacterData.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerLevel = action.payload.characterLevel
         state.playerFaction = action.payload.characterFaction
       })
       .addCase(addCharacterData.rejected, (state, action) => {})
-      .addCase(updateCharacterData.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(updateCharacterData.pending, (state, action) => {})
       .addCase(updateCharacterData.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerLevel = action.payload.characterLevel
         state.playerFaction = action.payload.characterFaction
       })
       .addCase(updateCharacterData.rejected, (state, action) => {})
-      .addCase(getCharacterData.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(getCharacterData.pending, (state, action) => {})
       .addCase(getCharacterData.fulfilled, (state, action) => {
-        state.isLoading = false
         if (typeof action.payload === "object") {
           state.playerLevel = action.payload.data.characterLevel
           state.playerFaction = action.payload.data.characterFaction
@@ -746,51 +711,33 @@ const characterSlice = createSlice({
         }
       })
       .addCase(getCharacterData.rejected, (state, action) => {})
-      .addCase(addHideoutLevel.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(addHideoutLevel.pending, (state, action) => {})
       .addCase(addHideoutLevel.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerHideoutLevel = action.payload
       })
       .addCase(addHideoutLevel.rejected, (state, action) => {})
-      .addCase(getHideoutLevel.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(getHideoutLevel.pending, (state, action) => {})
       .addCase(getHideoutLevel.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerHideoutLevel = action.payload.data
       })
       .addCase(getHideoutLevel.rejected, (state, action) => {})
-      .addCase(updateHideoutLevel.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(updateHideoutLevel.pending, (state, action) => {})
       .addCase(updateHideoutLevel.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerHideoutLevel = action.payload
       })
       .addCase(updateHideoutLevel.rejected, (state, action) => {})
-      .addCase(addInventoryItem.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(addInventoryItem.pending, (state, action) => {})
       .addCase(addInventoryItem.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerInventory = action.payload
       })
       .addCase(addInventoryItem.rejected, (state, action) => {})
-      .addCase(getInventoryItem.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(getInventoryItem.pending, (state, action) => {})
       .addCase(getInventoryItem.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerInventory = action.payload.data
       })
       .addCase(getInventoryItem.rejected, (state, action) => {})
-      .addCase(updateInventoryItem.pending, (state, action) => {
-        state.isLoading = true
-      })
+      .addCase(updateInventoryItem.pending, (state, action) => {})
       .addCase(updateInventoryItem.fulfilled, (state, action) => {
-        state.isLoading = false
         state.playerInventory = action.payload
       })
       .addCase(updateInventoryItem.rejected, (state, action) => {})
