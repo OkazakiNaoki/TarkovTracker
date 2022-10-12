@@ -6,6 +6,7 @@ import hideoutRoutes from "./routes/InGameHideoutRoutes.js"
 import taskRoutes from "./routes/InGameTasksRoutes.js"
 import userRoutes from "./routes/UserRoutes.js"
 import playerRoutes from "./routes/PlayerDataRoutes.js"
+import socialMedia from "./routes/SocialMediaRoutes.js"
 import connectDB from "./config/db.js"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
@@ -53,6 +54,7 @@ app.use("/api/hideout", hideoutRoutes)
 app.use("/api/task", taskRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/player", playerRoutes)
+app.use("/api/socialmedia", socialMedia)
 
 const PORT = process.env.PORT || 3030
 app.listen(

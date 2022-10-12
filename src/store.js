@@ -5,6 +5,7 @@ import TraderReducer from "./reducers/TraderSlice"
 import HideoutReducer from "./reducers/HideoutSlice"
 import UserReducer from "./reducers/UserSlice"
 import CharacterReducer from "./reducers/CharacterSlice"
+import SocialMediaReducer from "./reducers/MediaSlice"
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     hideout: HideoutReducer,
     user: UserReducer,
     character: CharacterReducer,
+    socialMedia: SocialMediaReducer,
   },
   devTools: true,
 })
