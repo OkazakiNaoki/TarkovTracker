@@ -16,11 +16,28 @@ export const getLatestVideo = createAsyncThunk(
   }
 )
 
+export const getLatestUpdateNews = createAsyncThunk(
+  "socialMedia/getLatestUpdateNews",
+  async (params) => {
+    try {
+      const { data } = await axios.get(`/api/socialmedia/news/update`)
+
+      return data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const mediaSlice = createSlice({
   name: "socialMedia",
   initialState: {
     lastestVideoFetched: false,
     lastestVideoId: null,
+    lastestUpdateNewsFetched: false,
+    latestUpdateNews: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -31,6 +48,14 @@ const mediaSlice = createSlice({
         state.lastestVideoFetched = true
       })
       .addCase(getLatestVideo.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
+      .addCase(getLatestUpdateNews.pending, (state, action) => {})
+      .addCase(getLatestUpdateNews.fulfilled, (state, action) => {
+        state.latestUpdateNews = action.payload.updateNews
+        state.lastestUpdateNewsFetched = true
+      })
+      .addCase(getLatestUpdateNews.rejected, (state, action) => {
         throw Error(action.payload)
       })
   },
