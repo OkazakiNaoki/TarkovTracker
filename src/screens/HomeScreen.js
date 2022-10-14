@@ -44,93 +44,73 @@ const HomeScreen = () => {
     <>
       <HeadMeta title="Home page" />
       <Container>
-        <h2 className="my-3 sandbeige">News</h2>
-        <Table
-          variant="dark"
-          className="mt-3 mb-5"
-          hover
-          style={{ "--bs-table-bg": "none" }}
-        >
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Title</th>
-            </tr>
-          </thead>
-          <tbody>
-            {latestUpdateNews &&
-              latestUpdateNews.map((news) => {
-                return (
-                  <tr
-                    role="button"
-                    onClick={() => {
-                      openInNewTab(
-                        `https://www.escapefromtarkov.com${news.link}`
-                      )
-                    }}
-                  >
-                    <td>{news.date}</td>
-                    <td>{news.title}</td>
+        <h1 className="my-3 sandbeige">News</h1>
+        <Row className="my-5">
+          <Col className="py-3">
+            <div className="px-3">
+              <Table variant="dark" hover style={{ "--bs-table-bg": "none" }}>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Title</th>
                   </tr>
-                )
-              })}
-          </tbody>
-        </Table>
-        <Row className="my-3">
-          <Col xs={6} className="py-3">
-            <Tabs
-              defaultActiveKey="featureVideo"
-              className="mb-4 flex-column flex-lg-row"
-              transition={false}
-              justify
-              onSelect={getLatestVideoHandle}
-            >
-              <Tab
-                eventKey="featureVideo"
-                title="Feature video"
-                className="px-3"
-              >
-                <div className="mb-2">Feature video on BSG Youtube channel</div>
-                <YoutubePlayer url="https://www.youtube.com/watch?v=gEbJjN6rtQE" />
-              </Tab>
-              <Tab eventKey="latestVideo" title="Latest video" className="px-3">
-                <div className="mb-2">Latest video on BSG Youtube channel</div>
-                {lastestVideoId ? (
-                  <YoutubePlayer
-                    url={`https://www.youtube.com/watch?v=${lastestVideoId}`}
-                  />
-                ) : (
-                  <DivLoading height={mediaColHeight} />
-                )}
-              </Tab>
-            </Tabs>
+                </thead>
+                <tbody>
+                  {latestUpdateNews &&
+                    latestUpdateNews.map((news) => {
+                      return (
+                        <tr
+                          role="button"
+                          onClick={() => {
+                            openInNewTab(
+                              `https://www.escapefromtarkov.com${news.link}`
+                            )
+                          }}
+                        >
+                          <td>{news.date}</td>
+                          <td>{news.title}</td>
+                        </tr>
+                      )
+                    })}
+                </tbody>
+              </Table>
+            </div>
           </Col>
-          <Col xs={6} className="py-3">
-            <Tabs
-              defaultActiveKey="twitter"
-              className="mb-4 flex-column flex-lg-row"
-              transition={false}
-              justify
-            >
-              <Tab eventKey="twitter" title="Twitter" className="px-3">
-                <div className="mb-2">Latest tweet from BSG</div>
-                <TwitterTimelineEmbed
-                  sourceType="profile"
-                  screenName="bstategames"
-                  noHeader={true}
-                  theme="dark"
-                  tweetLimit={10}
-                  placeholder={<DivLoading height={mediaColHeight} />}
-                  options={{ height: mediaColHeight }}
-                />
-              </Tab>
-              <Tab eventKey="ph" title="Placeholder" className="px-3">
-                <div className="mb-2">Placeholder</div>
-                <div>123</div>
-              </Tab>
-            </Tabs>
+          <Col className="py-3">
+            <div className="px-3">
+              <TwitterTimelineEmbed
+                sourceType="profile"
+                screenName="bstategames"
+                noHeader={true}
+                theme="dark"
+                tweetLimit={10}
+                placeholder={<DivLoading height={mediaColHeight} />}
+                options={{ height: mediaColHeight }}
+              />
+            </div>
           </Col>
         </Row>
+
+        <h1 className="my-3 sandbeige">Video</h1>
+        <Tabs
+          defaultActiveKey="featureVideo"
+          className="my-5 flex-column flex-lg-row"
+          transition={false}
+          onSelect={getLatestVideoHandle}
+        >
+          <Tab eventKey="featureVideo" title="Feature" className="px-3">
+            <YoutubePlayer url="https://www.youtube.com/watch?v=gEbJjN6rtQE" />
+          </Tab>
+          <Tab eventKey="latestVideo" title="Latest" className="px-3">
+            {lastestVideoId ? (
+              <YoutubePlayer
+                url={`https://www.youtube.com/watch?v=${lastestVideoId}`}
+              />
+            ) : (
+              <DivLoading height={mediaColHeight} />
+            )}
+          </Tab>
+        </Tabs>
       </Container>
     </>
   )
