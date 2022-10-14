@@ -31,7 +31,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   const [hoverOnBadge, setHoverOnBadge] = useState(null)
   const [currentInfo, setCurrentInfo] = useState(null)
   const [neededQuestInfo, setNeededQuestInfo] = useState(null)
-  const [itemCount, setItemCount] = useState(0)
+  const [itemCount, setItemCount] = useState(null)
   const [itemNeedTotalCount, setItemNeedTotalCount] = useState(0)
   const [itemModalOnOff, setItemModalOnOff] = useState(false)
 
@@ -87,7 +87,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
 
   useEffect(() => {
     // update player's inventory once own amount of quest item changed
-    if (playerInventory) {
+    if (playerInventory && itemCount !== null) {
       const newInventory = JSON.parse(JSON.stringify(playerInventory))
       const index = getIndexOfMatchFieldObjArr(
         newInventory,
