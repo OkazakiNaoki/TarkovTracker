@@ -57,9 +57,10 @@ const HomeScreen = () => {
                 </thead>
                 <tbody>
                   {latestUpdateNews &&
-                    latestUpdateNews.map((news) => {
+                    latestUpdateNews.map((news, i) => {
                       return (
                         <tr
+                          key={"news_" + i}
                           role="button"
                           onClick={() => {
                             openInNewTab(

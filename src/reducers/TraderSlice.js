@@ -216,7 +216,7 @@ export const getTaskDetail = createAsyncThunk(
                 items{item{id name} count}
                 offerUnlock{trader{name} level item{id name}}
                 skillLevelReward{name level}
-                traderUnlock{name}
+                traderUnlock{id name}
               }
               descriptionMessageId
             }

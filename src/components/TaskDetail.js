@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Container, Image } from "react-bootstrap"
+import { Col, Container, Image, Row } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { AddValueModal } from "../components/AddValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import blueCheck from "../../public/static/images/blue_check.png"
+import expIcon from "../../public/static/images/icon_experience_big.png"
+import standingIcon from "../../public/static/images/standing_icon.png"
+import { ItemSingleGrid } from "./ItemSingleGrid"
 
 const TaskDetail = ({
   task,
@@ -103,6 +106,8 @@ const TaskDetail = ({
     }
   }
 
+  let colIndex = 0
+
   return (
     <div>
       {completeable &&
@@ -138,7 +143,7 @@ const TaskDetail = ({
         return (
           <div
             key={"objective-" + i}
-            className="d-flex justify-content-center my-2 p-2"
+            className="d-flex justify-content-center mb-2 p-2"
             style={{
               backgroundColor: completeable
                 ? completeObjective &&
@@ -177,43 +182,130 @@ const TaskDetail = ({
       })}
       <div className="px-4">Rewards</div>
       <div className="p-2">
-        <div
-          className="text-center px-5"
-          style={{
-            backgroundColor: "#090a0b",
-            whiteSpace: "break-spaces",
-          }}
-        >
-          {"+" + task.experience + "EXP\n"}
-          {task.finishRewards.traderStanding.map((finishStanding) => {
+        <Row xs={4} className="g-2 px-5" style={{ backgroundColor: "#090a0b" }}>
+          <Col style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}>
+            <div className="d-flex align-items-center justify-content-center task-reward-bg h-100">
+              <div className="text-center">
+                <Image src={expIcon} />
+                <div>{"+" + task.experience}</div>
+              </div>
+            </div>
+          </Col>
+          {task.finishRewards.traderStanding.map((finishStanding, i) => {
             return (
-              finishStanding.trader.name +
-              (finishStanding.standing > 0 ? " +" : " ") +
-              finishStanding.standing +
-              "\n"
+              <Col
+                key={"standing_" + i}
+                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
+              >
+                <div className="d-flex align-items-center justify-content-center task-reward-bg h-100">
+                  <div className="text-center">
+                    <Image src={standingIcon} />
+                    <div>{finishStanding.trader.name}</div>
+                    <div>
+                      {(finishStanding.standing > 0 ? " +" : " ") +
+                        finishStanding.standing}
+                    </div>
+                  </div>
+                </div>
+              </Col>
             )
           })}
-          {task.finishRewards.items.map((finishItem) => {
-            return finishItem.item.name + " (" + finishItem.count + ")\n"
-          })}
-          {task.finishRewards.offerUnlock.map((finishOffer) => {
+          {task.finishRewards.items.map((finishItem, i) => {
             return (
-              "Unlock " +
-              finishOffer.item.name +
-              " at " +
-              finishOffer.trader.name +
-              "@Lv." +
-              finishOffer.level +
-              "\n"
+              <Col
+                key={"item_" + i}
+                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
+              >
+                <div className="task-reward-bg p-1 h-100">
+                  <div className="d-flex align-items-center justify-content-left h-100">
+                    <div className="d-inline-block">
+                      <ItemSingleGrid
+                        itemId={finishItem.item.id}
+                        amount={finishItem.count > 1 ? finishItem.count : null}
+                        foundInRaid={true}
+                      />
+                    </div>
+                    <p
+                      className="d-inline-block mb-0 ps-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      {finishItem.count > 1
+                        ? finishItem.item.name + " (" + finishItem.count + ")"
+                        : finishItem.item.name}
+                    </p>
+                  </div>
+                </div>
+              </Col>
             )
           })}
-          {task.finishRewards.skillLevelReward.map((finishSkill) => {
-            return "+" + finishSkill.level + " " + finishSkill.name + " level\n"
+          {task.finishRewards.offerUnlock.map((finishOffer, i) => {
+            return (
+              <Col
+                key={"offer_" + i}
+                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
+              >
+                <div className="task-reward-bg p-1 h-100">
+                  <div className="d-flex align-items-center justify-content-left h-100">
+                    <div className="d-inline-block">
+                      <ItemSingleGrid
+                        itemId={finishOffer.item.id}
+                        locked={true}
+                      />
+                    </div>
+                    <p
+                      className="d-inline-block mb-0 ps-2"
+                      style={{ fontSize: "14px" }}
+                      title={
+                        finishOffer.trader.name + " LL" + finishOffer.level
+                      }
+                    >
+                      {finishOffer.item.name}
+                    </p>
+                  </div>
+                </div>
+              </Col>
+            )
           })}
-          {task.finishRewards.traderUnlock.map((finishTrader) => {
-            return "Unlock trader " + finishTrader.name + "\n"
+          {task.finishRewards.skillLevelReward.map((finishSkill, i) => {
+            return (
+              <Col
+                key={"skill_" + i}
+                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
+              >
+                <div className="d-flex align-items-center justify-content-center task-reward-bg p-1 h-100">
+                  <div className="text-center">
+                    {/* <Image src={} /> */}
+                    <div>{finishSkill.name}</div>
+                    <div>{"+" + finishSkill.level + " level(s)"}</div>
+                  </div>
+                </div>
+              </Col>
+            )
           })}
-        </div>
+          {task.finishRewards.traderUnlock.map((finishTrader, i) => {
+            return (
+              <Col
+                key={"trader_" + i}
+                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
+              >
+                <div className="task-reward-bg p-1 h-100">
+                  <div className="d-flex align-items-center justify-content-left h-100">
+                    <Image
+                      src={`/asset/${finishTrader.id}.png`}
+                      style={{ width: "64px", height: "64px" }}
+                    />
+                    <p
+                      className="d-inline-block mb-0 ps-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      {finishTrader.name}
+                    </p>
+                  </div>
+                </div>
+              </Col>
+            )
+          })}
+        </Row>
       </div>
     </div>
   )

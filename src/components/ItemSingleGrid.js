@@ -2,12 +2,15 @@ import React from "react"
 import { Image } from "react-bootstrap"
 import itemBack from "../../public/static/images/cell_full_border.png"
 import firIcon from "../../public/static/images/icon_foundinraid_small.png"
+import lockIcon from "../../public/static/images/marker_locked.png"
 
 const ItemSingleGrid = ({
   itemId,
   foundInRaid = false,
   shortName = null,
   bgColor,
+  amount = null,
+  locked = false,
 }) => {
   const colors = {
     default: "#7f7f7f",
@@ -64,7 +67,33 @@ const ItemSingleGrid = ({
           <Image
             src={firIcon}
             className="position-absolute bottom-0 end-0"
-            style={{ transform: "translateX(-3px) translateY(-4px)" }}
+            style={{
+              transform: `translateX(-3px) translateY(${
+                amount ? "-20px" : "-4px"
+              })`,
+            }}
+          />
+        )}
+        {amount && (
+          <p
+            src={firIcon}
+            className="position-absolute bottom-0 end-0 mb-0"
+            style={{
+              fontSize: "14px",
+              color: "#6ca767",
+              transform: "translateX(-4px)",
+            }}
+          >
+            {amount}
+          </p>
+        )}
+        {locked && (
+          <Image
+            src={lockIcon}
+            className="position-absolute bottom-0 start-0"
+            style={{
+              transform: "translateX(-6px) translateY(4px)",
+            }}
           />
         )}
       </div>

@@ -98,6 +98,11 @@ nav {
     color: #b7ad9c;
 }
 
+/* custom bg color */
+.task-reward-bg {
+    background-color: #121314;
+}
+
 @keyframes spinnerSpin {
     from {
         transform: rotate(0deg) translateX(-1px) translateY(-1px);
