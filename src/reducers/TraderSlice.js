@@ -1,39 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 
-export const getTraders = createAsyncThunk(
-  "trader/getTraders",
-  async (params) => {
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-      const body = {
-        query: `{
-          traders(lang: en){
-            id
-            name
-          }
-        }`,
-      }
-      const gql = await axios.post(
-        `https://api.tarkov.dev/graphql`,
-        body,
-        config
-      )
-      const gqlData = gql.data.data.traders
-      return gqlData
-    } catch (error) {
-      return error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message
-    }
-  }
-)
-
 export const getTasksOfTrader = createAsyncThunk(
   "trader/getTasksOfTrader",
   async (params) => {
@@ -266,10 +233,43 @@ export const getTaskItemRequirements = createAsyncThunk(
 const traderSlice = createSlice({
   name: "trader",
   initialState: {
-    isLoading: true,
-    isLoadingTrader: true,
-    isLoadingTasks: true,
-    traders: [],
+    initTasks: false,
+    isLoading: false,
+    isLoadingTasks: false,
+    traders: [
+      {
+        id: "54cb50c76803fa8b248b4571",
+        name: "Prapor",
+      },
+      {
+        id: "54cb57776803fa99248b456e",
+        name: "Therapist",
+      },
+      {
+        id: "579dc571d53a0658a154fbec",
+        name: "Fence",
+      },
+      {
+        id: "58330581ace78e27b8b10cee",
+        name: "Skier",
+      },
+      {
+        id: "5935c25fb3acc3127c3d8cd9",
+        name: "Peacekeeper",
+      },
+      {
+        id: "5a7c2eca46aef81a7ca2145d",
+        name: "Mechanic",
+      },
+      {
+        id: "5ac3b934156ae10c4430e83c",
+        name: "Ragman",
+      },
+      {
+        id: "5c0647fdd443bc2504c2d371",
+        name: "Jaeger",
+      },
+    ],
     tasks: {},
     tasksDetail: {},
     tasksDetailFetched: {},
@@ -280,25 +280,16 @@ const traderSlice = createSlice({
       const { i, j } = action.payload
       state.tasks[i][j].collapse = !state.tasks[i][j].collapse
     },
+    initializeTasks: (state, action) => {
+      state.traders.forEach((trader) => {
+        state.tasks[`${trader.name}`] = null
+        state.tasksDetail[`${trader.name}`] = {}
+        state.tasksDetailFetched[`${trader.name}`] = []
+      })
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getTraders.pending, (state, action) => {
-        state.isLoadingTrader = true
-      })
-      .addCase(getTraders.fulfilled, (state, action) => {
-        state.isLoadingTrader = false
-        state.traders = action.payload
-        action.payload.forEach((trader) => {
-          state.tasks[`${trader.name}`] = null
-          state.tasksDetail[`${trader.name}`] = {}
-          state.tasksDetailFetched[`${trader.name}`] = []
-        })
-      })
-      .addCase(getTraders.rejected, (state, action) => {
-        state.isLoadingTrader = false
-        throw Error(action.payload)
-      })
       .addCase(getTasksOfTrader.pending, (state, action) => {
         state.isLoadingTasks = true
       })
@@ -339,4 +330,4 @@ const traderSlice = createSlice({
 })
 
 export default traderSlice.reducer
-export const { setTaskCollapse } = traderSlice.actions
+export const { initializeTasks, setTaskCollapse } = traderSlice.actions

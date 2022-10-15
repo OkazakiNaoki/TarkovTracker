@@ -27,7 +27,7 @@ import {
   getHideoutLevel,
   updateHideoutLevel,
 } from "../reducers/CharacterSlice"
-import { getTraders, getTaskDetail } from "../reducers/TraderSlice"
+import { getTaskDetail } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
@@ -99,12 +99,6 @@ const CharacterScreen = () => {
       }
     }
   }, [initSetup, playerLevel])
-
-  useEffect(() => {
-    if (traders.length === 0) {
-      dispatch(getTraders())
-    }
-  }, [traders])
 
   useEffect(() => {
     if (traders.length !== 0 && Object.keys(playerTaskFetched).length === 0) {

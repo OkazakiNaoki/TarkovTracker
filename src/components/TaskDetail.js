@@ -7,6 +7,7 @@ import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import blueCheck from "../../public/static/images/blue_check.png"
 import expIcon from "../../public/static/images/icon_experience_big.png"
 import standingIcon from "../../public/static/images/standing_icon.png"
+import skillIcon from "../../public/static/images/tab_icon_skills.png"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 
 const TaskDetail = ({
@@ -274,7 +275,7 @@ const TaskDetail = ({
               >
                 <div className="d-flex align-items-center justify-content-center task-reward-bg p-1 h-100">
                   <div className="text-center">
-                    {/* <Image src={} /> */}
+                    <Image src={skillIcon} />
                     <div>{finishSkill.name}</div>
                     <div>{"+" + finishSkill.level + " level(s)"}</div>
                   </div>
