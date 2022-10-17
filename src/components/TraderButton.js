@@ -1,11 +1,18 @@
 import React from "react"
 import { Image } from "react-bootstrap"
+import { CountdownTimer } from "./CountdownTimer"
 import traderBg from "../../public/static/images/image_diagonal_trader.png"
 import levelBadgeIcon from "../../public/static/images/bind_label.png"
 import maxStandIcon from "../../public/static/images/loyalty_king.png"
 import standingIcon from "../../public/static/images/icon_standing_small.png"
+import updateIcon from "../../public/static/images/icon_update_time.png"
 
-const TraderButton = ({ trader, standing = 1, rep = 0.2 }) => {
+const TraderButton = ({
+  trader,
+  standing = 1,
+  rep = 0.2,
+  resetTime = null,
+}) => {
   const getRomanNumber = (num) => {
     return "".padStart(num, "I")
   }
@@ -70,8 +77,19 @@ const TraderButton = ({ trader, standing = 1, rep = 0.2 }) => {
           {trader.name}
         </div>
         <div className="mt-2">
-          <Image src={standingIcon} className="me-1" />
-          {rep}
+          <Image src={standingIcon} style={{ marginRight: "3px" }} />
+          <div
+            className="d-inline-block"
+            style={{ fontSize: "12px", marginRight: "7px" }}
+          >
+            {rep.toFixed(2)}
+          </div>
+          {resetTime && (
+            <>
+              <Image src={updateIcon} />
+              <CountdownTimer targetDate={Date.parse(resetTime)} />
+            </>
+          )}
         </div>
       </div>
     </div>

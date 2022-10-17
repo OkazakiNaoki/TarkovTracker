@@ -1,6 +1,38 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 
+export const getTradeResetTime = createAsyncThunk(
+  "trader/getTradeResetTime",
+  async (params) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+      const body = {
+        query: `{
+          traders(lang: en) {
+            name
+            resetTime
+          }
+        }`,
+      }
+      const gql = await axios.post(
+        `https://api.tarkov.dev/graphql`,
+        body,
+        config
+      )
+      return gql.data.data.traders
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 export const getTasksOfTrader = createAsyncThunk(
   "trader/getTasksOfTrader",
   async (params) => {
@@ -236,6 +268,7 @@ const traderSlice = createSlice({
     initTasks: false,
     isLoading: false,
     isLoadingTasks: false,
+    tradeResetTime: {},
     traders: [
       {
         id: "54cb50c76803fa8b248b4571",
@@ -290,6 +323,15 @@ const traderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getTradeResetTime.pending, (state, action) => {})
+      .addCase(getTradeResetTime.fulfilled, (state, action) => {
+        action.payload.forEach((trader) => {
+          state.tradeResetTime[trader.name] = trader.resetTime
+        })
+      })
+      .addCase(getTradeResetTime.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
       .addCase(getTasksOfTrader.pending, (state, action) => {
         state.isLoadingTasks = true
       })

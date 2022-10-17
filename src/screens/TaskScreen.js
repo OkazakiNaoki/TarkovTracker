@@ -11,6 +11,7 @@ import {
   Collapse,
 } from "react-bootstrap"
 import {
+  getTradeResetTime,
   getTasksOfTrader,
   getTaskDetail,
   initializeTasks,
@@ -20,6 +21,7 @@ import { TaskDetail } from "../components/TaskDetail"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
 import { TraderButton } from "../components/TraderButton"
+import refreshIcon from "../../public/static/images/icon_refresh.png"
 
 const TaskScreen = () => {
   // hooks
@@ -29,6 +31,7 @@ const TaskScreen = () => {
   // redux
   const {
     initTasks,
+    tradeResetTime,
     isLoadingTasks,
     traders,
     tasks,
@@ -87,13 +90,30 @@ const TaskScreen = () => {
                           setCurTrader(trader.name)
                         }}
                       >
-                        <TraderButton trader={trader} />
+                        <TraderButton
+                          trader={trader}
+                          resetTime={
+                            Object.keys(tradeResetTime).length > 0
+                              ? tradeResetTime[trader.name]
+                              : null
+                          }
+                        />
                       </div>
                     </Col>
                   )
                 })}
             </Row>
           </div>
+          <Image
+            role="button"
+            className="ms-2"
+            src={refreshIcon}
+            title="get trade reset time"
+            style={{ width: "20px", height: "20px" }}
+            onClick={() => {
+              dispatch(getTradeResetTime())
+            }}
+          />
         </div>
 
         {curTrader && (
