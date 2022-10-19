@@ -5,6 +5,7 @@ import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutRequirement } from "../components/HideoutRequirement"
 import { ItemRequirement } from "../components/ItemRequirement"
 import { SkillIcon } from "../components/SkillIcon"
+import { SkillRequirement } from "../components/SkillRequirement"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TextStroke } from "../components/TextStroke"
 import { TraderRequirement } from "../components/TraderRequirement"
@@ -159,7 +160,7 @@ const HideoutScreen = () => {
                           <div className="d-flex justify-content-center mb-5">
                             {level.skillRequirements.map((skillReq, i) => {
                               return (
-                                <SkillIcon
+                                <SkillRequirement
                                   key={`skill_req_${i}`}
                                   skillName={skillReq.name}
                                   level={skillReq.level}

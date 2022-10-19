@@ -1,14 +1,17 @@
 import React from "react"
 import { Image } from "react-bootstrap"
-import { TraderIcon } from "./TraderIcon"
+import { SkillIcon } from "./SkillIcon"
 import itemFulfillIcon from "../../public/static/images/icon_requirement_fulfilled.png"
 import itemLockedIcon from "../../public/static/images/icon_requirement_locked.png"
 
-const TraderRequirement = ({ trader, standing, fulfill = false }) => {
+const SkillRequirement = ({ skillName, level, fulfill = false }) => {
   return (
     <div>
-      <div className="d-flex justify-content-center">
-        <TraderIcon trader={trader} standing={standing} />
+      <div
+        className="d-flex justify-content-center"
+        style={{ marginBottom: "-4px" }}
+      >
+        <SkillIcon skillName={skillName} level={level} />
       </div>
       <div className="d-flex justify-content-center">
         {fulfill ? (
@@ -21,4 +24,4 @@ const TraderRequirement = ({ trader, standing, fulfill = false }) => {
   )
 }
 
-export { TraderRequirement }
+export { SkillRequirement }
