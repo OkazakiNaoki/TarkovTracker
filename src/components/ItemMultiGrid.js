@@ -1,7 +1,8 @@
 import React from "react"
 import { Row, Col, Image } from "react-bootstrap"
+import { bgColors } from "../data/ItemBgColorMap"
 import itemBack from "../../public/static/images/cell_full_border.png"
-import firIcon from "../../public/static/images/icon_foundinraid_small.png"
+import { TextStroke } from "./TextStroke"
 
 const ItemMultiGrid = ({
   itemId,
@@ -12,17 +13,6 @@ const ItemMultiGrid = ({
   height = 1,
   resize = 1,
 }) => {
-  const colors = {
-    default: "#7f7f7f",
-    blue: "#1c4156",
-    yellow: "#686628",
-    green: "#152d00",
-    red: "#6d2318",
-    violet: "#4c2a55",
-    orange: "#3c1900",
-    black: "#000",
-  }
-
   return (
     <div
       className=""
@@ -54,7 +44,7 @@ const ItemMultiGrid = ({
                 <Image
                   src={itemBack}
                   style={{
-                    backgroundColor: `${colors[bgColor]}`,
+                    backgroundColor: `${bgColors[bgColor]}`,
                     maxHeight: "100%",
                     maxWidth: "100%",
                   }}
@@ -85,17 +75,31 @@ const ItemMultiGrid = ({
           )}
         </div>
         <div
-          className="position-absolute top-0 start-50 text-shadow-10 text-end"
+          className="position-absolute top-0 start-50"
           style={{
             whiteSpace: "nowrap",
-            overflow: "hidden",
-            fontSize: "12px",
             letterSpacing: "0px",
             width: "calc(100% - 6px)",
             transform: "translateX(-50%) translateY(-2px)",
           }}
         >
-          {shortName && shortName}
+          {shortName && (
+            <div
+              className=""
+              style={{
+                height: "64px",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ width: "fit-content", marginLeft: "auto" }}>
+                <TextStroke
+                  fontSize={12}
+                  content={shortName}
+                  selectable={false}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react"
 import { Container, Tabs, TabPane, Placeholder } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { HideoutIcon } from "../components/HideoutIcon"
+import { HideoutRequirement } from "../components/HideoutRequirement"
+import { ItemRequirement } from "../components/ItemRequirement"
+import { SkillIcon } from "../components/SkillIcon"
 import { TarkovSpinner } from "../components/TarkovSpinner"
+import { TextStroke } from "../components/TextStroke"
+import { TraderRequirement } from "../components/TraderRequirement"
 import { getAllHideout } from "../reducers/HideoutSlice"
 
 const HideoutScreen = () => {
@@ -39,7 +44,11 @@ const HideoutScreen = () => {
                     setCurStation(el.id)
                   }}
                 >
-                  <HideoutIcon iconName={el.id} />
+                  <HideoutIcon
+                    asButton={true}
+                    iconName={el.id}
+                    selected={curStation === el.id}
+                  />
                 </a>
               )
             })
@@ -99,69 +108,107 @@ const HideoutScreen = () => {
                         <p className="text-center fs-3">
                           CONSTRUCTION REQUIREMENTS
                         </p>
-                        <div className="d-flex justify-content-center mb-5">
-                          {level.itemRequirements.map((itemReq) => {
-                            return (
-                              itemReq.item.name + "  x" + itemReq.count + "\n"
-                            )
-                          })}
-                          {level.skillRequirements.map((skillReq) => {
-                            return (
-                              skillReq.name + " level " + skillReq.level + "\n"
-                            )
-                          })}
-                          {level.stationLevelRequirements.map((stationReq) => {
-                            return (
-                              stationReq.station.name +
-                              " level " +
-                              stationReq.level +
-                              "\n"
-                            )
-                          })}
-                          {level.traderRequirements.map((traderReq) => {
-                            return (
-                              traderReq.trader.name +
-                              " level " +
-                              traderReq.level +
-                              "\n"
-                            )
-                          })}
-                        </div>
-                        {level.crafts.length > 0 && (
-                          <p className="text-center fs-3">PRODUCTION</p>
+                        {level.stationLevelRequirements.length > 0 && (
+                          <div className="d-flex justify-content-center mb-5">
+                            {level.stationLevelRequirements.map(
+                              (stationReq, i) => {
+                                return (
+                                  <HideoutRequirement
+                                    key={`station_req_${i}`}
+                                    hideoutId={stationReq.station.id}
+                                    hideoutName={stationReq.station.name}
+                                    level={stationReq.level}
+                                  />
+                                )
+                              }
+                            )}
+                          </div>
                         )}
-                        <div>
-                          {level.crafts.map((c, i) => {
-                            return (
-                              <div
-                                key={el.name + c.level + "craft-" + i}
-                                className="text-center"
-                              >
-                                {c.duration}
-                                {c.requiredItems.map((itemReq, i) => {
-                                  return (
-                                    <div key={"itemReq-" + i}>
-                                      {itemReq.item.name +
-                                        "  x" +
-                                        itemReq.count +
-                                        "\n"}
-                                    </div>
-                                  )
-                                })}
-                                {c.rewardItems.map((itemRew) => {
-                                  return (
-                                    <div key={"itemRew-" + i}>
-                                      {itemRew.item.name +
-                                        "  x" +
-                                        itemRew.count +
-                                        "\n"}
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                            )
-                          })}
-                        </div>
+                        {level.itemRequirements.length > 0 && (
+                          <div className="d-flex justify-content-center mb-5">
+                            {level.itemRequirements.map((itemReq, i) => {
+                              return (
+                                <div className="mx-3" key={`item_req_${i}`}>
+                                  <ItemRequirement
+                                    itemId={itemReq.item.id}
+                                    bgColor={itemReq.item.backgroundColor}
+                                    reqAmount={itemReq.count}
+                                    curAmount={2}
+                                    showFulfill={true}
+                                  />
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                        {level.traderRequirements.length > 0 && (
+                          <div className="d-flex justify-content-center mb-5">
+                            {level.traderRequirements.map((traderReq, i) => {
+                              return (
+                                <div className="mx-3" key={`trader_req_${i}`}>
+                                  <TraderRequirement
+                                    trader={traderReq.trader}
+                                    standing={traderReq.level}
+                                  />
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                        {level.skillRequirements.length > 0 && (
+                          <div className="d-flex justify-content-center mb-5">
+                            {level.skillRequirements.map((skillReq, i) => {
+                              return (
+                                <SkillIcon
+                                  key={`skill_req_${i}`}
+                                  skillName={skillReq.name}
+                                  level={skillReq.level}
+                                />
+                              )
+                            })}
+                          </div>
+                        )}
+
+                        {level.crafts.length > 0 && [
+                          <p
+                            key="production_title"
+                            className="text-center fs-3"
+                          >
+                            PRODUCTION
+                          </p>,
+                          <div key="craft_list">
+                            {level.crafts.map((c, i) => {
+                              return (
+                                <div
+                                  key={el.name + c.level + "craft-" + i}
+                                  className="text-center"
+                                >
+                                  {c.duration}
+                                  {c.requiredItems.map((itemReq, i) => {
+                                    return (
+                                      <div key={"itemReq-" + i}>
+                                        {itemReq.item.name +
+                                          "  x" +
+                                          itemReq.count +
+                                          "\n"}
+                                      </div>
+                                    )
+                                  })}
+                                  {c.rewardItems.map((itemRew) => {
+                                    return (
+                                      <div key={"itemRew-" + i}>
+                                        {itemRew.item.name +
+                                          "  x" +
+                                          itemRew.count +
+                                          "\n"}
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              )
+                            })}
+                          </div>,
+                        ]}
                       </div>
                     )
                   })}

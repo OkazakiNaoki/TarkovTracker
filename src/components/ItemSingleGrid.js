@@ -1,5 +1,6 @@
 import React from "react"
 import { Image } from "react-bootstrap"
+import { bgColors } from "../data/ItemBgColorMap"
 import itemBack from "../../public/static/images/cell_full_border.png"
 import firIcon from "../../public/static/images/icon_foundinraid_small.png"
 import lockIcon from "../../public/static/images/marker_locked.png"
@@ -11,25 +12,16 @@ const ItemSingleGrid = ({
   bgColor,
   amount = null,
   locked = false,
+  transparent = 255,
+  useBgImg = true,
 }) => {
-  const colors = {
-    default: "#7f7f7f",
-    blue: "#1c4156",
-    yellow: "#686628",
-    green: "#152d00",
-    red: "#6d2318",
-    violet: "#4c2a55",
-    orange: "#3c1900",
-    black: "#000",
-  }
-
   return (
     <div
       style={{
         width: "64px",
         height: "64px",
-        backgroundImage: `url(${itemBack})`,
-        backgroundColor: `${colors[bgColor]}`,
+        backgroundImage: useBgImg ? `url(${itemBack})` : "none",
+        backgroundColor: `${bgColors[bgColor]}${transparent.toString(16)}`,
         boxShadow: "inset 0px 0px 0px 1px #495154",
         marginRight: "-1px",
         marginBottom: "-1px",

@@ -20,7 +20,7 @@ import placeholderImg from "../../public/static/images/default_avatar.png"
 import { TaskDetail } from "../components/TaskDetail"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
-import { TraderButton } from "../components/TraderButton"
+import { TraderCard } from "../components/TraderCard"
 import refreshIcon from "../../public/static/images/icon_refresh.png"
 
 const TaskScreen = () => {
@@ -90,7 +90,7 @@ const TaskScreen = () => {
                           setCurTrader(trader.name)
                         }}
                       >
-                        <TraderButton
+                        <TraderCard
                           trader={trader}
                           resetTime={
                             Object.keys(tradeResetTime).length > 0
