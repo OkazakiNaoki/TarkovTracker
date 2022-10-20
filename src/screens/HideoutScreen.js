@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Container, Tabs, TabPane, Placeholder } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
+import { CraftTimeRequirement } from "../components/CraftTimeRequirement"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutRequirement } from "../components/HideoutRequirement"
 import { ItemRequirement } from "../components/ItemRequirement"
@@ -9,6 +10,7 @@ import { SkillRequirement } from "../components/SkillRequirement"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TextStroke } from "../components/TextStroke"
 import { TraderRequirement } from "../components/TraderRequirement"
+import { formatInHoursMINsec, getHMSfromS } from "../helpers/TimeFormat"
 import { getAllHideout } from "../reducers/HideoutSlice"
 
 const HideoutScreen = () => {
@@ -105,10 +107,15 @@ const HideoutScreen = () => {
                         <h2 className="text-center">
                           {"Level " + level.level}
                         </h2>
-                        <p className="text-center pb-4">{level.description}</p>
-                        <p className="text-center fs-3">
-                          CONSTRUCTION REQUIREMENTS
-                        </p>
+                        <p className="pb-4 px-3">{level.description}</p>
+                        {(level.stationLevelRequirements.length > 0 ||
+                          level.itemRequirements.length > 0 ||
+                          level.traderRequirements.length > 0 ||
+                          level.skillRequirements.length > 0) && (
+                          <p className="text-center fs-3">
+                            CONSTRUCTION REQUIREMENTS
+                          </p>
+                        )}
                         {level.stationLevelRequirements.length > 0 && (
                           <div className="d-flex justify-content-center mb-5">
                             {level.stationLevelRequirements.map(
@@ -169,47 +176,62 @@ const HideoutScreen = () => {
                             })}
                           </div>
                         )}
-
-                        {level.crafts.length > 0 && [
+                        {level.crafts.length > 0 && (
                           <p
                             key="production_title"
                             className="text-center fs-3"
                           >
                             PRODUCTION
-                          </p>,
-                          <div key="craft_list">
-                            {level.crafts.map((c, i) => {
-                              return (
+                          </p>
+                        )}
+                        <div key="craft_list">
+                          {level.crafts.map((craft, i) => {
+                            return (
+                              <div
+                                key={el.name + craft.level + "craft_" + i}
+                                className="d-flex justify-content-center my-3"
+                              >
+                                {craft.requiredItems.map((itemReq, i) => {
+                                  return (
+                                    <div
+                                      key={`itemRequire_${i}`}
+                                      className="px-1"
+                                    >
+                                      <ItemRequirement
+                                        itemId={itemReq.item.id}
+                                        reqAmount={itemReq.count}
+                                      />
+                                    </div>
+                                  )
+                                })}
                                 <div
-                                  key={el.name + c.level + "craft-" + i}
-                                  className="text-center"
+                                  className="px-1"
+                                  style={{ paddingTop: "5px" }}
                                 >
-                                  {c.duration}
-                                  {c.requiredItems.map((itemReq, i) => {
-                                    return (
-                                      <div key={"itemReq-" + i}>
-                                        {itemReq.item.name +
-                                          "  x" +
-                                          itemReq.count +
-                                          "\n"}
-                                      </div>
-                                    )
-                                  })}
-                                  {c.rewardItems.map((itemRew) => {
-                                    return (
-                                      <div key={"itemRew-" + i}>
-                                        {itemRew.item.name +
-                                          "  x" +
-                                          itemRew.count +
-                                          "\n"}
-                                      </div>
-                                    )
-                                  })}
+                                  <CraftTimeRequirement
+                                    timeStr={formatInHoursMINsec(
+                                      getHMSfromS(craft.duration)
+                                    )}
+                                  />
                                 </div>
-                              )
-                            })}
-                          </div>,
-                        ]}
+
+                                {craft.rewardItems.map((itemRew) => {
+                                  return (
+                                    <div
+                                      key={`itemReward_${i}`}
+                                      className="px-1"
+                                    >
+                                      <ItemRequirement
+                                        itemId={itemRew.item.id}
+                                        reqAmount={itemRew.count}
+                                      />
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
                     )
                   })}

@@ -13,3 +13,10 @@ export const formatInColon = (hms) => {
   }
   return hms.H + ":" + hms.M + ":" + hms.S
 }
+
+export const formatInHoursMINsec = (hms) => {
+  const hours = hms.H > 0 ? hms.H + " Hour(s) " : ""
+  const min = hms.M > 0 ? hms.M + " MIN " : ""
+  const sec = hms.S > 0 ? hms.S + " sec" : ""
+  return hours + min + sec
+}
