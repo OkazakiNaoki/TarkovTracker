@@ -10,6 +10,7 @@ import {
 import { updateInventoryItem } from "../reducers/CharacterSlice"
 import { AddValueModal } from "./AddValueModal"
 import { DivLoading } from "./DivLoading"
+import { FloatingMessageBox } from "./FloatingMessageBox"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 
@@ -158,6 +159,13 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   }, [itemReq])
 
   return [
+    <FloatingMessageBox
+      key="msg_box"
+      posX={mainX}
+      posY={mainY}
+      display={displayGainItemDetail}
+      content={currentInfo}
+    />,
     <AddValueModal
       title={itemReq.item.itemName}
       key="modal_of_item_count"
@@ -214,7 +222,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
           badgeHoverHandle={badgeHoverHandle}
         />
       </div>
-      <div
+      {/* <div
         style={{
           position: "fixed",
           left: mainX,
@@ -236,7 +244,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         >
           {currentInfo}
         </div>
-      </div>
+      </div> */}
       <Card.Text className="text-center my-3">
         {itemCount + " / " + itemNeedTotalCount}
       </Card.Text>

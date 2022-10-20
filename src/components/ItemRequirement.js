@@ -6,6 +6,7 @@ import { Image } from "react-bootstrap"
 
 const ItemRequirement = ({
   itemId,
+  itemName,
   bgColor,
   reqAmount,
   curAmount = null,
@@ -17,9 +18,11 @@ const ItemRequirement = ({
         <div className="d-flex justify-content-center">
           <ItemSingleGrid
             itemId={itemId}
+            itemName={itemName}
             bgColor={bgColor}
             transparent={77}
             useBgImg={false}
+            useNameBox={true}
           />
         </div>
       </div>

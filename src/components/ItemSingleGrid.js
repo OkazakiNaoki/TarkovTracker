@@ -1,12 +1,14 @@
-import React from "react"
+import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import { bgColors } from "../data/ItemBgColorMap"
 import itemBack from "../../public/static/images/cell_full_border.png"
 import firIcon from "../../public/static/images/icon_foundinraid_small.png"
 import lockIcon from "../../public/static/images/marker_locked.png"
+import { FloatingMessageBox } from "./FloatingMessageBox"
 
 const ItemSingleGrid = ({
   itemId,
+  itemName = null,
   foundInRaid = false,
   shortName = null,
   bgColor,
@@ -14,7 +16,26 @@ const ItemSingleGrid = ({
   locked = false,
   transparent = 255,
   useBgImg = true,
+  useNameBox = false,
 }) => {
+  // hooks state
+  const [mainX, setMainX] = useState(0)
+  const [mainY, setMainY] = useState(0)
+  const [msgBoxDisplay, setMsgBoxDisplay] = useState("none")
+
+  // handles
+  const mouseMoveHandle = (e) => {
+    const { clientX, clientY } = e
+    setMainX(clientX)
+    setMainY(clientY)
+  }
+  const mouseEnterHandle = () => {
+    setMsgBoxDisplay("block")
+  }
+  const mouseLeaveHandle = () => {
+    setMsgBoxDisplay("none")
+  }
+
   return (
     <div
       style={{
@@ -26,7 +47,18 @@ const ItemSingleGrid = ({
         marginRight: "-1px",
         marginBottom: "-1px",
       }}
+      onMouseEnter={useNameBox ? mouseEnterHandle : null}
+      onMouseLeave={useNameBox ? mouseLeaveHandle : null}
+      onMouseMove={useNameBox ? mouseMoveHandle : null}
     >
+      {useNameBox && (
+        <FloatingMessageBox
+          posX={mainX}
+          posY={mainY}
+          display={msgBoxDisplay}
+          content={itemName}
+        />
+      )}
       <div className="position-relative">
         <div
           className="d-flex justify-content-center"

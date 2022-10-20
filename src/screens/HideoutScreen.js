@@ -139,6 +139,7 @@ const HideoutScreen = () => {
                                 <div className="mx-3" key={`item_req_${i}`}>
                                   <ItemRequirement
                                     itemId={itemReq.item.id}
+                                    itemName={itemReq.item.name}
                                     bgColor={itemReq.item.backgroundColor}
                                     reqAmount={itemReq.count}
                                     curAmount={2}
@@ -199,6 +200,7 @@ const HideoutScreen = () => {
                                     >
                                       <ItemRequirement
                                         itemId={itemReq.item.id}
+                                        itemName={itemReq.item.name}
                                         reqAmount={itemReq.count}
                                       />
                                     </div>
@@ -223,6 +225,7 @@ const HideoutScreen = () => {
                                     >
                                       <ItemRequirement
                                         itemId={itemRew.item.id}
+                                        itemName={itemRew.item.name}
                                         reqAmount={itemRew.count}
                                       />
                                     </div>
