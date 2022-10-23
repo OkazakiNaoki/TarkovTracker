@@ -8,6 +8,11 @@
     src: url("../public/static/fonts/Jovanny Lemonad - Bender Bold.otf") format("opentype")
 }
 
+@font-face {
+    font-family: "TarkovItalic";
+    src: url("../public/static/fonts/Jovanny Lemonad - Bender Italic.otf") format("opentype")
+}
+
 body {
     font-family: Tarkov, serif;
     letter-spacing: 0.6px;

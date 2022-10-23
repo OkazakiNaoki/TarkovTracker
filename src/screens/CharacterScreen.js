@@ -40,6 +40,7 @@ import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { QuestItems } from "../components/QuestItems"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { DivLoading } from "../components/DivLoading"
+import { TextStroke } from "../components/TextStroke"
 
 const CharacterScreen = () => {
   // hooks
@@ -593,94 +594,88 @@ const CharacterScreen = () => {
                     <div className="d-flex justify-content-center flex-wrap mb-5">
                       {hideout.map((station) => {
                         return (
-                          <a
+                          <div
                             key={station.id}
+                            role="button"
                             onClick={() => {
                               setCurrentStationId(station.id)
                             }}
                           >
                             <HideoutIcon
                               iconName={station.id}
+                              stationName={station.name}
                               selected={currentStationId === station.id}
+                              useNameBox={true}
                             />
-                          </a>
+                          </div>
                         )
                       })}
                     </div>
-                    <h1 className="sandbeige">
-                      {currentStation && currentStation.name}
-                    </h1>
+
                     {!levelInfoOfCurrentStation && <DivLoading height={300} />}
+                    {/* not yet construct case */}
                     {levelInfoOfCurrentStation &&
                       levelInfoOfCurrentStation.level === -1 &&
-                      currentStation &&
-                      currentStation.levels.map((level, i) => {
-                        if (i === 0) {
-                          return (
-                            <HideoutStationDetail
-                              key={currentStation.name + level.level}
-                              station={currentStation}
-                              level={level}
-                              nextLevel={currentStation.levels?.[i]}
-                              increaseLevelHandle={() => {
-                                if (currentStation.levels?.[i]) {
-                                  setConfirmModalTitle(
-                                    `${currentStation.name} Level ${level.level}`
-                                  )
-                                  setConfirmModalContent(
-                                    "Are you sure you are going to construct?"
-                                  )
-                                  setConfirmFunc(() => () => {
-                                    increaseStationLevelHandle(
-                                      currentStation.id,
-                                      i
-                                    )
-                                  })
-                                  openCloseConfirmModalHandle()
-                                }
-                              }}
-                              canConstruct={true}
-                            />
-                          )
-                        }
-                      })}
+                      currentStation && (
+                        <HideoutStationDetail
+                          station={currentStation}
+                          curLevelIndex={-1}
+                          nextLevelIndex={0}
+                          increaseLevelHandle={() => {
+                            if (currentStation.levels?.[0]) {
+                              setConfirmModalTitle(
+                                `${currentStation.name} Level ${currentStation.levels[0].level}`
+                              )
+                              setConfirmModalContent(
+                                "Are you sure you are going to construct?"
+                              )
+                              setConfirmFunc(() => () => {
+                                increaseStationLevelHandle(currentStation.id, 0)
+                              })
+                              openCloseConfirmModalHandle()
+                            }
+                          }}
+                        />
+                      )}
+                    {/* constructed case */}
                     {levelInfoOfCurrentStation &&
-                      levelInfoOfCurrentStation.level !== -1 &&
-                      currentStation &&
-                      currentStation.levels.map((level, i) => {
-                        if (
-                          level.level ===
-                          levelInfoOfCurrentStation.level + 1
-                        ) {
-                          return (
-                            <HideoutStationDetail
-                              key={currentStation.name + level.level}
-                              station={currentStation}
-                              level={level}
-                              nextLevel={currentStation.levels?.[i + 1]}
-                              increaseLevelHandle={() => {
-                                if (currentStation.levels?.[i + 1]) {
-                                  setConfirmModalTitle(
-                                    `${currentStation.name} Level ${
-                                      level.level
-                                    } > ${level.level + 1}`
-                                  )
-                                  setConfirmModalContent(
-                                    "Are you sure you are going to upgrade?"
-                                  )
-                                  setConfirmFunc(() => () => {
-                                    increaseStationLevelHandle(
-                                      currentStation.id,
-                                      i + 1
-                                    )
-                                  })
-                                  openCloseConfirmModalHandle()
-                                }
-                              }}
-                            />
-                          )
-                        }
-                      })}
+                      levelInfoOfCurrentStation.level > -1 &&
+                      currentStation && (
+                        <HideoutStationDetail
+                          station={currentStation}
+                          curLevelIndex={levelInfoOfCurrentStation.level}
+                          nextLevelIndex={levelInfoOfCurrentStation.level + 1}
+                          increaseLevelHandle={() => {
+                            if (
+                              currentStation.levels?.[
+                                levelInfoOfCurrentStation.level + 1
+                              ]
+                            ) {
+                              setConfirmModalTitle(
+                                `${currentStation.name} Level ${
+                                  currentStation.levels[
+                                    levelInfoOfCurrentStation.level
+                                  ].level
+                                } > ${
+                                  currentStation.levels[
+                                    levelInfoOfCurrentStation.level
+                                  ].level + 1
+                                }`
+                              )
+                              setConfirmModalContent(
+                                "Are you sure you are going to upgrade?"
+                              )
+                              setConfirmFunc(() => () => {
+                                increaseStationLevelHandle(
+                                  currentStation.id,
+                                  levelInfoOfCurrentStation.level + 1
+                                )
+                              })
+                              openCloseConfirmModalHandle()
+                            }
+                          }}
+                        />
+                      )}
                   </div>
                 </Tab>
 

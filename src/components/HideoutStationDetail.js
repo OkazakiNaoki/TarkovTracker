@@ -1,12 +1,14 @@
 import React, { useState } from "react"
+import { ConstructRequirements } from "./ConstructRequirements"
+import { HideoutIcon } from "./HideoutIcon"
 import { TarkovStyleButton } from "./TarkovStyleButton"
+import { TextStroke } from "./TextStroke"
 
 const HideoutStationDetail = ({
   station,
-  level,
-  nextLevel,
+  curLevelIndex,
+  nextLevelIndex,
   increaseLevelHandle,
-  canConstruct = false,
 }) => {
   const [showUpgrade, setShowUpgrade] = useState(false)
 
@@ -15,53 +17,66 @@ const HideoutStationDetail = ({
   }
 
   return (
-    <div className="my-3 p-2" style={{ border: "1px solid white" }}>
-      {!canConstruct && (
-        <h2 className="text-center">{"Level 0" + level.level}</h2>
-      )}
-      <p className="text-center pb-4">{level.description}</p>
-      {(canConstruct || showUpgrade) &&
-        nextLevel &&
-        (nextLevel.itemRequirements.length > 0 ||
-          nextLevel.skillRequirements.length > 0 ||
-          nextLevel.stationLevelRequirements.length > 0 ||
-          nextLevel.traderRequirements.length > 0) && [
-          <p key="construct_heading" className="text-center fs-3">
-            {canConstruct
-              ? "CONSTRUCTION REQUIREMENTS"
-              : `LEVEL 0${level.level + 1} UPGRADE REQUIREMENTS`}
-          </p>,
-          <div
-            key="construct_reqs"
-            className="d-flex justify-content-center mb-5"
-          >
-            {nextLevel.itemRequirements.map((itemReq) => {
-              return itemReq.item.name + "  x" + itemReq.count + "\n"
-            })}
-            {nextLevel.skillRequirements.map((skillReq) => {
-              return skillReq.name + " level " + skillReq.level + "\n"
-            })}
-            {nextLevel.stationLevelRequirements.map((stationReq) => {
-              return (
-                stationReq.station.name + " level " + stationReq.level + "\n"
-              )
-            })}
-            {nextLevel.traderRequirements.map((traderReq) => {
-              return traderReq.trader.name + " level " + traderReq.level + "\n"
-            })}
-          </div>,
-        ]}
+    <div className="my-3" style={{ border: "1px solid white" }}>
+      {/* heading */}
+      <div
+        className="d-flex align-items-center"
+        style={{ backgroundColor: "#191919" }}
+      >
+        <HideoutIcon
+          iconName={station.id}
+          level={curLevelIndex + 1}
+          noHover={true}
+        />
+        <TextStroke
+          fontSize={40}
+          strokeWidth={6}
+          content={station.name}
+          color="#edebd6"
+        />
+      </div>
+      {/* inner */}
+      {/* station description */}
+      <p
+        className="mx-3 mt-3 mb-5"
+        style={{
+          fontFamily: "TarkovItalic",
+          color: "#9ea8ad",
+          lineHeight: "1.2",
+        }}
+      >
+        {station.levels[curLevelIndex !== -1 ? curLevelIndex : 0].description}
+      </p>
+      {/* station construct/upgrade requirement */}
+      {(curLevelIndex === -1 || showUpgrade) &&
+        station.levels[nextLevelIndex] &&
+        (station.levels[nextLevelIndex].itemRequirements.length > 0 ||
+          station.levels[nextLevelIndex].skillRequirements.length > 0 ||
+          station.levels[nextLevelIndex].stationLevelRequirements.length > 0 ||
+          station.levels[nextLevelIndex].traderRequirements.length > 0) && (
+          <>
+            <p className="text-center fs-3 mb-0" style={{ color: "#edebd6" }}>
+              {curLevelIndex === -1
+                ? "CONSTRUCTION REQUIREMENTS"
+                : `LEVEL 0${
+                    station.levels[curLevelIndex].level + 1
+                  } UPGRADE REQUIREMENTS`}
+            </p>
+            <ConstructRequirements level={station.levels[nextLevelIndex]} />
+          </>
+        )}
 
-      {!canConstruct &&
+      {/* craft */}
+      {curLevelIndex !== -1 &&
         !showUpgrade &&
-        level.crafts.length > 0 && [
+        station.levels[curLevelIndex].crafts.length > 0 && [
           <p key="craft_heading" className="text-center fs-3">
             PRODUCTION
           </p>,
           <div key="crafts">
             {station.levels.map((lvl) => {
               return lvl.crafts.map((c, i) => {
-                if (lvl.level <= level.level)
+                if (lvl.level <= station.levels[curLevelIndex].level)
                   return (
                     <div
                       key={station.name + c.level + "craft_" + i}
@@ -88,21 +103,24 @@ const HideoutStationDetail = ({
             })}
           </div>,
         ]}
-      {canConstruct && (
+      {/* buttons */}
+      {curLevelIndex === -1 && (
         <TarkovStyleButton
           text="CONSTRUCT"
           clickHandle={increaseLevelHandle}
           height={50}
         />
       )}
-      {!canConstruct && !showUpgrade && nextLevel && (
-        <TarkovStyleButton
-          key="upgradeable_show_upgrade"
-          text="UPGRADE"
-          clickHandle={showUpgradeHandle}
-          height={50}
-        />
-      )}
+      {curLevelIndex !== -1 &&
+        !showUpgrade &&
+        station.levels[nextLevelIndex] && (
+          <TarkovStyleButton
+            key="upgradeable_show_upgrade"
+            text="UPGRADE"
+            clickHandle={showUpgradeHandle}
+            height={50}
+          />
+        )}
       {showUpgrade && [
         <TarkovStyleButton
           key="upgradeable_back"

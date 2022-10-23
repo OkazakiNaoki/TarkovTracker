@@ -6,6 +6,7 @@ const TextStroke = ({
   content,
   strokeWidth = 1,
   selectable = true,
+  color = "white",
 }) => {
   return (
     <div
@@ -20,6 +21,7 @@ const TextStroke = ({
       <div
         className="position-absolute"
         style={{
+          strokeLinecap: "round",
           WebkitTextStroke: `${strokeWidth}px black`,
           color: "black",
           userSelect: "none",
@@ -29,7 +31,7 @@ const TextStroke = ({
       </div>
       <div
         className="position-absolute"
-        style={{ color: "white", userSelect: selectable ? "text" : "none" }}
+        style={{ color: color, userSelect: selectable ? "text" : "none" }}
       >
         {content}
       </div>

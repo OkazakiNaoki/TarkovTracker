@@ -1,11 +1,15 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
+import { TextStroke } from "./TextStroke"
 import hideoutSelectIcon from "../../public/static/images/hideout_selected.png"
 import hideoutSelectedIcon from "../../public/static/images/selected_border.png"
-import { TextStroke } from "./TextStroke"
+import hideoutLockIcon from "../../public/static/images/icon_lock.png"
+// import hideoutUnlockIcon from "../../public/static/images/icon_hideout_unlocked.png"
+import { FloatingMessageBox } from "./FloatingMessageBox"
 
 const HideoutIcon = ({
   iconName,
+  stationName = null,
   selected = false,
   level = null,
   greenOutlined = false,
@@ -14,21 +18,46 @@ const HideoutIcon = ({
   isElite = false,
   isProducing = false,
   asButton = false,
+  useNameBox = false,
 }) => {
+  // hooks state
   const [hoverHidden, setHoverHidden] = useState(true)
+  const [mainX, setMainX] = useState(0)
+  const [mainY, setMainY] = useState(0)
+  const [msgBoxDisplay, setMsgBoxDisplay] = useState("none")
+
+  // handles
+  const mouseMoveHandle = (e) => {
+    const { clientX, clientY } = e
+    setMainX(clientX)
+    setMainY(clientY)
+  }
+  const mouseEnterHandle = () => {
+    if (useNameBox) setMsgBoxDisplay("block")
+    if (!selected) setHoverHidden(false)
+  }
+  const mouseLeaveHandle = () => {
+    if (useNameBox) setMsgBoxDisplay("none")
+    if (!selected) setHoverHidden(true)
+  }
 
   return (
     <div
       className="position-relative"
       style={{ width: "104px", height: "110px" }}
       role={asButton ? "button" : null}
-      onMouseEnter={() => {
-        if (!selected && !noHover) setHoverHidden(false)
-      }}
-      onMouseLeave={() => {
-        if (!selected && !noHover) setHoverHidden(true)
-      }}
+      onMouseEnter={noHover ? null : mouseEnterHandle}
+      onMouseLeave={noHover ? null : mouseLeaveHandle}
+      onMouseMove={noHover ? null : mouseMoveHandle}
     >
+      {useNameBox && (
+        <FloatingMessageBox
+          posX={mainX}
+          posY={mainY}
+          display={msgBoxDisplay}
+          content={stationName}
+        />
+      )}
       {!greenOutlined && !redOutlined && (
         <Image
           src="/asset/hideout-icon-background.png"
@@ -71,7 +100,16 @@ const HideoutIcon = ({
         className="position-absolute top-50 start-50 translate-middle"
         hidden={!selected}
       />
-      {level && (
+      {level !== null && level === 0 && (
+        <Image
+          src={hideoutLockIcon}
+          className="position-absolute end-0 bottom-0"
+          style={{
+            transform: "translateX(-12px) translateY(-9px)",
+          }}
+        />
+      )}
+      {level !== null && level > 0 && (
         <div
           className="position-absolute start-50 top-50 tarkov-bold-700"
           style={{
