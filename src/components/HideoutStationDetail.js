@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useEffect } from "react"
 import { ConstructRequirements } from "./ConstructRequirements"
 import { HideoutIcon } from "./HideoutIcon"
 import { TarkovStyleButton } from "./TarkovStyleButton"
@@ -10,8 +11,16 @@ const HideoutStationDetail = ({
   nextLevelIndex,
   increaseLevelHandle,
 }) => {
+  // hooks state
   const [showUpgrade, setShowUpgrade] = useState(false)
+  const [meetReq, setMeetReq] = useState(false)
 
+  // hooks effect
+  useEffect(() => {
+    setShowUpgrade(false)
+  }, [curLevelIndex])
+
+  // handle
   const showUpgradeHandle = () => {
     setShowUpgrade(!showUpgrade)
   }
@@ -104,37 +113,66 @@ const HideoutStationDetail = ({
           </div>,
         ]}
       {/* buttons */}
-      {curLevelIndex === -1 && (
-        <TarkovStyleButton
-          text="CONSTRUCT"
-          clickHandle={increaseLevelHandle}
-          height={50}
-        />
-      )}
-      {curLevelIndex !== -1 &&
-        !showUpgrade &&
-        station.levels[nextLevelIndex] && (
-          <TarkovStyleButton
-            key="upgradeable_show_upgrade"
-            text="UPGRADE"
-            clickHandle={showUpgradeHandle}
-            height={50}
-          />
+      <div
+        className="d-flex justify-content-center"
+        style={{ backgroundColor: "#1e1e1e" }}
+      >
+        {curLevelIndex === -1 && (
+          <div className="my-1">
+            <TarkovStyleButton
+              fs={24}
+              text="CONSTRUCT"
+              color={meetReq ? "#e7e5d4" : "#595853"}
+              clickHandle={increaseLevelHandle}
+              height={50}
+              useAnim={true}
+            />
+          </div>
         )}
-      {showUpgrade && [
-        <TarkovStyleButton
-          key="upgradeable_back"
-          text="BACK"
-          clickHandle={showUpgradeHandle}
-          height={50}
-        />,
-        <TarkovStyleButton
-          key="upgradeable_upgrade"
-          text="UPGRADE"
-          clickHandle={increaseLevelHandle}
-          height={50}
-        />,
-      ]}
+        {curLevelIndex !== -1 &&
+          !showUpgrade &&
+          station.levels[nextLevelIndex] && (
+            <div className="my-1">
+              <TarkovStyleButton
+                fs={24}
+                key="upgradeable_show_upgrade"
+                text={`LEVEL ${curLevelIndex + 2}`}
+                color={meetReq ? "#e7e5d4" : "#595853"}
+                clickHandle={showUpgradeHandle}
+                height={50}
+                useAnim={true}
+              />
+            </div>
+          )}
+        {showUpgrade && [
+          <div key="upgradeable_back" className="flex-fill my-1">
+            <div className="d-flex justify-content-center">
+              <TarkovStyleButton
+                fs={24}
+                text="BACK"
+                color={meetReq ? "#e7e5d4" : "#595853"}
+                clickHandle={showUpgradeHandle}
+                height={50}
+                useAnim={true}
+              />
+            </div>
+          </div>,
+          <div key="upgradeable_upgrade" className="flex-fill my-1">
+            <div className="d-flex justify-content-center">
+              <TarkovStyleButton
+                fs={24}
+                text="UPGRADE"
+                color={meetReq ? "#e7e5d4" : "#595853"}
+                clickHandle={() => {
+                  increaseLevelHandle()
+                }}
+                height={50}
+                useAnim={true}
+              />
+            </div>
+          </div>,
+        ]}
+      </div>
     </div>
   )
 }

@@ -112,3 +112,24 @@ nav {
         transform: rotate(360deg) translateX(-1px) translateY(-1px);
     }
 }
+
+@keyframes tarkovBtnFadeIn {
+    from {
+        right: calc(-50% + 50px);
+        top: 50%;
+        transform: translateX(calc(-50% - 50px)) translateY(-50%);
+        opacity: 0;
+    }
+    to {
+        left: 50%;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        opacity: 1;
+    }
+}
+
+@keyframes tarkovBtnColorAlter {
+    to {
+        color: black;
+    }
+}
