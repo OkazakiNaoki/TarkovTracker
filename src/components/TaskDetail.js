@@ -16,6 +16,7 @@ const TaskDetail = ({
   completeable = false,
   finishClickHandles,
   taskCompleteHandle,
+  disableTurnIn = false,
 }) => {
   // hooks
   const [completeObjective, setCompleteObjective] = useState(null)
@@ -167,7 +168,7 @@ const TaskDetail = ({
               completeObjective &&
               (completeObjective.includes(objective.id) ? (
                 <Image src={blueCheck} className="ms-1" />
-              ) : (
+              ) : disableTurnIn ? null : (
                 <div className="ms-1">
                   <TarkovStyleButton
                     text="TURN IN"

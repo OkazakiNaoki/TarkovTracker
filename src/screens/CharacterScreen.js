@@ -27,7 +27,8 @@ import {
   getHideoutLevel,
   updateHideoutLevel,
 } from "../reducers/CharacterSlice"
-import { getTaskDetail } from "../reducers/TraderSlice"
+
+import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
@@ -64,7 +65,7 @@ const CharacterScreen = () => {
 
   // redux
   const { user } = useSelector((state) => state.user)
-  const { traders, tasksDetail, tasksDetailFetched } = useSelector(
+  const { initTasks, traders, tasksDetail, tasksDetailFetched } = useSelector(
     (state) => state.trader
   )
   const { hideout } = useSelector((state) => state.hideout)
@@ -100,6 +101,12 @@ const CharacterScreen = () => {
       }
     }
   }, [initSetup, playerLevel])
+
+  useEffect(() => {
+    if (!initTasks) {
+      dispatch(initializeTasks())
+    }
+  }, [initTasks])
 
   useEffect(() => {
     if (traders.length !== 0 && Object.keys(playerTaskFetched).length === 0) {
@@ -568,6 +575,10 @@ const CharacterScreen = () => {
                                                                     taskId
                                                                   )
                                                                 }}
+                                                                disableTurnIn={
+                                                                  status ===
+                                                                  "notQualify"
+                                                                }
                                                               />
                                                             )}
                                                         </div>
