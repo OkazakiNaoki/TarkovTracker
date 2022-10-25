@@ -1,14 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
+import qs from "qs"
 
 export const searchItemByName = createAsyncThunk(
   "fleamarket/searchItemByName",
   async (params) => {
     const { handbook = null, keyword = "", page = "" } = params
     try {
-      const { data } = await axios.get(
-        `/api/items?handbook=${handbook}&keyword=${keyword}&page=${page}`
-      )
+      const { data } = await axios.get("/api/items", {
+        params: {
+          handbook,
+          keyword,
+          page,
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params)
+        },
+      })
       return data
     } catch (error) {
       return error.response && error.response.data.message

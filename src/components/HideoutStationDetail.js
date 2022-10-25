@@ -36,6 +36,7 @@ const HideoutStationDetail = ({
           iconName={station.id}
           level={curLevelIndex + 1}
           noHover={true}
+          constructUnlock={true}
         />
         <TextStroke
           fontSize={40}

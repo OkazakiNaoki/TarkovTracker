@@ -40,18 +40,20 @@ const HideoutScreen = () => {
               <TarkovSpinner />
             </div>
           ) : (
-            hideout.map((el) => {
+            hideout.map((station) => {
               return (
                 <a
-                  key={el.id}
+                  key={station.id}
                   onClick={() => {
-                    setCurStation(el.id)
+                    setCurStation(station.id)
                   }}
                 >
                   <HideoutIcon
                     asButton={true}
-                    iconName={el.id}
-                    selected={curStation === el.id}
+                    iconName={station.id}
+                    stationName={station.name}
+                    selected={curStation === station.id}
+                    useNameBox={true}
                   />
                 </a>
               )
@@ -102,18 +104,38 @@ const HideoutScreen = () => {
                     return (
                       <div
                         key={el.name + level.level}
-                        className="my-3 p-2"
+                        className="my-3"
                         style={{ border: "1px solid white" }}
                       >
-                        <h2 className="text-center">
-                          {"Level " + level.level}
-                        </h2>
-                        <p className="pb-4 px-3">{level.description}</p>
+                        <div
+                          className="d-flex align-items-center justify-content-center py-1"
+                          style={{ backgroundColor: "#191919" }}
+                        >
+                          <TextStroke
+                            fontSize={40}
+                            strokeWidth={6}
+                            content={"Level " + level.level}
+                            color="#edebd6"
+                          />
+                        </div>
+                        <p
+                          className="mx-3 mt-3 mb-5"
+                          style={{
+                            fontFamily: "TarkovItalic",
+                            color: "#9ea8ad",
+                            lineHeight: "1.2",
+                          }}
+                        >
+                          {level.description}
+                        </p>
                         {(level.stationLevelRequirements.length > 0 ||
                           level.itemRequirements.length > 0 ||
                           level.traderRequirements.length > 0 ||
                           level.skillRequirements.length > 0) && (
-                          <p className="text-center fs-3">
+                          <p
+                            className="text-center fs-3 mb-0"
+                            style={{ color: "#edebd6" }}
+                          >
                             CONSTRUCTION REQUIREMENTS
                           </p>
                         )}
@@ -121,8 +143,8 @@ const HideoutScreen = () => {
                         <ConstructRequirements level={level} />
                         {level.crafts.length > 0 && (
                           <p
-                            key="production_title"
-                            className="text-center fs-3"
+                            className="text-center fs-3 mb-0"
+                            style={{ color: "#edebd6" }}
                           >
                             PRODUCTION
                           </p>

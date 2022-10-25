@@ -4,7 +4,7 @@ import { TextStroke } from "./TextStroke"
 import hideoutSelectIcon from "../../public/static/images/hideout_selected.png"
 import hideoutSelectedIcon from "../../public/static/images/selected_border.png"
 import hideoutLockIcon from "../../public/static/images/icon_lock.png"
-// import hideoutUnlockIcon from "../../public/static/images/icon_hideout_unlocked.png"
+import hideoutUnlockIcon from "../../public/static/images/icon_status_unlocked.png"
 import { FloatingMessageBox } from "./FloatingMessageBox"
 
 const HideoutIcon = ({
@@ -19,6 +19,7 @@ const HideoutIcon = ({
   isProducing = false,
   asButton = false,
   useNameBox = false,
+  constructUnlock = false,
 }) => {
   // hooks state
   const [hoverHidden, setHoverHidden] = useState(true)
@@ -100,12 +101,21 @@ const HideoutIcon = ({
         className="position-absolute top-50 start-50 translate-middle"
         hidden={!selected}
       />
-      {level !== null && level === 0 && (
+      {level !== null && level === 0 && !constructUnlock && (
         <Image
           src={hideoutLockIcon}
           className="position-absolute end-0 bottom-0"
           style={{
             transform: "translateX(-12px) translateY(-9px)",
+          }}
+        />
+      )}
+      {level !== null && level === 0 && constructUnlock && (
+        <Image
+          src={hideoutUnlockIcon}
+          className="position-absolute end-0 bottom-0"
+          style={{
+            transform: "translateX(-6px) translateY(-9px)",
           }}
         />
       )}
