@@ -222,7 +222,7 @@ const FleamarketScreen = () => {
           </Dropdown>
         </InputGroup>
 
-        <Row>
+        <Row className="mb-3">
           {isLoading
             ? new Array(12).fill().map((el, i) => {
                 return (
@@ -252,13 +252,15 @@ const FleamarketScreen = () => {
               ))}
         </Row>
 
-        <Paginate
-          page={statePage}
-          pages={statePages}
-          keyword={keyword}
-          handbook={treeCheck}
-          setSearchParams={setSearchParams}
-        />
+        <div className="d-flex justify-content-center">
+          <Paginate
+            page={statePage}
+            pages={statePages}
+            keyword={keyword}
+            handbook={treeCheck}
+            setSearchParams={setSearchParams}
+          />
+        </div>
       </Container>
     </>
   )

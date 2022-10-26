@@ -28,8 +28,9 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
       }
     }
     return willRender ? (
-      <div
-        key={pageNum}
+      <Pagination.Item
+        key={`page_${pageNum}`}
+        active={pageNum === page}
         onClick={() => {
           setSearchParams({
             handbook: handbook.length > 0 ? JSON.stringify(handbook) : "",
@@ -38,16 +39,26 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
           })
         }}
       >
-        <Pagination.Item active={pageNum === page}>{pageNum}</Pagination.Item>
-      </div>
+        {pageNum}
+      </Pagination.Item>
     ) : null
   }
 
   return (
     pages > 1 && (
-      <Pagination>
-        <div
-          key="most-forward"
+      <Pagination
+        style={{
+          "--bs-pagination-padding-x": "1rem",
+          "--bs-pagination-color": "#b7ad9c",
+          "--bs-pagination-bg": "#212529",
+          "--bs-pagination-border-color": "#495154",
+          "--bs-pagination-active-color": "black",
+          "--bs-pagination-active-bg": "#b7ad9c",
+          "--bs-pagination-active-border-color": "#b7ad9c",
+          "--bs-pagination-hover-color": "black",
+        }}
+      >
+        <Pagination.First
           onClick={() => {
             setSearchParams({
               handbook: handbook.length > 0 ? JSON.stringify(handbook) : "",
@@ -55,14 +66,11 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
               page: 1,
             })
           }}
-        >
-          <Pagination.Item>{"<<"}</Pagination.Item>
-        </div>
+        />
         {[...Array(pages).keys()].map((x) => {
           return GetRange(x + 1)
         })}
-        <div
-          key="most-back"
+        <Pagination.Last
           onClick={() => {
             setSearchParams({
               handbook: handbook.length > 0 ? JSON.stringify(handbook) : "",
@@ -70,9 +78,7 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
               page: pages,
             })
           }}
-        >
-          <Pagination.Item>{">>"}</Pagination.Item>
-        </div>
+        />
       </Pagination>
     )
   )
