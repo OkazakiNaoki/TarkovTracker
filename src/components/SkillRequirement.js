@@ -4,21 +4,32 @@ import { SkillIcon } from "./SkillIcon"
 import itemFulfillIcon from "../../public/static/images/icon_requirement_fulfilled.png"
 import itemLockedIcon from "../../public/static/images/icon_requirement_locked.png"
 
-const SkillRequirement = ({ skillName, level, fulfill = false }) => {
+const SkillRequirement = ({
+  skillName,
+  level,
+  fulfill = false,
+  showFullfill = false,
+  useNameBox = false,
+}) => {
   return (
     <div>
       <div
         className="d-flex justify-content-center"
         style={{ marginBottom: "-4px" }}
       >
-        <SkillIcon skillName={skillName} level={level} />
+        <SkillIcon
+          skillName={skillName}
+          level={level}
+          useNameBox={useNameBox}
+        />
       </div>
       <div className="d-flex justify-content-center">
-        {fulfill ? (
-          <Image src={itemFulfillIcon} />
-        ) : (
-          <Image src={itemLockedIcon} />
-        )}
+        {showFullfill &&
+          (fulfill ? (
+            <Image src={itemFulfillIcon} />
+          ) : (
+            <Image src={itemLockedIcon} />
+          ))}
       </div>
     </div>
   )

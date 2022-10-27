@@ -7,13 +7,17 @@ import { TextStroke } from "./TextStroke"
 
 const HideoutStationDetail = ({
   station,
+  playerHideoutLevel,
   curLevelIndex,
   nextLevelIndex,
   increaseLevelHandle,
 }) => {
   // hooks state
   const [showUpgrade, setShowUpgrade] = useState(false)
-  const [meetReq, setMeetReq] = useState(false)
+  const [meetHideoutReq, setMeetHideoutReq] = useState(true)
+  const [meetItemReq, setMeetItemReq] = useState(true)
+  const [meetTraderReq, setMeetTraderReq] = useState(true)
+  const [meetSkillReq, setMeetSkillReq] = useState(true)
 
   // hooks effect
   useEffect(() => {
@@ -36,7 +40,23 @@ const HideoutStationDetail = ({
           iconName={station.id}
           level={curLevelIndex + 1}
           noHover={true}
-          constructUnlock={true}
+          constructUnlock={
+            meetHideoutReq && meetItemReq && meetTraderReq && meetTraderReq
+          }
+          greenOutlined={
+            curLevelIndex === -1 &&
+            meetHideoutReq &&
+            meetItemReq &&
+            meetTraderReq &&
+            meetTraderReq
+          }
+          redOutlined={
+            curLevelIndex === -1 &&
+            (!meetHideoutReq ||
+              !meetItemReq ||
+              !meetTraderReq ||
+              !meetTraderReq)
+          }
         />
         <TextStroke
           fontSize={40}
@@ -72,7 +92,15 @@ const HideoutStationDetail = ({
                     station.levels[curLevelIndex].level + 1
                   } UPGRADE REQUIREMENTS`}
             </p>
-            <ConstructRequirements level={station.levels[nextLevelIndex]} />
+            <ConstructRequirements
+              level={station.levels[nextLevelIndex]}
+              showFulfill={true}
+              setMeetHideoutReq={setMeetHideoutReq}
+              setMeetItemReq={setMeetItemReq}
+              setMeetTraderReq={setMeetTraderReq}
+              setMeetSkillReq={setMeetSkillReq}
+              playerHideoutLevel={playerHideoutLevel}
+            />
           </>
         )}
 
@@ -123,10 +151,20 @@ const HideoutStationDetail = ({
             <TarkovStyleButton
               fs={24}
               text="CONSTRUCT"
-              color={meetReq ? "#e7e5d4" : "#595853"}
+              color={
+                meetHideoutReq && meetItemReq && meetTraderReq && meetTraderReq
+                  ? "#e7e5d4"
+                  : "#595853"
+              }
               clickHandle={increaseLevelHandle}
               height={50}
               useAnim={true}
+              lockButton={
+                !meetHideoutReq ||
+                !meetItemReq ||
+                !meetTraderReq ||
+                !meetTraderReq
+              }
             />
           </div>
         )}
@@ -138,7 +176,7 @@ const HideoutStationDetail = ({
                 fs={24}
                 key="upgradeable_show_upgrade"
                 text={`LEVEL ${curLevelIndex + 2}`}
-                color={meetReq ? "#e7e5d4" : "#595853"}
+                color={"#e7e5d4"}
                 clickHandle={showUpgradeHandle}
                 height={50}
                 useAnim={true}
@@ -151,7 +189,7 @@ const HideoutStationDetail = ({
               <TarkovStyleButton
                 fs={24}
                 text="BACK"
-                color={meetReq ? "#e7e5d4" : "#595853"}
+                color={"#e7e5d4"}
                 clickHandle={showUpgradeHandle}
                 height={50}
                 useAnim={true}
@@ -163,12 +201,25 @@ const HideoutStationDetail = ({
               <TarkovStyleButton
                 fs={24}
                 text="UPGRADE"
-                color={meetReq ? "#e7e5d4" : "#595853"}
+                color={
+                  meetHideoutReq &&
+                  meetItemReq &&
+                  meetTraderReq &&
+                  meetTraderReq
+                    ? "#e7e5d4"
+                    : "#595853"
+                }
                 clickHandle={() => {
                   increaseLevelHandle()
                 }}
                 height={50}
                 useAnim={true}
+                lockButton={
+                  !meetHideoutReq ||
+                  !meetItemReq ||
+                  !meetTraderReq ||
+                  !meetTraderReq
+                }
               />
             </div>
           </div>,

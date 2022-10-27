@@ -28,7 +28,7 @@ const ItemRequirement = ({
       </div>
       <div className="d-flex align-items-center justify-content-center">
         <div className={`d-inline-block ${showFulfill ? "me-1" : ""}`}>
-          {curAmount !== null && curAmount + "/"}
+          {showFulfill && curAmount !== null && curAmount + "/"}
           {reqAmount}
         </div>
         {showFulfill &&

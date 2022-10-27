@@ -1,12 +1,43 @@
-import React from "react"
+import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import { skillIconMap } from "../data/SkillIconMap"
+import { FloatingMessageBox } from "./FloatingMessageBox"
 import skillBorder from "../../public/static/images/skill_border.png"
 import levelBadge from "../../public/static/images/skill_level_panel.png"
 
-const SkillIcon = ({ skillName, level = null }) => {
+const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
+  // hooks state
+  const [mainX, setMainX] = useState(0)
+  const [mainY, setMainY] = useState(0)
+  const [msgBoxDisplay, setMsgBoxDisplay] = useState("none")
+
+  // handles
+  const mouseMoveHandle = (e) => {
+    const { clientX, clientY } = e
+    setMainX(clientX)
+    setMainY(clientY)
+  }
+  const mouseEnterHandle = () => {
+    setMsgBoxDisplay("block")
+  }
+  const mouseLeaveHandle = () => {
+    setMsgBoxDisplay("none")
+  }
+
   return (
-    <div>
+    <div
+      onMouseEnter={useNameBox ? mouseEnterHandle : null}
+      onMouseLeave={useNameBox ? mouseLeaveHandle : null}
+      onMouseMove={useNameBox ? mouseMoveHandle : null}
+    >
+      {useNameBox && (
+        <FloatingMessageBox
+          posX={mainX}
+          posY={mainY}
+          display={msgBoxDisplay}
+          content={skillName}
+        />
+      )}
       <div
         className="position-relative"
         style={{

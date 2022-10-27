@@ -9,6 +9,7 @@ const TarkovStyleButton = ({
   height = "auto",
   fs = 16,
   useAnim = false,
+  lockButton = false,
 }) => {
   const [isHover, setIsHover] = useState(false)
 
@@ -21,7 +22,7 @@ const TarkovStyleButton = ({
 
   return (
     <div
-      role="button"
+      role={lockButton ? null : "button"}
       className="d-flex justify-content-center align-items-center"
       style={{
         height: `${height}px`,
@@ -29,9 +30,9 @@ const TarkovStyleButton = ({
         fontSize: `${fs}px`,
         color: "black",
       }}
-      onClick={clickHandle}
-      onMouseEnter={useAnim ? mouseEnterHandle : null}
-      onMouseLeave={useAnim ? mouseLeaveHandle : null}
+      onClick={lockButton ? null : clickHandle}
+      onMouseEnter={useAnim && !lockButton ? mouseEnterHandle : null}
+      onMouseLeave={useAnim && !lockButton ? mouseLeaveHandle : null}
     >
       <div className="position-relative">
         <Image
@@ -41,11 +42,11 @@ const TarkovStyleButton = ({
             height: `${height}px`,
             aspectRatio: `${232 / 51}`,
             animation:
-              useAnim && isHover
+              useAnim && isHover && !lockButton
                 ? "tarkovBtnFadeIn 0.2s ease-out forwards"
                 : "none",
             transform: `translateX(-50%) translateY(-50%)`,
-            opacity: useAnim ? "0" : "1",
+            opacity: useAnim || lockButton ? "0" : "1",
           }}
         />
         <div
@@ -55,7 +56,7 @@ const TarkovStyleButton = ({
             transform: `translateX(-50%) translateY(-50%)`,
             whiteSpace: "nowrap",
             animation:
-              useAnim && isHover
+              useAnim && isHover && !lockButton
                 ? "tarkovBtnColorAlter 0.2s ease-out forwards"
                 : "none",
           }}

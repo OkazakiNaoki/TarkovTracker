@@ -8,6 +8,7 @@ const HideoutRequirement = ({
   hideoutId,
   hideoutName,
   level,
+  showFulfill = false,
   fulfill = false,
 }) => {
   return (
@@ -16,18 +17,22 @@ const HideoutRequirement = ({
         <HideoutIcon
           iconName={hideoutId}
           level={level}
-          redOutlined={true}
+          redOutlined={!fulfill}
           noHover={true}
         />
       </div>
-      <div className="d-inline-block me-2" style={{ color: "#c40000" }}>
+      <div
+        className="d-inline-block me-2"
+        style={{ color: fulfill ? "white" : "#c40000" }}
+      >
         {hideoutName}
       </div>
-      {fulfill ? (
-        <Image src={itemFulfillIcon} style={{ margin: "0 -8px 0 -6px" }} />
-      ) : (
-        <Image src={itemLockedIcon} style={{ margin: "0 -8px 0 -6px" }} />
-      )}
+      {showFulfill &&
+        (fulfill ? (
+          <Image src={itemFulfillIcon} style={{ margin: "0 -8px 0 -6px" }} />
+        ) : (
+          <Image src={itemLockedIcon} style={{ margin: "0 -8px 0 -6px" }} />
+        ))}
     </div>
   )
 }

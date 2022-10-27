@@ -37,11 +37,9 @@ import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
 import { ConfirmModal } from "../components/ConfirmModal"
-import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { QuestItems } from "../components/QuestItems"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { DivLoading } from "../components/DivLoading"
-import { TextStroke } from "../components/TextStroke"
 
 const CharacterScreen = () => {
   // hooks
@@ -369,7 +367,7 @@ const CharacterScreen = () => {
                 </Col>
               </Row>
             </Col>
-            <Col>
+            <Col lg={9}>
               {/* TASK */}
               <Tabs
                 defaultActiveKey="task"
@@ -630,6 +628,7 @@ const CharacterScreen = () => {
                       currentStation && (
                         <HideoutStationDetail
                           station={currentStation}
+                          playerProgress={playerHideoutLevel}
                           curLevelIndex={-1}
                           nextLevelIndex={0}
                           increaseLevelHandle={() => {
@@ -654,6 +653,7 @@ const CharacterScreen = () => {
                       currentStation && (
                         <HideoutStationDetail
                           station={currentStation}
+                          playerHideoutLevel={playerHideoutLevel}
                           curLevelIndex={levelInfoOfCurrentStation.level}
                           nextLevelIndex={levelInfoOfCurrentStation.level + 1}
                           increaseLevelHandle={() => {
