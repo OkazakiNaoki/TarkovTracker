@@ -628,9 +628,7 @@ const CharacterScreen = () => {
                       currentStation && (
                         <HideoutStationDetail
                           station={currentStation}
-                          playerProgress={playerHideoutLevel}
                           curLevelIndex={-1}
-                          nextLevelIndex={0}
                           increaseLevelHandle={() => {
                             if (currentStation.levels?.[0]) {
                               setConfirmModalTitle(
@@ -653,9 +651,7 @@ const CharacterScreen = () => {
                       currentStation && (
                         <HideoutStationDetail
                           station={currentStation}
-                          playerHideoutLevel={playerHideoutLevel}
                           curLevelIndex={levelInfoOfCurrentStation.level}
-                          nextLevelIndex={levelInfoOfCurrentStation.level + 1}
                           increaseLevelHandle={() => {
                             if (
                               currentStation.levels?.[

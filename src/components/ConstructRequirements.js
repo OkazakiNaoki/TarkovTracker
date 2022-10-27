@@ -1,9 +1,12 @@
 import React from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { getHideoutLevel, getInventoryItem } from "../reducers/CharacterSlice"
 import { HideoutRequirement } from "./HideoutRequirement"
 import { ItemRequirement } from "./ItemRequirement"
 import { SkillRequirement } from "./SkillRequirement"
 import { TraderRequirement } from "./TraderRequirement"
 import itemInfoBg from "../../public/static/images/info_window_back.png"
+import { useEffect } from "react"
 
 const ConstructRequirements = ({
   level,
@@ -12,11 +15,29 @@ const ConstructRequirements = ({
   setMeetItemReq,
   setMeetTraderReq,
   setMeetSkillReq,
-  playerHideoutLevel,
 }) => {
-  // hooks state
+  // redux state
+  const { playerHideoutLevel, playerInventory } = useSelector(
+    (state) => state.character
+  )
+  // redux dispatch
+  const dispatch = useDispatch()
+
+  // hooks effect
+  useEffect(() => {
+    if (!playerHideoutLevel) {
+      dispatch(getHideoutLevel())
+    }
+  }, [playerHideoutLevel])
+
+  useEffect(() => {
+    if (!playerInventory) {
+      dispatch(getInventoryItem())
+    }
+  }, [playerInventory])
 
   let hideoutFulfillCount = 0
+  let itemFulfillCount = 0
 
   return (
     <div
@@ -61,6 +82,22 @@ const ConstructRequirements = ({
       {level.itemRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.itemRequirements.map((itemReq, i) => {
+            let fulfill = false
+            let itemOwnCount = 0
+            if (playerInventory) {
+              playerInventory.forEach((item) => {
+                if (item.itemId === itemReq.item.id) {
+                  itemOwnCount = item.count
+                  if (item.count >= itemReq.count) {
+                    fulfill = true
+                    itemFulfillCount += 1
+                  }
+                }
+              })
+            }
+            if (itemFulfillCount === level.itemRequirements.length) {
+              setMeetItemReq(true)
+            }
             return (
               <div className="mx-3" key={`item_req_${i}`}>
                 <ItemRequirement
@@ -68,7 +105,7 @@ const ConstructRequirements = ({
                   itemName={itemReq.item.name}
                   bgColor={itemReq.item.backgroundColor}
                   reqAmount={itemReq.count}
-                  curAmount={"plhd"}
+                  curAmount={itemOwnCount}
                   showFulfill={showFulfill}
                 />
               </div>

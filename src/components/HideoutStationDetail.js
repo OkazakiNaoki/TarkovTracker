@@ -7,7 +7,6 @@ import { TextStroke } from "./TextStroke"
 
 const HideoutStationDetail = ({
   station,
-  playerHideoutLevel,
   curLevelIndex,
   nextLevelIndex,
   increaseLevelHandle,
@@ -99,7 +98,6 @@ const HideoutStationDetail = ({
               setMeetItemReq={setMeetItemReq}
               setMeetTraderReq={setMeetTraderReq}
               setMeetSkillReq={setMeetSkillReq}
-              playerHideoutLevel={playerHideoutLevel}
             />
           </>
         )}
