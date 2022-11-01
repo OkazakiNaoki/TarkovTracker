@@ -11,11 +11,10 @@ import {
   getTaskObjectiveProgress,
   updateTaskObjectiveProgress,
 } from "../controllers/PlayerTaskController.js"
-
 import {
-  addTraderLL,
-  updateTraderLL,
-  getTraderLL,
+  getTraderProgress,
+  addTraderProgress,
+  updateTraderProgress,
 } from "../controllers/PlayerTraderController.js"
 import {
   addCharacterData,
@@ -61,9 +60,9 @@ router
 
 router
   .route("/trader/LL")
-  .get(protect, getTraderLL)
-  .post(protect, addTraderLL)
-  .put(protect, updateTraderLL)
+  .get(protect, getTraderProgress)
+  .post(protect, addTraderProgress)
+  .put(protect, updateTraderProgress)
 
 router
   .route("/hideout/level")

@@ -15,6 +15,10 @@ const playerCharacterDataSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  gameEdition: {
+    type: String,
+    required: true,
+  },
 })
 
 const PlayerCharacterData = mongoose.model(

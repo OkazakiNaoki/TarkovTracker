@@ -351,6 +351,7 @@ export const addCharacterData = createAsyncThunk(
   async (params, { getState }) => {
     const characterLevel = params.characterLevel
     const characterFaction = params.characterFaction
+    const gameEdition = params.gameEdition
     try {
       const { user } = getState().user
 
@@ -366,6 +367,7 @@ export const addCharacterData = createAsyncThunk(
           characterData: {
             characterLevel: characterLevel,
             characterFaction: characterFaction,
+            gameEdition: gameEdition,
           },
         },
         config
@@ -400,6 +402,7 @@ export const updateCharacterData = createAsyncThunk(
           characterData: {
             characterLevel: characterLevel,
             characterFaction: getState().character.playerFaction,
+            gameEdition: getState().character.gameEdition,
           },
         },
         config
@@ -614,19 +617,55 @@ export const updateInventoryItem = createAsyncThunk(
   }
 )
 
+export const addTraderProgress = createAsyncThunk(
+  "character/addTraderProgress",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const traderLL = await axios.post(
+        `/api/player/trader/LL`,
+        {
+          traderLL: params.traderLL,
+          traderRep: params.traderRep,
+          traderSpent: params.traderSpent,
+        },
+        config
+      )
+      const traderLLData = traderLL.data
+
+      return traderLLData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
-    gameEdition: null, // not use yet
-    initSetup: null,
+    initSetup: false,
+    // player basic data
     playerLevel: 0,
     playerFaction: null,
+    gameEdition: null,
+    // task progress
     playerTasksInfo: {},
     playerCompletedObjectives: null,
     playerObjectiveProgress: null,
+    // trader progress
     unlockedJaeger: false, // not use yet
-    traderLoyaltyLevel: {}, // not use yet
+    traderProgress: null,
     playerHideoutLevel: null,
+    // inventory
     playerInventory: null,
   },
   reducers: {
@@ -636,11 +675,6 @@ const characterSlice = createSlice({
     initPlayerTasks: (state, action) => {
       for (let i = 0; i < action.payload.length; i++) {
         state.playerTasksInfo[`${action.payload[i]}`] = null
-      }
-    },
-    initTraderLoyaltyLevel: (state, action) => {
-      for (let i = 0; i < action.payload.length; i++) {
-        state.traderLoyaltyLevel[`${action.payload[i]}`] = null
       }
     },
   },
@@ -692,6 +726,7 @@ const characterSlice = createSlice({
       .addCase(addCharacterData.fulfilled, (state, action) => {
         state.playerLevel = action.payload.characterLevel
         state.playerFaction = action.payload.characterFaction
+        state.gameEdition = action.payload.gameEdition
       })
       .addCase(addCharacterData.rejected, (state, action) => {})
       .addCase(updateCharacterData.pending, (state, action) => {})
@@ -705,6 +740,7 @@ const characterSlice = createSlice({
         if (typeof action.payload === "object") {
           state.playerLevel = action.payload.data.characterLevel
           state.playerFaction = action.payload.data.characterFaction
+          state.gameEdition = action.payload.data.gameEdition
           state.initSetup = true
         } else {
           state.initSetup = false
@@ -741,6 +777,11 @@ const characterSlice = createSlice({
         state.playerInventory = action.payload
       })
       .addCase(updateInventoryItem.rejected, (state, action) => {})
+      .addCase(addTraderProgress.pending, (state, action) => {})
+      .addCase(addTraderProgress.fulfilled, (state, action) => {
+        state.traderProgress = action.payload
+      })
+      .addCase(addTraderProgress.rejected, (state, action) => {})
   },
 })
 

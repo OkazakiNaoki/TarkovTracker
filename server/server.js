@@ -48,6 +48,10 @@ app.use(
   express.static(join(__dirname, "public/images/handbook-icons"))
 )
 app.use("/asset", express.static(join(__dirname, "public/images/skill-icons")))
+app.use(
+  "/asset",
+  express.static(join(__dirname, "public/images/game-edition-images"))
+)
 
 app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)

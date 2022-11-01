@@ -17,6 +17,7 @@ export const addCharacterData = asyncHandler(async (req, res) => {
         user: req.user._id,
         characterLevel: characterData.characterLevel,
         characterFaction: characterData.characterFaction,
+        gameEdition: characterData.gameEdition,
       })
       const createdPcd = await pcd.save()
       res.status(201).json(createdPcd)
@@ -42,6 +43,7 @@ export const updateCharacterData = asyncHandler(async (req, res) => {
     } else {
       existPcd.characterLevel = characterData.characterLevel
       existPcd.characterFaction = characterData.characterFaction
+      existPcd.gameEdition = characterData.gameEdition
       const updatedPcd = await existPcd.save()
       res.json(updatedPcd)
     }
@@ -59,6 +61,7 @@ export const getCharacterData = asyncHandler(async (req, res) => {
     res.json({
       characterLevel: pcd.characterLevel,
       characterFaction: pcd.characterFaction,
+      gameEdition: pcd.gameEdition,
     })
   }
 })

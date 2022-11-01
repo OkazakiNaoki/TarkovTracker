@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react"
 import { Modal, Button, Row, Col } from "react-bootstrap"
+import { Plus, Dash } from "react-bootstrap-icons"
 
-const AddValueModal = ({
+const EditValueModal = ({
   show,
   title = null,
   value,
-  valueCap,
+  minValue = 0,
+  maxValue,
   setValueHandle,
   closeHandle,
 }) => {
   const [localValue, setLocalValue] = useState(0)
 
   useEffect(() => {
-    if (value !== 0) {
-      setLocalValue(value)
-    }
+    setLocalValue(value)
   }, [value])
 
   const fiddleValue = (step) => {
-    if (localValue + step < 0 || localValue + step > valueCap) {
+    if (localValue + step < minValue || localValue + step > maxValue) {
       return
     }
     setLocalValue(localValue + step)
@@ -33,10 +33,10 @@ const AddValueModal = ({
       backdrop="static"
       style={{ "--bs-modal-bg": "#080605" }}
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className="sandbeige">
         {title && <Modal.Title id={`${title}`}>{title}</Modal.Title>}
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ backgroundColor: "#191919" }}>
         <Row>
           <Col xs={4}>
             <div
@@ -44,14 +44,20 @@ const AddValueModal = ({
               style={{ aspectRatio: "1" }}
             >
               <Button
+                className="d-flex justify-content-center align-items-center"
                 variant="danger"
-                className="fs-1 rounded-circle"
                 onClick={() => {
                   fiddleValue(-1)
                 }}
-                style={{ width: "60%", height: "60%" }}
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "20px",
+                  fontSize: "40px",
+                  verticalAlign: "middle",
+                }}
               >
-                -
+                <Dash />
               </Button>
             </div>
           </Col>
@@ -60,7 +66,7 @@ const AddValueModal = ({
               className="d-flex justify-content-center align-items-center"
               style={{ aspectRatio: "1" }}
             >
-              <span className="fs-1">{localValue}</span>
+              <span style={{ fontSize: "70px" }}>{localValue}</span>
             </div>
           </Col>
           <Col xs={4}>
@@ -69,14 +75,19 @@ const AddValueModal = ({
               style={{ aspectRatio: "1" }}
             >
               <Button
+                className="d-flex justify-content-center align-items-center"
                 variant="success"
-                className="fs-1 rounded-circle"
                 onClick={() => {
                   fiddleValue(1)
                 }}
-                style={{ width: "60%", height: "60%" }}
+                style={{
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "20px",
+                  fontSize: "40px",
+                }}
               >
-                +
+                <Plus />
               </Button>
             </div>
           </Col>
@@ -99,4 +110,4 @@ const AddValueModal = ({
   )
 }
 
-export { AddValueModal }
+export { EditValueModal }

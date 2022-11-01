@@ -15,7 +15,7 @@ const TraderCard = ({ trader, standing = 1, rep = 0.2, resetTime = null }) => {
         backgroundColor: "black",
       }}
     >
-      <div className="pt-3 px-3 pb-1" style={{ width: "fit-content" }}>
+      <div className="pt-3 px-3 pb-1">
         <TraderIcon trader={trader} />
         <div
           className="text-center"

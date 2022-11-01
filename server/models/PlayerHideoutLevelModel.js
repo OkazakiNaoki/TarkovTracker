@@ -14,10 +14,6 @@ const hideoutLevel = mongoose.Schema({
     type: String,
     required: false,
   },
-  maxed: {
-    type: Boolean,
-    required: true,
-  },
 })
 
 const playerHideoutLevelSchema = mongoose.Schema({

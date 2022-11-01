@@ -79,13 +79,14 @@ const TaskScreen = () => {
       <Container className="py-5">
         <div className="d-flex justify-content-center">
           <div style={{ width: "696px" }}>
-            <Row xs={4} className="g-3">
+            <Row xs={2} sm={3} md={4} className="g-3">
               {traders.length !== 0 &&
                 traders.map((trader, i) => {
                   return (
                     <Col key={i}>
                       <div
                         role="button"
+                        className="d-flex justify-content-center"
                         onClick={() => {
                           setCurTrader(trader.name)
                         }}

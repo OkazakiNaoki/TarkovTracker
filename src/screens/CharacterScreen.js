@@ -26,13 +26,13 @@ import {
   updateCharacterData,
   getHideoutLevel,
   updateHideoutLevel,
+  addTraderProgress,
 } from "../reducers/CharacterSlice"
-
 import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
-import { AddValueModal } from "../components/AddValueModal"
+import { EditValueModal } from "../components/EditValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
@@ -40,28 +40,35 @@ import { ConfirmModal } from "../components/ConfirmModal"
 import { QuestItems } from "../components/QuestItems"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { DivLoading } from "../components/DivLoading"
+import { TraderCard } from "../components/TraderCard"
+import { TraderRelationModal } from "../components/TraderRelationModal"
 
 const CharacterScreen = () => {
-  // hooks
+  //// hooks state
+  // player basic data
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
+  const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
+  // player task
   const [playerTaskFetched, setPlayerTaskFetched] = useState({})
   const [showCompleteTask, setShowCompleteTask] = useState(false)
   const [showOngoingTask, setShowOngoingTask] = useState(true)
   const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
   const [collapseDetail, setCollapseDetail] = useState({})
-  const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
+  // player trader
+  const [openTraderSettingModal, setOpenTraderSettingModal] = useState(false)
+  // player hideout
   const [currentStationId, setCurrentStationId] = useState(
     "5d388e97081959000a123acf"
   )
   const [currentStation, setCurrentStation] = useState(null)
   const [levelInfoOfCurrentStation, setLevelInfoOfCurrentStation] =
     useState(null)
-  const [confirmModalTitle, setConfirmModalTitle] = useState("")
+  const [hideoutModalTitle, setHideoutModalTitle] = useState("")
   const [confirmModalContent, setConfirmModalContent] = useState("")
-  const [openConfirmModal, setOpenConfirmModal] = useState(false)
+  const [openHideoutModal, setOpenHideoutModal] = useState(false)
   const [confirmFunc, setConfirmFunc] = useState(() => () => {})
 
-  // redux
+  //// redux state
   const { user } = useSelector((state) => state.user)
   const { initTasks, traders, tasksDetail, tasksDetailFetched } = useSelector(
     (state) => state.trader
@@ -71,6 +78,7 @@ const CharacterScreen = () => {
     initSetup,
     playerLevel,
     playerFaction,
+    gameEdition,
     playerTasksInfo,
     unlockedJaeger,
     traderLoyaltyLevel,
@@ -83,9 +91,10 @@ const CharacterScreen = () => {
   // redux debug
   const charState = useSelector((state) => state.character)
 
-  // effects
+  //// hooks effects
+  // pick level icon for player's level
   useEffect(() => {
-    if (initSetup === null) {
+    if (!initSetup) {
       dispatch(getCharacterData())
     }
     if (initSetup) {
@@ -100,12 +109,14 @@ const CharacterScreen = () => {
     }
   }, [initSetup, playerLevel])
 
+  // initialize player task data
   useEffect(() => {
     if (!initTasks) {
       dispatch(initializeTasks())
     }
   }, [initTasks])
 
+  // initialize fetched record of task list(base on player progress)
   useEffect(() => {
     if (traders.length !== 0 && Object.keys(playerTaskFetched).length === 0) {
       const needRefresh = {}
@@ -116,15 +127,14 @@ const CharacterScreen = () => {
     }
   }, [traders])
 
+  // initialize task list
   useEffect(() => {
     if (traders.length !== 0 && Object.keys(playerTasksInfo).length === 0) {
       dispatch(initPlayerTasks(traders.map((trader) => trader.name)))
     }
-    if (traders.length !== 0 && Object.keys(traderLoyaltyLevel).length === 0) {
-      dispatch(initPlayerTasks(traders.map((trader) => trader.name)))
-    }
   }, [traders])
 
+  // on fetched record of task list(base on player progress) change, initialize collapse status of each task(of a trader just fetched)
   useEffect(() => {
     const newCollapse = { ...collapseDetail }
     for (const trader in playerTaskFetched) {
@@ -139,37 +149,43 @@ const CharacterScreen = () => {
     setCollapseDetail(newCollapse)
   }, [traders, playerTaskFetched])
 
+  // get player task completed objectives
   useEffect(() => {
     if (initSetup && !playerCompletedObjectives) {
       dispatch(getCompletedObjectives())
     }
   }, [initSetup, playerCompletedObjectives])
 
+  // get player task objectives progress
   useEffect(() => {
     if (initSetup && !playerObjectiveProgress) {
       dispatch(getObjectiveProgress())
     }
   }, [initSetup, playerObjectiveProgress])
 
+  // get all hideout station
   useEffect(() => {
-    if (hideout.length === 0) {
+    if (!hideout) {
       dispatch(getAllHideout())
     }
   }, [hideout])
 
+  // get hideout data of current selected station ID
   useEffect(() => {
-    if (hideout.length > 0) {
+    if (hideout && hideout.length > 0) {
       const index = getIndexOfMatchFieldObjArr(hideout, "id", currentStationId)
       setCurrentStation(hideout[index])
     }
   }, [hideout, currentStationId])
 
+  // get player hideout station level
   useEffect(() => {
     if (!playerHideoutLevel) {
       dispatch(getHideoutLevel())
     }
   }, [playerHideoutLevel])
 
+  // set currently selected station's construct detail and craft detail
   useEffect(() => {
     if (playerHideoutLevel) {
       const index = getIndexOfMatchFieldObjArr(
@@ -280,6 +296,10 @@ const CharacterScreen = () => {
     setOpenPlayerLevelModal(!openPlayerLevelModal)
   }
 
+  const openCloseTraderSettingModalHandle = () => {
+    setOpenTraderSettingModal(!openTraderSettingModal)
+  }
+
   const increaseStationLevelHandle = (hideoutId, levelIndex) => {
     const newHideoutLevel = JSON.parse(JSON.stringify(playerHideoutLevel))
     const index = getIndexOfMatchFieldObjArr(
@@ -292,7 +312,7 @@ const CharacterScreen = () => {
   }
 
   const openCloseConfirmModalHandle = () => {
-    setOpenConfirmModal(!openConfirmModal)
+    setOpenHideoutModal(!openHideoutModal)
   }
 
   return (
@@ -304,19 +324,30 @@ const CharacterScreen = () => {
       >
         Redux State
       </Button>
-      <AddValueModal
+      <EditValueModal
+        title="Player level"
         show={openPlayerLevelModal}
         value={playerLevel}
-        valueCap={79}
+        maxValue={79}
         setValueHandle={(v) => {
           adjustPlayerLevelHandle(v)
           openCloseLevelModalHandle()
         }}
         closeHandle={openCloseLevelModalHandle}
       />
+      <TraderRelationModal
+        title={"Prapor"}
+        show={openTraderSettingModal}
+        playerRep={0.2}
+        playerSpent={0.2}
+        setValueHandle={(v) => {
+          openCloseTraderSettingModalHandle
+        }}
+        closeHandle={openCloseTraderSettingModalHandle}
+      />
       <ConfirmModal
-        show={openConfirmModal}
-        title={confirmModalTitle}
+        show={openHideoutModal}
+        title={hideoutModalTitle}
         content={confirmModalContent}
         confirmHandle={confirmFunc}
         closeHandle={openCloseConfirmModalHandle}
@@ -329,6 +360,11 @@ const CharacterScreen = () => {
         <Container>
           <Row className="my-5 gx-5 align-items-start">
             <Col lg={3} style={{ border: "1px solid white" }}>
+              <Row>
+                <p className="mt-3 mb-0 text-center sandbeige">
+                  {gameEdition && gameEdition}
+                </p>
+              </Row>
               <Row className="my-3" align="center">
                 <Col>
                   <div
@@ -368,13 +404,13 @@ const CharacterScreen = () => {
               </Row>
             </Col>
             <Col lg={9}>
-              {/* TASK */}
               <Tabs
                 defaultActiveKey="task"
                 className="mb-4 flex-column flex-lg-row"
                 transition={false}
                 justify
               >
+                {/* TASK */}
                 <Tab eventKey="task" title="Task">
                   <div>
                     <ToggleButton
@@ -601,24 +637,25 @@ const CharacterScreen = () => {
                 <Tab eventKey="hideout" title="Hideout">
                   <div>
                     <div className="d-flex justify-content-center flex-wrap mb-5">
-                      {hideout.map((station) => {
-                        return (
-                          <div
-                            key={station.id}
-                            role="button"
-                            onClick={() => {
-                              setCurrentStationId(station.id)
-                            }}
-                          >
-                            <HideoutIcon
-                              iconName={station.id}
-                              stationName={station.name}
-                              selected={currentStationId === station.id}
-                              useNameBox={true}
-                            />
-                          </div>
-                        )
-                      })}
+                      {hideout &&
+                        hideout.map((station) => {
+                          return (
+                            <div
+                              key={station.id}
+                              role="button"
+                              onClick={() => {
+                                setCurrentStationId(station.id)
+                              }}
+                            >
+                              <HideoutIcon
+                                iconName={station.id}
+                                stationName={station.name}
+                                selected={currentStationId === station.id}
+                                useNameBox={true}
+                              />
+                            </div>
+                          )
+                        })}
                     </div>
 
                     {!levelInfoOfCurrentStation && <DivLoading height={300} />}
@@ -631,7 +668,7 @@ const CharacterScreen = () => {
                           curLevelIndex={-1}
                           increaseLevelHandle={() => {
                             if (currentStation.levels?.[0]) {
-                              setConfirmModalTitle(
+                              setHideoutModalTitle(
                                 `${currentStation.name} Level ${currentStation.levels[0].level}`
                               )
                               setConfirmModalContent(
@@ -658,7 +695,7 @@ const CharacterScreen = () => {
                                 levelInfoOfCurrentStation.level + 1
                               ]
                             ) {
-                              setConfirmModalTitle(
+                              setHideoutModalTitle(
                                 `${currentStation.name} Level ${
                                   currentStation.levels[
                                     levelInfoOfCurrentStation.level
@@ -687,10 +724,30 @@ const CharacterScreen = () => {
                 </Tab>
 
                 {/* Quest item */}
-                <Tab eventKey="inventory" title="Inventory">
+                <Tab eventKey="questItem" title="Quest item">
                   <div>
                     <QuestItems />
                   </div>
+                </Tab>
+
+                {/* Trader LL */}
+                <Tab eventKey="trader" title="Trader">
+                  <Row xs={2} sm={3} md={4} className="g-3">
+                    {traders.length !== 0 &&
+                      traders.map((trader, i) => {
+                        return (
+                          <Col key={i}>
+                            <div
+                              role="button"
+                              className="d-flex justify-content-center"
+                              onClick={() => {}}
+                            >
+                              <TraderCard trader={trader} />
+                            </div>
+                          </Col>
+                        )
+                      })}
+                  </Row>
                 </Tab>
               </Tabs>
             </Col>

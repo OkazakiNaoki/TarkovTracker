@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Col, Container, Image, Row } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
-import { AddValueModal } from "../components/AddValueModal"
+import { EditValueModal } from "./EditValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import blueCheck from "../../public/static/images/blue_check.png"
 import expIcon from "../../public/static/images/icon_experience_big.png"
@@ -117,11 +117,11 @@ const TaskDetail = ({
         task.objectives.map((objective, i) => {
           return (
             objective.id in objectiveProgress && (
-              <AddValueModal
+              <EditValueModal
                 key={`${objective.id}_modal`}
                 show={closeAddValueModal[objective.id]}
                 value={objectiveProgress[objective.id]}
-                valueCap={objective.count}
+                maxValue={objective.count}
                 setValueHandle={(v) => {
                   confirmTurnInHandle(v, task.id, objective.id, objective.count)
                   openCloseModal(objective.id)

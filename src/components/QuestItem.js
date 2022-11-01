@@ -8,7 +8,7 @@ import {
   getIndexOfMatchFieldObjArr,
 } from "../helpers/LoopThrough"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
-import { AddValueModal } from "./AddValueModal"
+import { EditValueModal } from "./EditValueModal"
 import { DivLoading } from "./DivLoading"
 import { FloatingMessageBox } from "./FloatingMessageBox"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
@@ -166,12 +166,12 @@ const QuestItem = ({ playerInventory, itemReq }) => {
       display={displayGainItemDetail}
       content={currentInfo}
     />,
-    <AddValueModal
+    <EditValueModal
       title={itemReq.item.itemName}
       key="modal_of_item_count"
       show={itemModalOnOff}
       value={itemCount}
-      valueCap={itemNeedTotalCount}
+      maxValue={itemNeedTotalCount}
       setValueHandle={(v) => {
         setItemCount(v)
         openItemCountModal()

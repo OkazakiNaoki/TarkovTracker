@@ -33,7 +33,7 @@ const hideoutSlice = createSlice({
   name: "hideout",
   initialState: {
     isLoading: false,
-    hideout: [],
+    hideout: null,
   },
   reducers: {},
   extraReducers: (builder) => {

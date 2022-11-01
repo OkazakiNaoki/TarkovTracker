@@ -1,65 +1,69 @@
 import asyncHandler from "express-async-handler"
-import PlayerTraderLL from "../models/PlayerTraderLoyaltyLevelModel.js"
+import PlayerTraderProgress from "../models/PlayerTraderProgressModel.js"
 
-// @desc get trader loyalty level of a player
+// @desc get trader progress of a player
 // @route GET /api/player/trader/LL
 // @access private
-export const getTraderLL = asyncHandler(async (req, res) => {
-  const traderLL = await PlayerTraderLL.findOne({ user: req.user._id })
-  if (!traderLL) {
-    res.status(404).send("Previous trader loyalty level data not found")
+export const getTraderProgress = asyncHandler(async (req, res) => {
+  const traderProgress = await PlayerTraderProgress.findOne({
+    user: req.user._id,
+  })
+  if (!traderProgress) {
+    res.status(404).send("Previous trader progress data not found")
   } else {
     res.json({
-      traderLL: traderLL.traderLL,
+      traderLL: traderProgress.traderLL,
+      traderRep: traderProgress.traderRep,
+      traderSpent: traderProgress.traderSpent,
     })
   }
 })
 
-// @desc add trader loyalty level of a player
+// @desc add trader progress of a player
 // @route POST /api/player/trader/LL
 // @access private
-export const addTraderLL = asyncHandler(async (req, res) => {
-  const LL = req.body.LL
-
-  if (LL && Object.keys(LL).length === 0) {
-    res.status(400).send("Loyalty level is empty")
+export const addTraderProgress = asyncHandler(async (req, res) => {
+  if (req.body && Object.keys(req.body).length === 0) {
+    res.status(400).send("Trader progress is empty")
     return
   } else {
-    const existTraderLL = await PlayerTraderLL.findOne({
+    const existTraderProgress = await PlayerTraderProgress.findOne({
       user: req.user._id,
     })
-    if (!existTraderLL) {
-      const tll = new PlayerTraderLL({
+    if (!existTraderProgress) {
+      const tp = new PlayerTraderProgress({
         user: req.user._id,
-        traderLL: LL,
+        traderLL: req.body.traderLL,
+        traderRep: req.body.traderRep,
+        traderSpent: req.body.traderSpent,
       })
-      const createdTll = await tll.save()
-      res.status(201).json(createdTll)
+      const createdTp = await tp.save()
+      res.status(201).json(createdTp)
     } else {
-      res.status(400).send("Exist loyalty level data")
+      res.status(400).send("Exist trader progress data")
     }
   }
 })
 
-// @desc update trader loyalty level of a player
+// @desc update trader progress of a player
 // @route PUT /api/player/trader/LL
 // @access private
-export const updateTraderLL = asyncHandler(async (req, res) => {
-  const LL = req.body.LL
-
-  if (LL && Object.keys(LL).length === 0) {
-    res.status(400).send("Loyalty level is empty")
+export const updateTraderProgress = asyncHandler(async (req, res) => {
+  if (req.body && Object.keys(req.body).length === 0) {
+    res.status(400).send("Trader progress is empty")
     return
   } else {
-    const existTraderLL = await PlayerTraderLL.findOne({
+    const existTraderProgress = await PlayerTraderProgress.findOne({
       user: req.user._id,
     })
-    if (!existTraderLL) {
-      res.status(404).send("Previous loyalty level data not found")
+    if (!existTraderProgress) {
+      res.status(404).send("Previous trader progress data not found")
     } else {
-      existTraderLL.traderLL = LL
-      const updatedTll = await existTraderLL.save()
-      res.json(updatedTll)
+      existTraderProgress.traderLL = req.body.traderLL
+      existTraderProgress.traderRep = req.body.traderRep
+      existTraderProgress.traderSpent = req.body.traderSpent
+      const updatedTp = await existTraderProgress.save()
+      res.json(updatedTp)
     }
   }
 })
