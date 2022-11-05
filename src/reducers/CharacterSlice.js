@@ -706,6 +706,7 @@ const characterSlice = createSlice({
   name: "character",
   initialState: {
     initSetup: false,
+    loadingInitSetup: false,
     // player basic data
     playerLevel: 0,
     playerFaction: null,
@@ -789,8 +790,11 @@ const characterSlice = createSlice({
         state.playerFaction = action.payload.characterFaction
       })
       .addCase(updateCharacterData.rejected, (state, action) => {})
-      .addCase(getCharacterData.pending, (state, action) => {})
+      .addCase(getCharacterData.pending, (state, action) => {
+        state.loadingInitSetup = true
+      })
       .addCase(getCharacterData.fulfilled, (state, action) => {
+        state.loadingInitSetup = false
         if (typeof action.payload === "object") {
           state.playerLevel = action.payload.data.characterLevel
           state.playerFaction = action.payload.data.characterFaction
@@ -800,7 +804,9 @@ const characterSlice = createSlice({
           state.initSetup = false
         }
       })
-      .addCase(getCharacterData.rejected, (state, action) => {})
+      .addCase(getCharacterData.rejected, (state, action) => {
+        state.loadingInitSetup = false
+      })
       .addCase(addHideoutLevel.pending, (state, action) => {})
       .addCase(addHideoutLevel.fulfilled, (state, action) => {
         state.playerHideoutLevel = action.payload

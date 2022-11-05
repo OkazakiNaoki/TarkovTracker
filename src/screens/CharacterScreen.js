@@ -78,6 +78,7 @@ const CharacterScreen = () => {
   const { hideout } = useSelector((state) => state.hideout)
   const {
     initSetup,
+    loadingInitSetup,
     playerLevel,
     playerFaction,
     gameEdition,
@@ -360,9 +361,10 @@ const CharacterScreen = () => {
         closeHandle={openCloseConfirmModalHandle}
       />
       {Object.keys(user).length === 0 && <LoginFirst />}
-      {Object.keys(user).length > 0 && initSetup !== null && !initSetup && (
-        <PlayerDataSetup />
-      )}
+      {Object.keys(user).length > 0 &&
+        initSetup !== null &&
+        !initSetup &&
+        !loadingInitSetup && <PlayerDataSetup />}
       {Object.keys(user).length > 0 && initSetup && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
