@@ -26,6 +26,7 @@ import {
   updateCharacterData,
   getHideoutLevel,
   updateHideoutLevel,
+  getTraderProgress,
   addTraderProgress,
 } from "../reducers/CharacterSlice"
 import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
@@ -56,6 +57,7 @@ const CharacterScreen = () => {
   const [collapseDetail, setCollapseDetail] = useState({})
   // player trader
   const [openTraderSettingModal, setOpenTraderSettingModal] = useState(false)
+  const [traderSettingTarget, setTraderSettingTarget] = useState("")
   // player hideout
   const [currentStationId, setCurrentStationId] = useState(
     "5d388e97081959000a123acf"
@@ -81,7 +83,7 @@ const CharacterScreen = () => {
     gameEdition,
     playerTasksInfo,
     unlockedJaeger,
-    traderLoyaltyLevel,
+    traderProgress,
     playerCompletedObjectives,
     playerObjectiveProgress,
     playerHideoutLevel,
@@ -196,6 +198,13 @@ const CharacterScreen = () => {
       setLevelInfoOfCurrentStation(playerHideoutLevel[index])
     }
   }, [currentStationId, playerHideoutLevel])
+
+  // get player trader progress
+  useEffect(() => {
+    if (!traderProgress) {
+      dispatch(getTraderProgress())
+    }
+  }, [traderProgress])
 
   // handles
   const expandTaskDetailHandle = (trader, taskId) => {
@@ -336,10 +345,8 @@ const CharacterScreen = () => {
         closeHandle={openCloseLevelModalHandle}
       />
       <TraderRelationModal
-        title={"Prapor"}
         show={openTraderSettingModal}
-        playerRep={0.2}
-        playerSpent={0.2}
+        traderName={traderSettingTarget}
         setValueHandle={(v) => {
           openCloseTraderSettingModalHandle
         }}
@@ -363,6 +370,7 @@ const CharacterScreen = () => {
               <Row>
                 <p className="mt-3 mb-0 text-center sandbeige">
                   {gameEdition && gameEdition}
+                  {" edition"}
                 </p>
               </Row>
               <Row className="my-3" align="center">
@@ -734,15 +742,23 @@ const CharacterScreen = () => {
                 <Tab eventKey="trader" title="Trader">
                   <Row xs={2} sm={3} md={4} className="g-3">
                     {traders.length !== 0 &&
+                      traderProgress &&
                       traders.map((trader, i) => {
                         return (
                           <Col key={i}>
                             <div
                               role="button"
                               className="d-flex justify-content-center"
-                              onClick={() => {}}
+                              onClick={() => {
+                                setTraderSettingTarget(trader.name)
+                                openCloseTraderSettingModalHandle()
+                              }}
                             >
-                              <TraderCard trader={trader} />
+                              <TraderCard
+                                trader={trader}
+                                standing={traderProgress.traderLL[trader.name]}
+                                rep={traderProgress.traderRep[trader.name]}
+                              />
                             </div>
                           </Col>
                         )

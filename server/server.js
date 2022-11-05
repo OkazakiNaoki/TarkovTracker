@@ -7,6 +7,7 @@ import taskRoutes from "./routes/InGameTasksRoutes.js"
 import userRoutes from "./routes/UserRoutes.js"
 import playerRoutes from "./routes/PlayerDataRoutes.js"
 import socialMedia from "./routes/SocialMediaRoutes.js"
+import traderRoutes from "./routes/InGameTraderRoutes.js"
 import connectDB from "./config/db.js"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
@@ -57,6 +58,7 @@ app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)
 app.use("/api/hideout", hideoutRoutes)
 app.use("/api/task", taskRoutes)
+app.use("/api/trader", traderRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/player", playerRoutes)
 app.use("/api/socialmedia", socialMedia)

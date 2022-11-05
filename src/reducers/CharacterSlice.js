@@ -638,9 +638,62 @@ export const addTraderProgress = createAsyncThunk(
         },
         config
       )
-      const traderLLData = traderLL.data
 
-      return traderLLData
+      return traderLL.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getTraderProgress = createAsyncThunk(
+  "character/getTraderProgress",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const traderLL = await axios.get(`/api/player/trader/LL`, config)
+
+      return traderLL.data
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  }
+)
+
+export const updateTraderProgress = createAsyncThunk(
+  "character/updateTraderProgress",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newTraderLL = await axios.put(
+        `/api/player/trader/LL`,
+        {
+          traderLL: params.traderLL,
+          traderRep: params.traderRep,
+          traderSpent: params.traderSpent,
+        },
+        config
+      )
+
+      return newTraderLL.data
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -664,6 +717,7 @@ const characterSlice = createSlice({
     // trader progress
     unlockedJaeger: false, // not use yet
     traderProgress: null,
+    // hideout progress
     playerHideoutLevel: null,
     // inventory
     playerInventory: null,
@@ -782,6 +836,16 @@ const characterSlice = createSlice({
         state.traderProgress = action.payload
       })
       .addCase(addTraderProgress.rejected, (state, action) => {})
+      .addCase(getTraderProgress.pending, (state, action) => {})
+      .addCase(getTraderProgress.fulfilled, (state, action) => {
+        state.traderProgress = action.payload
+      })
+      .addCase(getTraderProgress.rejected, (state, action) => {})
+      .addCase(updateTraderProgress.pending, (state, action) => {})
+      .addCase(updateTraderProgress.fulfilled, (state, action) => {
+        state.traderProgress = action.payload
+      })
+      .addCase(updateTraderProgress.rejected, (state, action) => {})
   },
 })
 

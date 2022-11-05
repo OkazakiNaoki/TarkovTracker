@@ -1,26 +1,36 @@
 import mongoose from "mongoose"
 
-const inGameTraderSchema = mongoose.Schema({
-  id: {
-    type: String,
+const levelsReq = mongoose.Schema({
+  requiredReputation: {
+    type: Number,
     required: true,
   },
+  requiredPlayerLevel: {
+    type: Number,
+    required: true,
+  },
+  requiredCommerce: {
+    type: Number,
+    required: true,
+  },
+})
+
+const inGameTraderLevelsSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  shortName: {
-    type: String,
-    required: true,
-  },
-  categories: [
+  levels: [
     {
-      type: Object,
+      type: levelsReq,
       required: true,
     },
   ],
 })
 
-const InGameTrader = mongoose.model("InGameTrader", inGameTraderSchema)
+const InGameTraderLevels = mongoose.model(
+  "InGameTraderLevels",
+  inGameTraderLevelsSchema
+)
 
-export default InGameTrader
+export default InGameTraderLevels

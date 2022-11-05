@@ -16,7 +16,7 @@ const TraderCard = ({ trader, standing = 1, rep = 0.2, resetTime = null }) => {
       }}
     >
       <div className="pt-3 px-3 pb-1">
-        <TraderIcon trader={trader} />
+        <TraderIcon trader={trader} standing={standing} />
         <div
           className="text-center"
           style={{

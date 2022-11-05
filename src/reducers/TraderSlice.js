@@ -1,6 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 
+export const getLevelReqOfTrader = createAsyncThunk(
+  "trader/getLevelReqOfTrader",
+  async (params) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+      const traderLevels = await axios.get(
+        `/api/trader/levels?trader=${params.trader}`,
+        config
+      )
+      return traderLevels.data[0]
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 export const getTradeResetTime = createAsyncThunk(
   "trader/getTradeResetTime",
   async (params) => {
@@ -303,6 +326,7 @@ const traderSlice = createSlice({
         name: "Jaeger",
       },
     ],
+    traderLevels: null,
     tasks: {},
     tasksDetail: {},
     tasksDetailFetched: {},
@@ -366,6 +390,19 @@ const traderSlice = createSlice({
         state.taskItemRequirement = action.payload
       })
       .addCase(getTaskItemRequirements.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
+      .addCase(getLevelReqOfTrader.pending, (state, action) => {})
+      .addCase(getLevelReqOfTrader.fulfilled, (state, action) => {
+        if (state.traderLevels === null) {
+          const newTraderLevels = {}
+          newTraderLevels[action.payload.name] = action.payload.levels
+          state.traderLevels = newTraderLevels
+        } else {
+          state.traderLevels[action.payload.name] = action.payload.levels
+        }
+      })
+      .addCase(getLevelReqOfTrader.rejected, (state, action) => {
         throw Error(action.payload)
       })
   },
