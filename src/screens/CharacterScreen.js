@@ -767,6 +767,9 @@ const CharacterScreen = () => {
                       })}
                   </Row>
                 </Tab>
+
+                {/* Inventory */}
+                <Tab eventKey="inventory" title="Inventory"></Tab>
               </Tabs>
             </Col>
           </Row>

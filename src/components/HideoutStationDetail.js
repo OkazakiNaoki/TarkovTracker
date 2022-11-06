@@ -8,7 +8,6 @@ import { TextStroke } from "./TextStroke"
 const HideoutStationDetail = ({
   station,
   curLevelIndex,
-  nextLevelIndex,
   increaseLevelHandle,
 }) => {
   // hooks state
@@ -78,11 +77,12 @@ const HideoutStationDetail = ({
       </p>
       {/* station construct/upgrade requirement */}
       {(curLevelIndex === -1 || showUpgrade) &&
-        station.levels[nextLevelIndex] &&
-        (station.levels[nextLevelIndex].itemRequirements.length > 0 ||
-          station.levels[nextLevelIndex].skillRequirements.length > 0 ||
-          station.levels[nextLevelIndex].stationLevelRequirements.length > 0 ||
-          station.levels[nextLevelIndex].traderRequirements.length > 0) && (
+        station.levels[curLevelIndex + 1] &&
+        (station.levels[curLevelIndex + 1].itemRequirements.length > 0 ||
+          station.levels[curLevelIndex + 1].skillRequirements.length > 0 ||
+          station.levels[curLevelIndex + 1].stationLevelRequirements.length >
+            0 ||
+          station.levels[curLevelIndex + 1].traderRequirements.length > 0) && (
           <>
             <p className="text-center fs-3 mb-0" style={{ color: "#edebd6" }}>
               {curLevelIndex === -1
@@ -92,7 +92,7 @@ const HideoutStationDetail = ({
                   } UPGRADE REQUIREMENTS`}
             </p>
             <ConstructRequirements
-              level={station.levels[nextLevelIndex]}
+              level={station.levels[curLevelIndex + 1]}
               showFulfill={true}
               setMeetHideoutReq={setMeetHideoutReq}
               setMeetItemReq={setMeetItemReq}
@@ -168,7 +168,7 @@ const HideoutStationDetail = ({
         )}
         {curLevelIndex !== -1 &&
           !showUpgrade &&
-          station.levels[nextLevelIndex] && (
+          station.levels[curLevelIndex + 1] && (
             <div className="my-1">
               <TarkovStyleButton
                 fs={24}

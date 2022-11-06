@@ -33,7 +33,8 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
         active={pageNum === page}
         onClick={() => {
           setSearchParams({
-            handbook: handbook.length > 0 ? JSON.stringify(handbook) : "",
+            handbook:
+              handbook && handbook.length > 0 ? JSON.stringify(handbook) : "",
             keyword: keyword,
             page: pageNum,
           })
