@@ -5,13 +5,14 @@ import qs from "qs"
 export const searchItemByName = createAsyncThunk(
   "fleamarket/searchItemByName",
   async (params) => {
-    const { handbook = null, keyword = "", page = "" } = params
+    const { handbook = null, keyword = "", page = "", limit } = params
     try {
       const { data } = await axios.get("/api/items", {
         params: {
           handbook,
           keyword,
           page,
+          limit,
         },
         paramsSerializer: (params) => {
           return qs.stringify(params)
@@ -67,6 +68,9 @@ export const FleamarketSlice = createSlice({
     handbookTree: [],
   },
   reducers: {
+    clearItems: (state, action) => {
+      state.items = []
+    },
     setHandbookTree: (state, action) => {
       const copyHandbook = {}
       const tree = []
@@ -155,4 +159,4 @@ export const FleamarketSlice = createSlice({
 })
 
 export default FleamarketSlice.reducer
-export const { setHandbookTree } = FleamarketSlice.actions
+export const { setHandbookTree, clearItems } = FleamarketSlice.actions

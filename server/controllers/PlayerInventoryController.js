@@ -11,7 +11,7 @@ export const addInventory = asyncHandler(async (req, res) => {
   if (!existPi) {
     const pi = new PlayerInventory({
       user: req.user._id,
-      ownItemList: itemList,
+      itemList: itemList,
     })
     const createdPi = await pi.save()
     res.status(201).json(createdPi)
@@ -24,17 +24,29 @@ export const addInventory = asyncHandler(async (req, res) => {
 // @route PUT /api/player/inventory
 // @access private
 export const updateInventory = asyncHandler(async (req, res) => {
-  const itemList = req.body.itemList
+  const item = req.body.item
 
-  if (itemList && itemList.length === 0) {
-    res.status(400).send("Inventory is empty")
+  if (item && Object.keys(item).length === 0) {
+    res.status(400).send("Item is empty")
     return
   } else {
     const existPi = await PlayerInventory.findOne({ user: req.user._id })
     if (!existPi) {
       res.status(404).send("Previous inventory data not found")
     } else {
-      existPi.ownItemList = itemList
+      const matchItemIndex = existPi.itemList.findIndex((i) => {
+        return i.itemId === item.itemId
+      })
+      if (matchItemIndex === -1) {
+        existPi.itemList.push(item)
+      } else {
+        if (item.count === 0) {
+          existPi.itemList.splice(matchItemIndex, 1)
+        } else {
+          existPi.itemList[matchItemIndex].count = item.count
+          existPi.itemList[matchItemIndex].positionArray = item.positionArray
+        }
+      }
       const updatedPi = await existPi.save()
       res.json(updatedPi)
     }
@@ -50,7 +62,7 @@ export const getInventory = asyncHandler(async (req, res) => {
     res.status(404).send("Previous inventory data not found")
   } else {
     res.json({
-      ownItemList: pi.ownItemList,
+      itemList: pi.itemList,
     })
   }
 })

@@ -11,11 +11,15 @@ import InGaneItemAmmoCaliber from "../models/InGameItemAmmoCaliberModel.js"
 export const getItems = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
   const handbook = req.query.handbook
+  const limit = req.query.limit
+    ? Number(req.query.limit) > 12
+      ? 12
+      : Number(req.query.limit)
+    : 12
   const page = Number(req.query.page) || 1
 
   const handbookArr = handbook ? JSON.parse(handbook) : null
 
-  let limit = 12
   let skip = limit * (page - 1)
 
   const aggregateArr = [

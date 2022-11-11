@@ -37,19 +37,11 @@ const FleamarketScreen = () => {
     )
   }, [searchParams])
 
-  // handle
-  const onResetSearch = () => {
-    navigate("/fleamarket")
-  }
-
   return (
     <>
       <HeadMeta title="Fleamarket" />
       <Container className="py-5">
-        <ItemSearchBar
-          onResetSearch={onResetSearch}
-          setSearchParams={setSearchParams}
-        />
+        <ItemSearchBar setSearchParams={setSearchParams} />
 
         <Row className="mb-3">
           {isLoading
@@ -92,6 +84,8 @@ const FleamarketScreen = () => {
                 : null
             }
             setSearchParams={setSearchParams}
+            usePageNum={true}
+            useFirstLast={true}
           />
         </div>
       </Container>

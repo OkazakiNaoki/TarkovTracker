@@ -1,9 +1,18 @@
 import React from "react"
 import { Pagination } from "react-bootstrap"
 
-const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
+const Paginate = ({
+  page,
+  pages = 0,
+  keyword,
+  handbook,
+  setSearchParams,
+  usePageNum = false,
+  usePrevNext = false,
+  useFirstLast = false,
+}) => {
   const GetRange = (pageNum) => {
-    let limit = 10
+    let limit = 10 // page button range
     let half = 5
     let frontSlot = page - 1
     let rearSlot = pages - page
@@ -59,27 +68,68 @@ const Paginate = ({ page, pages, keyword, handbook, setSearchParams }) => {
           "--bs-pagination-hover-color": "black",
         }}
       >
-        <Pagination.First
-          onClick={() => {
-            setSearchParams({
-              handbook: handbook.length > 0 ? JSON.stringify(handbook) : "",
-              keyword: keyword,
-              page: 1,
-            })
-          }}
-        />
-        {[...Array(pages).keys()].map((x) => {
-          return GetRange(x + 1)
-        })}
-        <Pagination.Last
-          onClick={() => {
-            setSearchParams({
-              handbook: handbook.length > 0 ? JSON.stringify(handbook) : "",
-              keyword: keyword,
-              page: pages,
-            })
-          }}
-        />
+        {useFirstLast && (
+          <Pagination.First
+            onClick={() => {
+              setSearchParams({
+                handbook:
+                  handbook && handbook.length > 0
+                    ? JSON.stringify(handbook)
+                    : "",
+                keyword: keyword,
+                page: 1,
+              })
+            }}
+          />
+        )}
+        {usePrevNext && (
+          <Pagination.Prev
+            onClick={() => {
+              setSearchParams({
+                handbook:
+                  handbook && handbook.length > 0
+                    ? JSON.stringify(handbook)
+                    : "",
+                keyword: keyword,
+                page: page - 1,
+              })
+            }}
+            disabled={page === 1}
+          />
+        )}
+        {usePageNum &&
+          [...Array(pages).keys()].map((x) => {
+            return GetRange(x + 1)
+          })}
+        {usePrevNext && (
+          <Pagination.Next
+            onClick={() => {
+              setSearchParams({
+                handbook:
+                  handbook && handbook.length > 0
+                    ? JSON.stringify(handbook)
+                    : "",
+                keyword: keyword,
+                page: page + 1,
+              })
+            }}
+            disabled={page === pages}
+          />
+        )}
+        {useFirstLast && (
+          <Pagination.Last
+            onClick={() => {
+              setSearchParams({
+                handbook:
+                  handbook && handbook.length > 0
+                    ? JSON.stringify(handbook)
+                    : "",
+                keyword: keyword,
+                page: pages,
+              })
+            }}
+          />
+        )}
       </Pagination>
     )
   )

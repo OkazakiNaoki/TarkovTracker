@@ -17,7 +17,7 @@ import {
 import CheckboxTree from "react-checkbox-tree"
 import { getItemHandbook, setHandbookTree } from "../reducers/FleamarketSlice"
 
-const ItemSearchBar = ({ onResetSearch, setSearchParams }) => {
+const ItemSearchBar = ({ setSearchParams }) => {
   const dispatch = useDispatch()
   // redux state
   const { isLoading, handbook, handbookTree } = useSelector(
@@ -81,7 +81,7 @@ const ItemSearchBar = ({ onResetSearch, setSearchParams }) => {
   const resetSearchHandle = () => {
     setTreeCheck([])
     setKeyword("")
-    onResetSearch()
+    setSearchParams({})
   }
 
   const setIconCompInHandbookNodes = (node) => {
@@ -113,7 +113,7 @@ const ItemSearchBar = ({ onResetSearch, setSearchParams }) => {
         className="text-center"
       />
       {(keyword !== "" || treeCheck.length > 0) && (
-        <Button variant="secondary" onClick={resetSearchHandle}>
+        <Button variant="danger" onClick={resetSearchHandle}>
           <XLg />
         </Button>
       )}

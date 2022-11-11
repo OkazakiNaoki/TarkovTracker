@@ -108,14 +108,6 @@ const PlayerDataSetup = () => {
       dispatch(addCompletedTasks({ completeTasks: [] }))
       dispatch(addCompletedObjectives({ completeObjectives: [] }))
       dispatch(addObjectiveProgress({ objectiveProgress: [] }))
-      const initPlayerInventory = []
-      taskItemRequirement.forEach((req) => {
-        initPlayerInventory.push({
-          itemId: req.item.itemId,
-          itemName: req.item.itemName,
-          count: 0,
-        })
-      })
       // player trader progress
       const traderLL = {}
       const traderRep = {}
@@ -131,7 +123,7 @@ const PlayerDataSetup = () => {
       })
       dispatch(addTraderProgress({ traderLL, traderRep, traderSpent }))
       // player inventory data
-      dispatch(addInventoryItem({ itemList: initPlayerInventory }))
+      dispatch(addInventoryItem({ itemList: [] }))
       // initialized flag
       dispatch(setInitSetup())
     }

@@ -7,7 +7,10 @@ import {
   getAnotherFieldOfMatchFieldObjArr,
   getIndexOfMatchFieldObjArr,
 } from "../helpers/LoopThrough"
-import { updateInventoryItem } from "../reducers/CharacterSlice"
+import {
+  addInventoryItem,
+  updateInventoryItem,
+} from "../reducers/CharacterSlice"
 import { EditValueModal } from "./EditValueModal"
 import { DivLoading } from "./DivLoading"
 import { FloatingMessageBox } from "./FloatingMessageBox"
@@ -95,9 +98,15 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         "itemId",
         itemReq.item.itemId
       )
-      if (index !== -1 && newInventory[index].count !== itemCount) {
-        newInventory[index].count = itemCount
-        dispatch(updateInventoryItem({ itemList: newInventory }))
+      if (index === -1 || newInventory[index].count !== itemCount) {
+        dispatch(
+          updateInventoryItem({
+            itemId: itemReq.item.itemId,
+            itemName: itemReq.item.itemName,
+            count: itemCount,
+            bgColor: itemReq.item.bgColor,
+          })
+        )
       }
     }
   }, [itemCount])
@@ -170,7 +179,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
       title={itemReq.item.itemName}
       key="modal_of_item_count"
       show={itemModalOnOff}
-      value={itemCount}
+      value={itemCount ?? 0}
       maxValue={itemNeedTotalCount}
       setValueHandle={(v) => {
         setItemCount(v)
@@ -222,31 +231,8 @@ const QuestItem = ({ playerInventory, itemReq }) => {
           badgeHoverHandle={badgeHoverHandle}
         />
       </div>
-      {/* <div
-        style={{
-          position: "fixed",
-          left: mainX,
-          top: mainY,
-          display: displayGainItemDetail,
-          userSelect: "none",
-          transform: "translateX(10px) translateY(-100%)",
-          backgroundColor: "#fff",
-          zIndex: "100001",
-        }}
-      >
-        <div
-          className="py-1 px-2"
-          style={{
-            backgroundColor: "#000",
-            border: "2px solid #585d60",
-            whiteSpace: "break-spaces",
-          }}
-        >
-          {currentInfo}
-        </div>
-      </div> */}
       <Card.Text className="text-center my-3">
-        {itemCount + " / " + itemNeedTotalCount}
+        {(itemCount ?? 0) + " / " + itemNeedTotalCount}
       </Card.Text>
       <div className="d-flex flex-grow-1 justify-content-center">
         {playerInventory && (

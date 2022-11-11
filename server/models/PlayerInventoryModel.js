@@ -1,20 +1,27 @@
 import mongoose from "mongoose"
 import User from "./UserModel.js"
 
-const itemSchema = mongoose.Schema({
-  itemId: {
-    type: String,
-    required: true,
+const itemSchema = mongoose.Schema(
+  {
+    itemId: {
+      type: String,
+      required: true,
+    },
+    itemName: {
+      type: String,
+      required: true,
+    },
+    bgColor: {
+      type: String,
+      required: true,
+    },
+    count: {
+      type: Number,
+      required: true,
+    },
   },
-  itemName: {
-    type: String,
-    required: true,
-  },
-  count: {
-    type: Number,
-    required: true,
-  },
-})
+  { _id: false }
+)
 
 const playerInventorySchema = mongoose.Schema({
   user: {
@@ -22,7 +29,7 @@ const playerInventorySchema = mongoose.Schema({
     required: true,
     ref: User,
   },
-  ownItemList: [
+  itemList: [
     {
       type: itemSchema,
       required: true,

@@ -576,7 +576,7 @@ export const getInventoryItem = createAsyncThunk(
 
       return {
         status: inventory.status,
-        data: inventory.data.ownItemList,
+        data: inventory.data.itemList,
       }
     } catch (error) {
       return error.response && error.response.data
@@ -589,7 +589,6 @@ export const getInventoryItem = createAsyncThunk(
 export const updateInventoryItem = createAsyncThunk(
   "character/updateInventoryItem",
   async (params, { getState }) => {
-    const itemList = params.itemList
     try {
       const { user } = getState().user
 
@@ -602,11 +601,16 @@ export const updateInventoryItem = createAsyncThunk(
       const newInventory = await axios.put(
         `/api/player/inventory`,
         {
-          itemList: itemList,
+          item: {
+            itemId: params.itemId,
+            itemName: params.itemName,
+            count: params.count,
+            bgColor: params.bgColor,
+          },
         },
         config
       )
-      const newInventoryData = newInventory.data.ownItemList
+      const newInventoryData = newInventory.data.itemList
 
       return newInventoryData
     } catch (error) {

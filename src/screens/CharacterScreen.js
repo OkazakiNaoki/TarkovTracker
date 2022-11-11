@@ -12,7 +12,9 @@ import {
   ToggleButton,
   Collapse,
 } from "react-bootstrap"
+import { Pencil } from "react-bootstrap-icons"
 import { useDispatch, useSelector } from "react-redux"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { LoginFirst } from "../components/LoginFirst"
 import {
   getTasksOfTraderWithLevel,
@@ -28,13 +30,18 @@ import {
   updateHideoutLevel,
   getTraderProgress,
   addTraderProgress,
+  updateInventoryItem,
 } from "../reducers/CharacterSlice"
 import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
+import { clearItems, searchItemByName } from "../reducers/FleamarketSlice"
 import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
 import { EditValueModal } from "../components/EditValueModal"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import {
+  getAnotherFieldOfMatchFieldObjArr,
+  getIndexOfMatchFieldObjArr,
+} from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
 import { ConfirmModal } from "../components/ConfirmModal"
@@ -43,8 +50,14 @@ import { TarkovSpinner } from "../components/TarkovSpinner"
 import { DivLoading } from "../components/DivLoading"
 import { TraderCard } from "../components/TraderCard"
 import { TraderRelationModal } from "../components/TraderRelationModal"
+import { ItemSearchBar } from "../components/ItemSearchBar"
+import Paginate from "../components/Paginate"
+import { ItemSingleGrid } from "../components/ItemSingleGrid"
 
 const CharacterScreen = () => {
+  // router
+  const [searchParams, setSearchParams] = useSearchParams({})
+
   //// hooks state
   // player basic data
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
@@ -69,6 +82,10 @@ const CharacterScreen = () => {
   const [confirmModalContent, setConfirmModalContent] = useState("")
   const [openHideoutModal, setOpenHideoutModal] = useState(false)
   const [confirmFunc, setConfirmFunc] = useState(() => () => {})
+  // player inventory
+  const [openItemModal, setOpenItemModal] = useState(false)
+  const [curInventoryItem, setCurInventoryItem] = useState(null)
+  const [curInventoryItemCount, setCurInventoryItemCount] = useState(null)
 
   //// redux state
   const { user } = useSelector((state) => state.user)
@@ -88,7 +105,13 @@ const CharacterScreen = () => {
     playerCompletedObjectives,
     playerObjectiveProgress,
     playerHideoutLevel,
+    playerInventory,
   } = useSelector((state) => state.character)
+  const {
+    items,
+    page: statePage,
+    pages: statePages,
+  } = useSelector((state) => state.fleamarket)
   const dispatch = useDispatch()
 
   // redux debug
@@ -207,7 +230,36 @@ const CharacterScreen = () => {
     }
   }, [traderProgress])
 
-  // handles
+  // on search params change
+  useEffect(() => {
+    if (
+      searchParams.get("handbook") ||
+      searchParams.get("keyword") ||
+      searchParams.get("page")
+    ) {
+      dispatch(
+        searchItemByName({
+          handbook: searchParams.get("handbook")
+            ? searchParams.get("handbook")
+            : undefined,
+          keyword: searchParams.get("keyword")
+            ? searchParams.get("keyword")
+            : undefined,
+          page: searchParams.get("page") ? searchParams.get("page") : undefined,
+          limit: 10,
+        })
+      )
+    }
+    if (
+      !searchParams.get("handbook") &&
+      !searchParams.get("keyword") &&
+      !searchParams.get("page")
+    ) {
+      dispatch(clearItems())
+    }
+  }, [searchParams])
+
+  //// handles
   const expandTaskDetailHandle = (trader, taskId) => {
     if (!tasksDetailFetched[trader].includes(taskId)) {
       dispatch(getTaskDetail({ id: taskId, traderName: trader }))
@@ -325,6 +377,21 @@ const CharacterScreen = () => {
     setOpenHideoutModal(!openHideoutModal)
   }
 
+  const openCloseItemModalHandle = () => {
+    setOpenItemModal(!openItemModal)
+  }
+
+  const addItemToInventoryHandle = (item, count) => {
+    dispatch(
+      updateInventoryItem({
+        itemId: item.id,
+        itemName: item.name,
+        bgColor: item.backgroundColor,
+        count: count,
+      })
+    )
+  }
+
   return (
     <>
       <Button
@@ -359,6 +426,16 @@ const CharacterScreen = () => {
         content={confirmModalContent}
         confirmHandle={confirmFunc}
         closeHandle={openCloseConfirmModalHandle}
+      />
+      <EditValueModal
+        title={curInventoryItem && curInventoryItem.name}
+        show={openItemModal}
+        value={curInventoryItemCount && curInventoryItemCount}
+        setValueHandle={(v) => {
+          addItemToInventoryHandle(curInventoryItem, v)
+          openCloseItemModalHandle()
+        }}
+        closeHandle={openCloseItemModalHandle}
       />
       {Object.keys(user).length === 0 && <LoginFirst />}
       {Object.keys(user).length > 0 &&
@@ -758,8 +835,14 @@ const CharacterScreen = () => {
                             >
                               <TraderCard
                                 trader={trader}
-                                standing={traderProgress.traderLL[trader.name]}
-                                rep={traderProgress.traderRep[trader.name]}
+                                standing={
+                                  traderProgress.traderLL &&
+                                  traderProgress.traderLL[trader.name]
+                                }
+                                rep={
+                                  traderProgress.traderRep &&
+                                  traderProgress.traderRep[trader.name]
+                                }
                               />
                             </div>
                           </Col>
@@ -769,7 +852,82 @@ const CharacterScreen = () => {
                 </Tab>
 
                 {/* Inventory */}
-                <Tab eventKey="inventory" title="Inventory"></Tab>
+                <Tab eventKey="inventory" title="Inventory">
+                  <ItemSearchBar setSearchParams={setSearchParams} />
+                  <div className="d-flex justify-content-center">
+                    {(searchParams.get("handbook") ||
+                      searchParams.get("keyword") ||
+                      searchParams.get("page")) && (
+                      <Paginate
+                        page={statePage}
+                        pages={statePages}
+                        keyword={searchParams.get("keyword")}
+                        handbook={
+                          searchParams.get("handbook")
+                            ? JSON.parse(searchParams.get("handbook"))
+                            : null
+                        }
+                        setSearchParams={setSearchParams}
+                        usePrevNext={true}
+                      />
+                    )}
+                  </div>
+                  <Table bordered style={{ color: "white" }}>
+                    <tbody>
+                      {items &&
+                        items.map((item) => {
+                          return (
+                            <tr key={item.name}>
+                              <td style={{ whiteSpace: "nowrap", width: "1%" }}>
+                                <ItemSingleGrid
+                                  itemId={item.id}
+                                  bgColor={item.backgroundColor}
+                                />
+                              </td>
+                              <td>{item.name}</td>
+                              <td>
+                                {getAnotherFieldOfMatchFieldObjArr(
+                                  playerInventory,
+                                  "itemId",
+                                  item.id,
+                                  "count"
+                                ) ?? "no data"}
+                              </td>
+                              <td style={{ whiteSpace: "nowrap", width: "1%" }}>
+                                <Button
+                                  variant="success"
+                                  className="d-flex justify-content-center align-items-center"
+                                  style={{ width: "64px", height: "64px" }}
+                                  onClick={() => {
+                                    setCurInventoryItem(item)
+                                    setCurInventoryItemCount(
+                                      getAnotherFieldOfMatchFieldObjArr(
+                                        playerInventory,
+                                        "itemId",
+                                        item.id,
+                                        "count"
+                                      ) ?? 0
+                                    )
+                                    openCloseItemModalHandle()
+                                  }}
+                                >
+                                  <Pencil />
+                                </Button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                    </tbody>
+                  </Table>
+                  {playerInventory &&
+                    playerInventory.map((item) => {
+                      return (
+                        <div key={item.itemId}>
+                          {item.itemName + " " + item.count}
+                        </div>
+                      )
+                    })}
+                </Tab>
               </Tabs>
             </Col>
           </Row>
