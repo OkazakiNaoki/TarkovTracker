@@ -854,60 +854,115 @@ const CharacterScreen = () => {
                 {/* Inventory */}
                 <Tab eventKey="inventory" title="Inventory">
                   <ItemSearchBar setSearchParams={setSearchParams} />
-                  <div className="d-flex justify-content-center">
-                    {(searchParams.get("handbook") ||
-                      searchParams.get("keyword") ||
-                      searchParams.get("page")) && (
-                      <Paginate
-                        page={statePage}
-                        pages={statePages}
-                        keyword={searchParams.get("keyword")}
-                        handbook={
-                          searchParams.get("handbook")
-                            ? JSON.parse(searchParams.get("handbook"))
-                            : null
-                        }
-                        setSearchParams={setSearchParams}
-                        usePrevNext={true}
-                      />
-                    )}
-                  </div>
+
+                  {items &&
+                    items.length > 0 && [
+                      <h2 key="item_search_title" className="sandbeige">
+                        Search result
+                      </h2>,
+                      <div
+                        key="search_pagination"
+                        className="d-flex justify-content-center"
+                      >
+                        {(searchParams.get("handbook") ||
+                          searchParams.get("keyword") ||
+                          searchParams.get("page")) && (
+                          <Paginate
+                            page={statePage}
+                            pages={statePages}
+                            keyword={searchParams.get("keyword")}
+                            handbook={
+                              searchParams.get("handbook")
+                                ? JSON.parse(searchParams.get("handbook"))
+                                : null
+                            }
+                            setSearchParams={setSearchParams}
+                            usePrevNext={true}
+                          />
+                        )}
+                      </div>,
+                      <Table
+                        key="item_search_results"
+                        bordered
+                        className="mb-5"
+                        style={{ color: "white" }}
+                      >
+                        <tbody>
+                          {items.map((item) => {
+                            return (
+                              <tr key={item.name}>
+                                <td
+                                  style={{ whiteSpace: "nowrap", width: "1%" }}
+                                >
+                                  <ItemSingleGrid
+                                    itemId={item.id}
+                                    bgColor={item.backgroundColor}
+                                  />
+                                </td>
+                                <td>{item.name}</td>
+                                <td>
+                                  {getAnotherFieldOfMatchFieldObjArr(
+                                    playerInventory,
+                                    "itemId",
+                                    item.id,
+                                    "count"
+                                  ) ?? 0}
+                                </td>
+                                <td
+                                  style={{ whiteSpace: "nowrap", width: "1%" }}
+                                >
+                                  <Button
+                                    variant="success"
+                                    className="d-flex justify-content-center align-items-center"
+                                    style={{ width: "64px", height: "64px" }}
+                                    onClick={() => {
+                                      setCurInventoryItem(item)
+                                      setCurInventoryItemCount(
+                                        getAnotherFieldOfMatchFieldObjArr(
+                                          playerInventory,
+                                          "itemId",
+                                          item.id,
+                                          "count"
+                                        ) ?? 0
+                                      )
+                                      openCloseItemModalHandle()
+                                    }}
+                                  >
+                                    <Pencil />
+                                  </Button>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </Table>,
+                    ]}
+                  <h2 className="sandbeige">Inventory</h2>
                   <Table bordered style={{ color: "white" }}>
                     <tbody>
-                      {items &&
-                        items.map((item) => {
+                      {playerInventory &&
+                        playerInventory.map((item) => {
                           return (
-                            <tr key={item.name}>
+                            <tr key={item.itemId}>
                               <td style={{ whiteSpace: "nowrap", width: "1%" }}>
                                 <ItemSingleGrid
-                                  itemId={item.id}
-                                  bgColor={item.backgroundColor}
+                                  itemId={item.itemId}
+                                  bgColor={item.bgColor}
                                 />
                               </td>
-                              <td>{item.name}</td>
-                              <td>
-                                {getAnotherFieldOfMatchFieldObjArr(
-                                  playerInventory,
-                                  "itemId",
-                                  item.id,
-                                  "count"
-                                ) ?? "no data"}
-                              </td>
+                              <td>{item.itemName}</td>
+                              <td>{item.count}</td>
                               <td style={{ whiteSpace: "nowrap", width: "1%" }}>
                                 <Button
                                   variant="success"
                                   className="d-flex justify-content-center align-items-center"
                                   style={{ width: "64px", height: "64px" }}
                                   onClick={() => {
-                                    setCurInventoryItem(item)
-                                    setCurInventoryItemCount(
-                                      getAnotherFieldOfMatchFieldObjArr(
-                                        playerInventory,
-                                        "itemId",
-                                        item.id,
-                                        "count"
-                                      ) ?? 0
-                                    )
+                                    setCurInventoryItem({
+                                      id: item.itemId,
+                                      name: item.itemName,
+                                    })
+                                    setCurInventoryItemCount(item.count)
                                     openCloseItemModalHandle()
                                   }}
                                 >
@@ -919,14 +974,6 @@ const CharacterScreen = () => {
                         })}
                     </tbody>
                   </Table>
-                  {playerInventory &&
-                    playerInventory.map((item) => {
-                      return (
-                        <div key={item.itemId}>
-                          {item.itemName + " " + item.count}
-                        </div>
-                      )
-                    })}
                 </Tab>
               </Tabs>
             </Col>
