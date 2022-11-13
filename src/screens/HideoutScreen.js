@@ -4,13 +4,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { ConstructRequirements } from "../components/ConstructRequirements"
 import { CraftTimeRequirement } from "../components/CraftTimeRequirement"
 import { HideoutIcon } from "../components/HideoutIcon"
-import { HideoutRequirement } from "../components/HideoutRequirement"
 import { ItemRequirement } from "../components/ItemRequirement"
-import { SkillIcon } from "../components/SkillIcon"
-import { SkillRequirement } from "../components/SkillRequirement"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TextStroke } from "../components/TextStroke"
-import { TraderRequirement } from "../components/TraderRequirement"
 import { formatInHoursMINsec, getHMSfromS } from "../helpers/TimeFormat"
 import { getAllHideout } from "../reducers/HideoutSlice"
 
@@ -23,7 +19,7 @@ const HideoutScreen = () => {
   const [curStation, setCurStation] = useState("5d388e97081959000a123acf")
 
   useEffect(() => {
-    if (hideout.length === 0) {
+    if (!hideout) {
       dispatch(getAllHideout())
     }
   }, [hideout])
@@ -40,6 +36,7 @@ const HideoutScreen = () => {
               <TarkovSpinner />
             </div>
           ) : (
+            hideout &&
             hideout.map((station) => {
               return (
                 <a
@@ -95,7 +92,7 @@ const HideoutScreen = () => {
               </div>
             </TabPane>
           )}
-          {hideout.length !== 0 &&
+          {hideout &&
             hideout.map((el, i) => {
               return (
                 <TabPane eventKey={el.id} key={el.name}>
@@ -118,16 +115,17 @@ const HideoutScreen = () => {
                             color="#edebd6"
                           />
                         </div>
-                        <p
-                          className="mx-3 mt-3 mb-5"
+                        <div
+                          className="d-flex justify-content-center mx-3 mt-3 mb-5"
                           style={{
                             fontFamily: "TarkovItalic",
                             color: "#9ea8ad",
                             lineHeight: "1.2",
+                            flexWrap: "wrap",
                           }}
                         >
-                          {level.description}
-                        </p>
+                          <p>{level.description}</p>
+                        </div>
                         {(level.stationLevelRequirements.length > 0 ||
                           level.itemRequirements.length > 0 ||
                           level.traderRequirements.length > 0 ||
@@ -140,7 +138,12 @@ const HideoutScreen = () => {
                           </p>
                         )}
                         {/* all kind of requirement bundle */}
-                        <ConstructRequirements level={level} />
+                        {(level.stationLevelRequirements.length > 0 ||
+                          level.itemRequirements.length > 0 ||
+                          level.traderRequirements.length > 0 ||
+                          level.skillRequirements.length > 0) && (
+                          <ConstructRequirements level={level} />
+                        )}
                         {level.crafts.length > 0 && (
                           <p
                             className="text-center fs-3 mb-0"

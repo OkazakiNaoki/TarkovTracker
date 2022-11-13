@@ -65,16 +65,19 @@ const HideoutStationDetail = ({
       </div>
       {/* inner */}
       {/* station description */}
-      <p
-        className="mx-3 mt-3 mb-5"
+      <div
+        className="d-flex justify-content-center mx-3 mt-3 mb-5"
         style={{
           fontFamily: "TarkovItalic",
           color: "#9ea8ad",
           lineHeight: "1.2",
+          flexWrap: "wrap",
         }}
       >
-        {station.levels[curLevelIndex !== -1 ? curLevelIndex : 0].description}
-      </p>
+        <p className="d-block">
+          {station.levels[curLevelIndex !== -1 ? curLevelIndex : 0].description}
+        </p>
+      </div>
       {/* station construct/upgrade requirement */}
       {(curLevelIndex === -1 || showUpgrade) &&
         station.levels[curLevelIndex + 1] &&
