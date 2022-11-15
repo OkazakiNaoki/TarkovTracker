@@ -1,6 +1,10 @@
 import React from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getHideoutLevel, getInventoryItem } from "../reducers/CharacterSlice"
+import {
+  getHideoutLevel,
+  getInventoryItem,
+  getTraderProgress,
+} from "../reducers/CharacterSlice"
 import { HideoutRequirement } from "./HideoutRequirement"
 import { ItemRequirement } from "./ItemRequirement"
 import { SkillRequirement } from "./SkillRequirement"
@@ -17,7 +21,7 @@ const ConstructRequirements = ({
   setMeetSkillReq,
 }) => {
   // redux state
-  const { playerHideoutLevel, playerInventory } = useSelector(
+  const { playerHideoutLevel, playerInventory, traderProgress } = useSelector(
     (state) => state.character
   )
   // redux dispatch
@@ -36,8 +40,15 @@ const ConstructRequirements = ({
     }
   }, [playerInventory])
 
+  useEffect(() => {
+    if (!traderProgress) {
+      dispatch(getTraderProgress())
+    }
+  }, [traderProgress])
+
   let hideoutFulfillCount = 0
   let itemFulfillCount = 0
+  let traderFulfillCount = 0
 
   return (
     <div
@@ -116,12 +127,24 @@ const ConstructRequirements = ({
       {level.traderRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.traderRequirements.map((traderReq, i) => {
+            let fulfill = false
+            if (
+              traderProgress &&
+              traderProgress.traderLL[traderReq.trader.name] >= traderReq.level
+            ) {
+              fulfill = true
+              traderFulfillCount += 1
+            }
+            if (traderFulfillCount === level.traderRequirements.length) {
+              setMeetTraderReq(true)
+            }
             return (
               <div className="mx-3" key={`trader_req_${i}`}>
                 <TraderRequirement
                   trader={traderReq.trader}
                   standing={traderReq.level}
                   showFulfill={showFulfill}
+                  fulfill={fulfill}
                 />
               </div>
             )
@@ -131,6 +154,7 @@ const ConstructRequirements = ({
       {level.skillRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.skillRequirements.map((skillReq, i) => {
+            setMeetSkillReq(false)
             return (
               <SkillRequirement
                 key={`skill_req_${i}`}

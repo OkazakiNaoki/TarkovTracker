@@ -39,21 +39,18 @@ const HideoutStationDetail = ({
           level={curLevelIndex + 1}
           noHover={true}
           constructUnlock={
-            meetHideoutReq && meetItemReq && meetTraderReq && meetTraderReq
+            meetHideoutReq && meetItemReq && meetTraderReq && meetSkillReq
           }
           greenOutlined={
             curLevelIndex === -1 &&
             meetHideoutReq &&
             meetItemReq &&
             meetTraderReq &&
-            meetTraderReq
+            meetSkillReq
           }
           redOutlined={
             curLevelIndex === -1 &&
-            (!meetHideoutReq ||
-              !meetItemReq ||
-              !meetTraderReq ||
-              !meetTraderReq)
+            (!meetHideoutReq || !meetItemReq || !meetTraderReq || !meetSkillReq)
           }
         />
         <TextStroke
@@ -90,9 +87,7 @@ const HideoutStationDetail = ({
             <p className="text-center fs-3 mb-0" style={{ color: "#edebd6" }}>
               {curLevelIndex === -1
                 ? "CONSTRUCTION REQUIREMENTS"
-                : `LEVEL 0${
-                    station.levels[curLevelIndex].level + 1
-                  } UPGRADE REQUIREMENTS`}
+                : `LEVEL 0${curLevelIndex + 2} UPGRADE REQUIREMENTS`}
             </p>
             <ConstructRequirements
               level={station.levels[curLevelIndex + 1]}
@@ -153,7 +148,7 @@ const HideoutStationDetail = ({
               fs={24}
               text="CONSTRUCT"
               color={
-                meetHideoutReq && meetItemReq && meetTraderReq && meetTraderReq
+                meetHideoutReq && meetItemReq && meetTraderReq && meetSkillReq
                   ? "#e7e5d4"
                   : "#595853"
               }
@@ -164,7 +159,7 @@ const HideoutStationDetail = ({
                 !meetHideoutReq ||
                 !meetItemReq ||
                 !meetTraderReq ||
-                !meetTraderReq
+                !meetSkillReq
               }
             />
           </div>
@@ -203,10 +198,7 @@ const HideoutStationDetail = ({
                 fs={24}
                 text="UPGRADE"
                 color={
-                  meetHideoutReq &&
-                  meetItemReq &&
-                  meetTraderReq &&
-                  meetTraderReq
+                  meetHideoutReq && meetItemReq && meetTraderReq && meetSkillReq
                     ? "#e7e5d4"
                     : "#595853"
                 }
@@ -219,7 +211,7 @@ const HideoutStationDetail = ({
                   !meetHideoutReq ||
                   !meetItemReq ||
                   !meetTraderReq ||
-                  !meetTraderReq
+                  !meetSkillReq
                 }
               />
             </div>
