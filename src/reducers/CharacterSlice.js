@@ -706,6 +706,58 @@ export const updateTraderProgress = createAsyncThunk(
   }
 )
 
+export const addSkillProgress = createAsyncThunk(
+  "character/addSkillProgress",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const skills = await axios.post(
+        `/api/player/skill`,
+        {
+          skills: params.skills,
+        },
+        config
+      )
+
+      return skills.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getSkillProgress = createAsyncThunk(
+  "character/getSkillProgress",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const skills = await axios.get(`/api/player/skill`, config)
+
+      return skills.data
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -726,6 +778,8 @@ const characterSlice = createSlice({
     playerHideoutLevel: null,
     // inventory
     playerInventory: null,
+    // skill
+    playerSkill: null,
   },
   reducers: {
     setInitSetup: (state, action) => {
@@ -856,6 +910,16 @@ const characterSlice = createSlice({
         state.traderProgress = action.payload
       })
       .addCase(updateTraderProgress.rejected, (state, action) => {})
+      .addCase(addSkillProgress.pending, (state, action) => {})
+      .addCase(addSkillProgress.fulfilled, (state, action) => {
+        state.playerSkill = action.payload
+      })
+      .addCase(addSkillProgress.rejected, (state, action) => {})
+      .addCase(getSkillProgress.pending, (state, action) => {})
+      .addCase(getSkillProgress.fulfilled, (state, action) => {
+        state.playerSkill = action.payload
+      })
+      .addCase(getSkillProgress.rejected, (state, action) => {})
   },
 })
 

@@ -31,6 +31,7 @@ import {
   getTraderProgress,
   addTraderProgress,
   updateInventoryItem,
+  getSkillProgress,
 } from "../reducers/CharacterSlice"
 import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
@@ -53,6 +54,7 @@ import { TraderRelationModal } from "../components/TraderRelationModal"
 import { ItemSearchBar } from "../components/ItemSearchBar"
 import Paginate from "../components/Paginate"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
+import { SkillIcon } from "../components/SkillIcon"
 
 const CharacterScreen = () => {
   // router
@@ -106,6 +108,7 @@ const CharacterScreen = () => {
     playerObjectiveProgress,
     playerHideoutLevel,
     playerInventory,
+    playerSkill,
   } = useSelector((state) => state.character)
   const {
     items,
@@ -229,6 +232,13 @@ const CharacterScreen = () => {
       dispatch(getTraderProgress())
     }
   }, [traderProgress])
+
+  // get player skill progress
+  useEffect(() => {
+    if (!playerSkill) {
+      dispatch(getSkillProgress())
+    }
+  }, [playerSkill])
 
   // on search params change
   useEffect(() => {
@@ -810,11 +820,24 @@ const CharacterScreen = () => {
                   </div>
                 </Tab>
 
-                {/* Quest item */}
-                <Tab eventKey="questItem" title="Quest item">
-                  <div>
-                    <QuestItems />
-                  </div>
+                {/* Skill */}
+                <Tab eventKey="skill" title="Skill">
+                  <Row xs={2} sm={3} md={4} className="g-3">
+                    {playerSkill &&
+                      playerSkill.skills.map((skill) => {
+                        return (
+                          <Col>
+                            <div className="d-flex justify-content-center">
+                              <SkillIcon
+                                skillName={skill.skillName}
+                                level={skill.level}
+                                useNameBox={true}
+                              />
+                            </div>
+                          </Col>
+                        )
+                      })}
+                  </Row>
                 </Tab>
 
                 {/* Trader LL */}
@@ -974,6 +997,13 @@ const CharacterScreen = () => {
                         })}
                     </tbody>
                   </Table>
+                </Tab>
+
+                {/* Quest item */}
+                <Tab eventKey="questItem" title="Quest item">
+                  <div>
+                    <QuestItems />
+                  </div>
                 </Tab>
               </Tabs>
             </Col>

@@ -31,6 +31,11 @@ import {
   getInventory,
   updateInventory,
 } from "../controllers/PlayerInventoryController.js"
+import {
+  addSkillProgress,
+  getSkillProgress,
+  updateSkillProgress,
+} from "../controllers/PlayerSkillController.js"
 
 const router = express.Router()
 
@@ -75,5 +80,11 @@ router
   .get(protect, getInventory)
   .post(protect, addInventory)
   .put(protect, updateInventory)
+
+router
+  .route("/skill")
+  .get(protect, getSkillProgress)
+  .post(protect, addSkillProgress)
+  .put(protect, updateSkillProgress)
 
 export default router

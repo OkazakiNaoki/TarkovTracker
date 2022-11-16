@@ -12,11 +12,13 @@ import {
   addHideoutLevel,
   addInventoryItem,
   addTraderProgress,
+  addSkillProgress,
 } from "../reducers/CharacterSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
 import usecIcon from "../../public/static/images/icon_usec.png"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
+import { skillIconMap } from "../data/SkillIconMap"
 
 const PlayerDataSetup = () => {
   // hooks state
@@ -124,6 +126,12 @@ const PlayerDataSetup = () => {
       dispatch(addTraderProgress({ traderLL, traderRep, traderSpent }))
       // player inventory data
       dispatch(addInventoryItem({ itemList: [] }))
+      // player skill data
+      const newSkills = []
+      Object.keys(skillIconMap).forEach((skill) => {
+        newSkills.push({ skillName: skill, level: 1 })
+      })
+      dispatch(addSkillProgress({ skills: newSkills }))
       // initialized flag
       dispatch(setInitSetup())
     }
