@@ -32,6 +32,7 @@ import {
   addTraderProgress,
   updateInventoryItem,
   getSkillProgress,
+  updateSkillProgress,
 } from "../reducers/CharacterSlice"
 import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
@@ -88,6 +89,9 @@ const CharacterScreen = () => {
   const [openItemModal, setOpenItemModal] = useState(false)
   const [curInventoryItem, setCurInventoryItem] = useState(null)
   const [curInventoryItemCount, setCurInventoryItemCount] = useState(null)
+  // player skill
+  const [openSkillSettingModal, setOpenSkillSettingModal] = useState(false)
+  const [skillSettingTarget, setSkillSettingTarget] = useState(null)
 
   //// redux state
   const { user } = useSelector((state) => state.user)
@@ -402,6 +406,14 @@ const CharacterScreen = () => {
     )
   }
 
+  const openCloseSkillSettingModalHandle = () => {
+    setOpenSkillSettingModal(!openSkillSettingModal)
+  }
+
+  const modifySkillLevelHandle = (skillName, level) => {
+    dispatch(updateSkillProgress({ skillName, level }))
+  }
+
   return (
     <>
       <Button
@@ -446,6 +458,17 @@ const CharacterScreen = () => {
           openCloseItemModalHandle()
         }}
         closeHandle={openCloseItemModalHandle}
+      />
+      <EditValueModal
+        title={skillSettingTarget && skillSettingTarget.skillName}
+        show={openSkillSettingModal}
+        value={skillSettingTarget && skillSettingTarget.level}
+        maxValue={51}
+        setValueHandle={(v) => {
+          modifySkillLevelHandle(skillSettingTarget.skillName, v)
+          openCloseSkillSettingModalHandle()
+        }}
+        closeHandle={openCloseSkillSettingModalHandle}
       />
       {Object.keys(user).length === 0 && <LoginFirst />}
       {Object.keys(user).length > 0 &&
@@ -826,13 +849,22 @@ const CharacterScreen = () => {
                     {playerSkill &&
                       playerSkill.skills.map((skill) => {
                         return (
-                          <Col>
+                          <Col key={skill.skillName}>
                             <div className="d-flex justify-content-center">
-                              <SkillIcon
-                                skillName={skill.skillName}
-                                level={skill.level}
-                                useNameBox={true}
-                              />
+                              <div
+                                className="d-flex"
+                                role="button"
+                                onClick={() => {
+                                  setSkillSettingTarget(skill)
+                                  openCloseSkillSettingModalHandle()
+                                }}
+                              >
+                                <SkillIcon
+                                  skillName={skill.skillName}
+                                  level={skill.level}
+                                  useNameBox={true}
+                                />
+                              </div>
                             </div>
                           </Col>
                         )
@@ -848,25 +880,27 @@ const CharacterScreen = () => {
                       traders.map((trader, i) => {
                         return (
                           <Col key={i}>
-                            <div
-                              role="button"
-                              className="d-flex justify-content-center"
-                              onClick={() => {
-                                setTraderSettingTarget(trader.name)
-                                openCloseTraderSettingModalHandle()
-                              }}
-                            >
-                              <TraderCard
-                                trader={trader}
-                                standing={
-                                  traderProgress.traderLL &&
-                                  traderProgress.traderLL[trader.name]
-                                }
-                                rep={
-                                  traderProgress.traderRep &&
-                                  traderProgress.traderRep[trader.name]
-                                }
-                              />
+                            <div className="d-flex justify-content-center">
+                              <div
+                                className="d-flex"
+                                role="button"
+                                onClick={() => {
+                                  setTraderSettingTarget(trader.name)
+                                  openCloseTraderSettingModalHandle()
+                                }}
+                              >
+                                <TraderCard
+                                  trader={trader}
+                                  standing={
+                                    traderProgress.traderLL &&
+                                    traderProgress.traderLL[trader.name]
+                                  }
+                                  rep={
+                                    traderProgress.traderRep &&
+                                    traderProgress.traderRep[trader.name]
+                                  }
+                                />
+                              </div>
                             </div>
                           </Col>
                         )

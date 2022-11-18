@@ -758,6 +758,35 @@ export const getSkillProgress = createAsyncThunk(
   }
 )
 
+export const updateSkillProgress = createAsyncThunk(
+  "character/updateSkillProgress",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newSkills = await axios.put(
+        `/api/player/skill`,
+        {
+          skill: { skillName: params.skillName, level: params.level },
+        },
+        config
+      )
+
+      return newSkills.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -920,6 +949,11 @@ const characterSlice = createSlice({
         state.playerSkill = action.payload
       })
       .addCase(getSkillProgress.rejected, (state, action) => {})
+      .addCase(updateSkillProgress.pending, (state, action) => {})
+      .addCase(updateSkillProgress.fulfilled, (state, action) => {
+        state.playerSkill = action.payload
+      })
+      .addCase(updateSkillProgress.rejected, (state, action) => {})
   },
 })
 

@@ -4,6 +4,7 @@ import { skillIconMap } from "../data/SkillIconMap"
 import { FloatingMessageBox } from "./FloatingMessageBox"
 import skillBorder from "../../public/static/images/skill_border.png"
 import levelBadge from "../../public/static/images/skill_level_panel.png"
+import maxStandIcon from "../../public/static/images/loyalty_king.png"
 
 const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
   // hooks state
@@ -62,17 +63,24 @@ const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
               transform: "translateX(-3px) translateY(3px)",
             }}
           />
-          <p
-            className="position-absolute bottom-0 start-0 mb-0"
-            style={{
-              fontSize: "12px",
-              color: "black",
-              transform: "translateX(6px)",
-              userSelect: "none",
-            }}
-          >
-            {level}
-          </p>
+          {level < 51 ? (
+            <p
+              className="position-absolute bottom-0 start-0 mb-0"
+              style={{
+                fontSize: "12px",
+                color: "black",
+                transform: level < 9 ? "translateX(6px)" : "translateX(2px)",
+                userSelect: "none",
+              }}
+            >
+              {level}
+            </p>
+          ) : (
+            <Image
+              src={maxStandIcon}
+              className="position-absolute bottom-0 start-0"
+            />
+          )}
         </div>
       </div>
     </div>

@@ -11,11 +11,11 @@ const EditValueModal = ({
   setValueHandle,
   closeHandle,
 }) => {
-  const [localValue, setLocalValue] = useState(0)
+  const [localValue, setLocalValue] = useState(value)
 
   useEffect(() => {
     setLocalValue(value)
-  }, [value])
+  }, [value, title])
 
   const fiddleValue = (step) => {
     if (localValue + step < minValue || localValue + step > maxValue) {

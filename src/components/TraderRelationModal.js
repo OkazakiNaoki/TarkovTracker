@@ -59,7 +59,7 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
 
   // get trader loyalty level depend on updated reputation and money spent
   useEffect(() => {
-    if (initSetup && traderName && traderLevels) {
+    if (initSetup && traderName && traderLevels && traderLevels[traderName]) {
       for (let i = 1; i < traderLevels[traderName].length; i++) {
         if (
           // traderLevels[traderName][i].requiredPlayerLevel <= playerLevel &&
