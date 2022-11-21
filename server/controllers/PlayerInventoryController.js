@@ -5,13 +5,13 @@ import PlayerInventory from "../models/PlayerInventoryModel.js"
 // @route POST /api/player/inventory
 // @access private
 export const addInventory = asyncHandler(async (req, res) => {
-  const itemList = req.body.itemList
+  const items = req.body.items
 
   const existPi = await PlayerInventory.findOne({ user: req.user._id })
   if (!existPi) {
     const pi = new PlayerInventory({
       user: req.user._id,
-      itemList: itemList,
+      items: items,
     })
     const createdPi = await pi.save()
     res.status(201).json(createdPi)
@@ -24,29 +24,31 @@ export const addInventory = asyncHandler(async (req, res) => {
 // @route PUT /api/player/inventory
 // @access private
 export const updateInventory = asyncHandler(async (req, res) => {
-  const item = req.body.item
+  const items = req.body.items
 
-  if (item && Object.keys(item).length === 0) {
-    res.status(400).send("Item is empty")
+  if (items && Object.keys(items).length === 0) {
+    res.status(400).send("Items is empty")
     return
   } else {
     const existPi = await PlayerInventory.findOne({ user: req.user._id })
     if (!existPi) {
       res.status(404).send("Previous inventory data not found")
     } else {
-      const matchItemIndex = existPi.itemList.findIndex((i) => {
-        return i.itemId === item.itemId
-      })
-      if (matchItemIndex === -1) {
-        existPi.itemList.push(item)
-      } else {
-        if (item.count === 0) {
-          existPi.itemList.splice(matchItemIndex, 1)
+      items.forEach((item) => {
+        const matchItemIndex = existPi.items.findIndex((i) => {
+          return i.itemId === item.itemId
+        })
+        if (matchItemIndex === -1) {
+          existPi.items.push(item)
         } else {
-          existPi.itemList[matchItemIndex].count = item.count
-          existPi.itemList[matchItemIndex].positionArray = item.positionArray
+          if (item.count === 0) {
+            existPi.items.splice(matchItemIndex, 1)
+          } else {
+            existPi.items[matchItemIndex].count = item.count
+          }
         }
-      }
+      })
+
       const updatedPi = await existPi.save()
       res.json(updatedPi)
     }
@@ -62,7 +64,7 @@ export const getInventory = asyncHandler(async (req, res) => {
     res.status(404).send("Previous inventory data not found")
   } else {
     res.json({
-      itemList: pi.itemList,
+      items: pi.items,
     })
   }
 })

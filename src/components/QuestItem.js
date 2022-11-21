@@ -101,10 +101,14 @@ const QuestItem = ({ playerInventory, itemReq }) => {
       if (index === -1 || newInventory[index].count !== itemCount) {
         dispatch(
           updateInventoryItem({
-            itemId: itemReq.item.itemId,
-            itemName: itemReq.item.itemName,
-            count: itemCount,
-            bgColor: itemReq.item.bgColor,
+            items: [
+              {
+                itemId: itemReq.item.itemId,
+                itemName: itemReq.item.itemName,
+                count: itemCount,
+                bgColor: itemReq.item.bgColor,
+              },
+            ],
           })
         )
       }

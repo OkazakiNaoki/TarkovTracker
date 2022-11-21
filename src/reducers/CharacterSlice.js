@@ -532,7 +532,7 @@ export const updateHideoutLevel = createAsyncThunk(
 export const addInventoryItem = createAsyncThunk(
   "character/addInventoryItem",
   async (params, { getState }) => {
-    const itemList = params.itemList
+    const items = params.items
     try {
       const { user } = getState().user
 
@@ -545,11 +545,11 @@ export const addInventoryItem = createAsyncThunk(
       const inventory = await axios.post(
         `/api/player/inventory`,
         {
-          itemList: itemList,
+          items: items,
         },
         config
       )
-      const inventoryData = inventory.data.ownItemList
+      const inventoryData = inventory.data.items
 
       return inventoryData
     } catch (error) {
@@ -576,7 +576,7 @@ export const getInventoryItem = createAsyncThunk(
 
       return {
         status: inventory.status,
-        data: inventory.data.itemList,
+        data: inventory.data.items,
       }
     } catch (error) {
       return error.response && error.response.data
@@ -601,16 +601,11 @@ export const updateInventoryItem = createAsyncThunk(
       const newInventory = await axios.put(
         `/api/player/inventory`,
         {
-          item: {
-            itemId: params.itemId,
-            itemName: params.itemName,
-            count: params.count,
-            bgColor: params.bgColor,
-          },
+          items: params.items,
         },
         config
       )
-      const newInventoryData = newInventory.data.itemList
+      const newInventoryData = newInventory.data.items
 
       return newInventoryData
     } catch (error) {

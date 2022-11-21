@@ -29,7 +29,6 @@ import {
   getHideoutLevel,
   updateHideoutLevel,
   getTraderProgress,
-  addTraderProgress,
   updateInventoryItem,
   getSkillProgress,
   updateSkillProgress,
@@ -398,10 +397,14 @@ const CharacterScreen = () => {
   const addItemToInventoryHandle = (item, count) => {
     dispatch(
       updateInventoryItem({
-        itemId: item.id,
-        itemName: item.name,
-        bgColor: item.backgroundColor,
-        count: count,
+        items: [
+          {
+            itemId: item.id,
+            itemName: item.name,
+            bgColor: item.backgroundColor,
+            count: count,
+          },
+        ],
       })
     )
   }
@@ -412,6 +415,25 @@ const CharacterScreen = () => {
 
   const modifySkillLevelHandle = (skillName, level) => {
     dispatch(updateSkillProgress({ skillName, level }))
+  }
+
+  const removeHideoutUpgradeCostItems = (itemRequirements) => {
+    const items = []
+    itemRequirements.forEach((itemReq) => {
+      playerInventory.some((item) => {
+        if (item.itemId === itemReq.item.id) {
+          const newItem = {
+            itemId: item.itemId,
+            itemName: item.itemName,
+            bgColor: item.bgColor,
+            count: item.count - itemReq.count,
+          }
+          items.push(newItem)
+          return true
+        }
+      })
+    })
+    dispatch(updateInventoryItem({ items }))
   }
 
   return (
@@ -795,6 +817,9 @@ const CharacterScreen = () => {
                                 "Are you sure you are going to construct?"
                               )
                               setConfirmFunc(() => () => {
+                                removeHideoutUpgradeCostItems(
+                                  currentStation.levels[0].itemRequirements
+                                )
                                 increaseStationLevelHandle(currentStation.id, 0)
                               })
                               openCloseConfirmModalHandle()
@@ -822,14 +847,19 @@ const CharacterScreen = () => {
                                   ].level
                                 } > ${
                                   currentStation.levels[
-                                    levelInfoOfCurrentStation.level
-                                  ].level + 1
+                                    levelInfoOfCurrentStation.level + 1
+                                  ].level
                                 }`
                               )
                               setConfirmModalContent(
                                 "Are you sure you are going to upgrade?"
                               )
                               setConfirmFunc(() => () => {
+                                removeHideoutUpgradeCostItems(
+                                  currentStation.levels[
+                                    levelInfoOfCurrentStation.level + 1
+                                  ].itemRequirements
+                                )
                                 increaseStationLevelHandle(
                                   currentStation.id,
                                   levelInfoOfCurrentStation.level + 1
@@ -847,6 +877,7 @@ const CharacterScreen = () => {
                 <Tab eventKey="skill" title="Skill">
                   <Row xs={2} sm={3} md={4} className="g-3">
                     {playerSkill &&
+                      playerSkill.skills &&
                       playerSkill.skills.map((skill) => {
                         return (
                           <Col key={skill.skillName}>

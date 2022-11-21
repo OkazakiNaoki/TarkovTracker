@@ -8,7 +8,7 @@ const SkillRequirement = ({
   skillName,
   level,
   fulfill = false,
-  showFullfill = false,
+  showFulfill = false,
   useNameBox = false,
 }) => {
   return (
@@ -24,7 +24,7 @@ const SkillRequirement = ({
         />
       </div>
       <div className="d-flex justify-content-center">
-        {showFullfill &&
+        {showFulfill &&
           (fulfill ? (
             <Image src={itemFulfillIcon} />
           ) : (

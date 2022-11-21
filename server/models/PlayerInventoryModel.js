@@ -29,7 +29,7 @@ const playerInventorySchema = mongoose.Schema({
     required: true,
     ref: User,
   },
-  itemList: [
+  items: [
     {
       type: itemSchema,
       required: true,
