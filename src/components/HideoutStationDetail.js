@@ -92,6 +92,7 @@ const HideoutStationDetail = ({
             <ConstructRequirements
               level={station.levels[curLevelIndex + 1]}
               showFulfill={true}
+              useMeetReq={true}
               setMeetHideoutReq={setMeetHideoutReq}
               setMeetItemReq={setMeetItemReq}
               setMeetTraderReq={setMeetTraderReq}

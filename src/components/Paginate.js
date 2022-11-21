@@ -44,7 +44,7 @@ const Paginate = ({
           setSearchParams({
             handbook:
               handbook && handbook.length > 0 ? JSON.stringify(handbook) : "",
-            keyword: keyword,
+            keyword: keyword ?? "",
             page: pageNum,
           })
         }}
@@ -76,7 +76,7 @@ const Paginate = ({
                   handbook && handbook.length > 0
                     ? JSON.stringify(handbook)
                     : "",
-                keyword: keyword,
+                keyword: keyword ?? "",
                 page: 1,
               })
             }}
@@ -90,7 +90,7 @@ const Paginate = ({
                   handbook && handbook.length > 0
                     ? JSON.stringify(handbook)
                     : "",
-                keyword: keyword,
+                keyword: keyword ?? "",
                 page: page - 1,
               })
             }}
@@ -109,7 +109,7 @@ const Paginate = ({
                   handbook && handbook.length > 0
                     ? JSON.stringify(handbook)
                     : "",
-                keyword: keyword,
+                keyword: keyword ?? "",
                 page: page + 1,
               })
             }}
@@ -124,7 +124,7 @@ const Paginate = ({
                   handbook && handbook.length > 0
                     ? JSON.stringify(handbook)
                     : "",
-                keyword: keyword,
+                keyword: keyword ?? "",
                 page: pages,
               })
             }}

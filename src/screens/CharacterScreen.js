@@ -500,9 +500,15 @@ const CharacterScreen = () => {
       {Object.keys(user).length > 0 && initSetup && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
-            <Col lg={3} style={{ border: "1px solid white" }}>
-              <Row>
-                <p className="mt-3 mb-0 text-center sandbeige">
+            <Col lg={3} className="p-0 gray-rounded-40">
+              <Row
+                className="p-0 m-0"
+                style={{
+                  borderRadius: "40px 40px 0 0",
+                  backgroundColor: "#292929",
+                }}
+              >
+                <p className="my-3 text-center sandbeige">
                   {gameEdition && gameEdition}
                   {" edition"}
                 </p>
@@ -624,7 +630,11 @@ const CharacterScreen = () => {
                               <div className="fs-4">{trader.name}</div>
                             </Accordion.Header>
                             <Accordion.Body className="p-0">
-                              <Table variant="dark" className="m-0">
+                              <Table
+                                variant="dark"
+                                className="m-0"
+                                style={{ "--bs-table-bg": "black" }}
+                              >
                                 <tbody>
                                   {(!playerCompletedObjectives ||
                                     !playerObjectiveProgress) && (

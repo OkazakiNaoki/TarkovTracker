@@ -16,6 +16,7 @@ import { useEffect } from "react"
 const ConstructRequirements = ({
   level,
   showFulfill = false,
+  useMeetReq = false,
   setMeetHideoutReq,
   setMeetItemReq,
   setMeetTraderReq,
@@ -41,90 +42,100 @@ const ConstructRequirements = ({
   }, [playerHideoutLevel])
 
   useEffect(() => {
-    let stationFulfillCount = 0
-    const fulfillArr = new Array(level.stationLevelRequirements.length).fill(
-      false
-    )
-    if (playerHideoutLevel && level.stationLevelRequirements.length > 0) {
-      level.stationLevelRequirements.forEach((stationReq, i) => {
-        playerHideoutLevel.some((station) => {
-          if (
-            station.hideoutId === stationReq.station.id &&
-            station.level + 1 >= stationReq.level
-          ) {
-            fulfillArr[i] = true
-            stationFulfillCount += 1
-            return true
-          }
-        })
-      })
-      setStationFulfill(fulfillArr)
-      setMeetHideoutReq(
-        stationFulfillCount === level.stationLevelRequirements.length
+    if (useMeetReq) {
+      let stationFulfillCount = 0
+      const fulfillArr = new Array(level.stationLevelRequirements.length).fill(
+        false
       )
-    } else {
-      setMeetHideoutReq(true)
+      if (playerHideoutLevel && level.stationLevelRequirements.length > 0) {
+        level.stationLevelRequirements.forEach((stationReq, i) => {
+          playerHideoutLevel.some((station) => {
+            if (
+              station.hideoutId === stationReq.station.id &&
+              station.level + 1 >= stationReq.level
+            ) {
+              fulfillArr[i] = true
+              stationFulfillCount += 1
+              return true
+            }
+          })
+        })
+        setStationFulfill(fulfillArr)
+        setMeetHideoutReq(
+          stationFulfillCount === level.stationLevelRequirements.length
+        )
+      } else {
+        setMeetHideoutReq(true)
+      }
     }
   }, [playerHideoutLevel, level.stationLevelRequirements])
 
   useEffect(() => {
-    let itemFulfillCount = 0
-    const itemCountArr = new Array(level.itemRequirements.length).fill(0)
-    if (playerInventory && level.itemRequirements.length > 0) {
-      level.itemRequirements.forEach((itemReq, i) => {
-        playerInventory.some((item) => {
-          if (item.itemId === itemReq.item.id) {
-            itemCountArr[i] = item.count
-            if (item.count >= itemReq.count) {
-              itemFulfillCount += 1
+    if (useMeetReq) {
+      let itemFulfillCount = 0
+      const itemCountArr = new Array(level.itemRequirements.length).fill(0)
+      if (playerInventory && level.itemRequirements.length > 0) {
+        level.itemRequirements.forEach((itemReq, i) => {
+          playerInventory.some((item) => {
+            if (item.itemId === itemReq.item.id) {
+              itemCountArr[i] = item.count
+              if (item.count >= itemReq.count) {
+                itemFulfillCount += 1
+              }
+              return true
             }
-            return true
-          }
+          })
         })
-      })
-      setCurItemCount(itemCountArr)
-      setMeetItemReq(itemFulfillCount === level.itemRequirements.length)
-    } else {
-      setMeetItemReq(true)
+        setCurItemCount(itemCountArr)
+        setMeetItemReq(itemFulfillCount === level.itemRequirements.length)
+      } else {
+        setMeetItemReq(true)
+      }
     }
   }, [playerInventory, level.itemRequirements])
 
   useEffect(() => {
-    let traderFulfillCount = 0
-    const fulfillArr = new Array(level.traderRequirements.length).fill(false)
-    if (traderProgress && level.traderRequirements.length > 0) {
-      level.traderRequirements.forEach((traderReq, i) => {
-        if (traderProgress.traderLL[traderReq.trader.name] >= traderReq.level) {
-          fulfillArr[i] = true
-          traderFulfillCount += 1
-        }
-      })
-      setTraderFulfill(fulfillArr)
-      setMeetTraderReq(traderFulfillCount === level.traderRequirements.length)
-    } else {
-      setMeetTraderReq(true)
+    if (useMeetReq) {
+      let traderFulfillCount = 0
+      const fulfillArr = new Array(level.traderRequirements.length).fill(false)
+      if (traderProgress && level.traderRequirements.length > 0) {
+        level.traderRequirements.forEach((traderReq, i) => {
+          if (
+            traderProgress.traderLL[traderReq.trader.name] >= traderReq.level
+          ) {
+            fulfillArr[i] = true
+            traderFulfillCount += 1
+          }
+        })
+        setTraderFulfill(fulfillArr)
+        setMeetTraderReq(traderFulfillCount === level.traderRequirements.length)
+      } else {
+        setMeetTraderReq(true)
+      }
     }
   }, [traderProgress, level.traderRequirements])
 
   useEffect(() => {
-    let skillFulfillCount = 0
-    const fulfillArr = new Array(level.skillRequirements.length).fill(false)
-    if (playerSkill && level.skillRequirements.length > 0) {
-      level.skillRequirements.forEach((skillReq, i) => {
-        playerSkill.skills.some((skill) => {
-          if (skill.skillName === skillReq.name) {
-            if (skill.level >= skillReq.level) {
-              fulfillArr[i] = true
-              skillFulfillCount += 1
-              return true
+    if (useMeetReq) {
+      let skillFulfillCount = 0
+      const fulfillArr = new Array(level.skillRequirements.length).fill(false)
+      if (playerSkill && level.skillRequirements.length > 0) {
+        level.skillRequirements.forEach((skillReq, i) => {
+          playerSkill.skills.some((skill) => {
+            if (skill.skillName === skillReq.name) {
+              if (skill.level >= skillReq.level) {
+                fulfillArr[i] = true
+                skillFulfillCount += 1
+                return true
+              }
             }
-          }
+          })
         })
-      })
-      setSkillFulfill(fulfillArr)
-      setMeetSkillReq(skillFulfillCount === level.skillRequirements.length)
-    } else {
-      setMeetSkillReq(true)
+        setSkillFulfill(fulfillArr)
+        setMeetSkillReq(skillFulfillCount === level.skillRequirements.length)
+      } else {
+        setMeetSkillReq(true)
+      }
     }
   }, [playerSkill, level.skillRequirements])
 

@@ -17,7 +17,7 @@ import {
   titleCase,
   insertSpaceIntoCamelCase,
 } from "../helpers/StringCasesFormat"
-import { getHMSfromS } from "../helpers/TimeFormat"
+import { getHMSfromS, formatInHoursMINsec } from "../helpers/TimeFormat"
 import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
@@ -107,7 +107,7 @@ const ItemScreen = ({}) => {
         <Row className="gx-5 mb-5">
           <Col
             sm={6}
-            className="d-flex align-items-center justify-content-center border border-light p-3"
+            className="d-flex align-items-center justify-content-center p-3 gray-rounded-20"
             style={{
               height: "300px",
             }}
@@ -129,7 +129,7 @@ const ItemScreen = ({}) => {
               <Row className="g-2 mb-2">
                 {new Array(6).fill().map((el, i) => (
                   <Col key={`dummp_col_${i}`} sm={12} md={6}>
-                    <div className="border border-light py-2 h-100">
+                    <div className="py-2 h-100 gray-rounded-20">
                       <div className="text-center">
                         <Placeholder animation="wave">
                           <Placeholder xs={2} size="lg" />
@@ -154,7 +154,7 @@ const ItemScreen = ({}) => {
                   return (
                     <Row key={i} className="g-2 mb-2">
                       <Col sm={12} md={6}>
-                        <div className="border border-light py-2 h-100">
+                        <div className="py-2 h-100 gray-rounded-20">
                           <div className="text-center">{el[0].key}</div>
                           <div
                             className="px-3"
@@ -165,7 +165,7 @@ const ItemScreen = ({}) => {
                         </div>
                       </Col>
                       <Col sm={12} md={6}>
-                        <div className="border border-light py-2 h-100">
+                        <div className="py-2 h-100 gray-rounded-20">
                           <div className="text-center">{el[1].key}</div>
                           <div
                             className="px-3"
@@ -181,7 +181,7 @@ const ItemScreen = ({}) => {
                   return (
                     <Row key={i} className="g-2 mb-2">
                       <Col sm={12} md={6}>
-                        <div className="border border-light py-2 h-100">
+                        <div className="py-2 h-100 gray-rounded-20">
                           <div className="text-center">{el[0].key}</div>
                           <div
                             className="px-3"
@@ -221,9 +221,7 @@ const ItemScreen = ({}) => {
                       <tr key={i}>
                         <td>
                           {el.vendor.name !== "Flea Market"
-                            ? el.vendor.name +
-                              " @Lv." +
-                              el.vendor.minTraderLevel
+                            ? el.vendor.name + " LL" + el.vendor.minTraderLevel
                             : el.vendor.name}
                         </td>
                         <td>{el.price}</td>
@@ -309,13 +307,13 @@ const ItemScreen = ({}) => {
                   item.craftsFor.map((el, i) => {
                     return (
                       <tr key={i}>
-                        <td>{el.station.name + " @Lv." + el.level}</td>
+                        <td>{el.station.name + " Level " + el.level}</td>
                         <td style={{ whiteSpace: "break-spaces" }}>
                           {el.requiredItems.reduce((prev, el) => {
                             return prev + el.item.name + "  x" + el.count + "\n"
                           }, "")}
                         </td>
-                        <td>{getHMSfromS(el.duration)}</td>
+                        <td>{formatInHoursMINsec(getHMSfromS(el.duration))}</td>
                         <td style={{ whiteSpace: "break-spaces" }}>
                           {el.rewardItems.reduce((prev, el) => {
                             return prev + el.item.name + "  x" + el.count + "\n"
@@ -342,7 +340,7 @@ const ItemScreen = ({}) => {
                   hideout.map((el, i) => {
                     return (
                       <tr key={i}>
-                        <td>{el.name + " @Lv." + el.levels.level}</td>
+                        <td>{el.name + " Level " + el.levels.level}</td>
                         <td style={{ whiteSpace: "break-spaces" }}>
                           {el.levels.itemRequirements.reduce((prev, el) => {
                             return prev + el.item.name + "  x" + el.count + "\n"
