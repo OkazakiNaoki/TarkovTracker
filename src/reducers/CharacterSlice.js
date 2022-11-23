@@ -95,6 +95,15 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus =
+        getState().character.requests["getTasksOfTraderWithLevel"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -186,6 +195,15 @@ export const getCompletedObjectives = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus =
+        getState().character.requests["getCompletedObjectives"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -279,6 +297,14 @@ export const getObjectiveProgress = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getObjectiveProgress"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -438,6 +464,14 @@ export const getCharacterData = createAsyncThunk(
         ? error.response.data
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getCharacterData"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -495,6 +529,14 @@ export const getHideoutLevel = createAsyncThunk(
         ? error.response.data
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getHideoutLevel"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -583,6 +625,14 @@ export const getInventoryItem = createAsyncThunk(
         ? error.response.data
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getInventoryItem"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -667,6 +717,14 @@ export const getTraderProgress = createAsyncThunk(
         ? error.response.data
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getTraderProgress"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -750,6 +808,14 @@ export const getSkillProgress = createAsyncThunk(
         ? error.response.data
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getSkillProgress"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -785,6 +851,9 @@ export const updateSkillProgress = createAsyncThunk(
 const characterSlice = createSlice({
   name: "character",
   initialState: {
+    // request record
+    requests: {},
+    // initialize record
     initSetup: false,
     loadingInitSetup: false,
     // player basic data
@@ -817,21 +886,27 @@ const characterSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {})
+      .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {
+        state.requests["getTasksOfTraderWithLevel"] = "pending"
+      })
       .addCase(getTasksOfTraderWithLevel.fulfilled, (state, action) => {
         state.playerTasksInfo[`${action.payload.trader}`] = {
           complete: action.payload.completeTasks,
           ongoing: action.payload.ongoingTasks,
           notQualify: action.payload.notQualifyTasks,
         }
+        state.requests["getTasksOfTraderWithLevel"] = "fulfilled"
       })
       .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
       .addCase(updateCompletedTasks.pending, (state, action) => {})
       .addCase(updateCompletedTasks.fulfilled, (state, action) => {})
       .addCase(updateCompletedTasks.rejected, (state, action) => {})
-      .addCase(getCompletedObjectives.pending, (state, action) => {})
+      .addCase(getCompletedObjectives.pending, (state, action) => {
+        state.requests["getCompletedObjectives"] = "pending"
+      })
       .addCase(getCompletedObjectives.fulfilled, (state, action) => {
         state.playerCompletedObjectives = action.payload.completeObjectives
+        state.requests["getCompletedObjectives"] = "fulfilled"
       })
       .addCase(getCompletedObjectives.rejected, (state, action) => {})
       .addCase(updateCompletedObjectives.pending, (state, action) => {})
@@ -844,9 +919,12 @@ const characterSlice = createSlice({
         state.playerCompletedObjectives = action.payload.completeObjectives
       })
       .addCase(addCompletedObjectives.rejected, (state, action) => {})
-      .addCase(getObjectiveProgress.pending, (state, action) => {})
+      .addCase(getObjectiveProgress.pending, (state, action) => {
+        state.requests["getObjectiveProgress"] = "pending"
+      })
       .addCase(getObjectiveProgress.fulfilled, (state, action) => {
         state.playerObjectiveProgress = action.payload.objectiveProgress
+        state.requests["getObjectiveProgress"] = "fulfilled"
       })
       .addCase(getObjectiveProgress.rejected, (state, action) => {})
       .addCase(updateObjectiveProgress.pending, (state, action) => {})
@@ -874,6 +952,7 @@ const characterSlice = createSlice({
       .addCase(updateCharacterData.rejected, (state, action) => {})
       .addCase(getCharacterData.pending, (state, action) => {
         state.loadingInitSetup = true
+        state.requests["getCharacterData"] = "pending"
       })
       .addCase(getCharacterData.fulfilled, (state, action) => {
         state.loadingInitSetup = false
@@ -885,6 +964,7 @@ const characterSlice = createSlice({
         } else {
           state.initSetup = false
         }
+        state.requests["getCharacterData"] = "fulfilled"
       })
       .addCase(getCharacterData.rejected, (state, action) => {
         state.loadingInitSetup = false
@@ -894,9 +974,12 @@ const characterSlice = createSlice({
         state.playerHideoutLevel = action.payload
       })
       .addCase(addHideoutLevel.rejected, (state, action) => {})
-      .addCase(getHideoutLevel.pending, (state, action) => {})
+      .addCase(getHideoutLevel.pending, (state, action) => {
+        state.requests["getHideoutLevel"] = "pending"
+      })
       .addCase(getHideoutLevel.fulfilled, (state, action) => {
         state.playerHideoutLevel = action.payload.data
+        state.requests["getHideoutLevel"] = "fulfilled"
       })
       .addCase(getHideoutLevel.rejected, (state, action) => {})
       .addCase(updateHideoutLevel.pending, (state, action) => {})
@@ -909,9 +992,12 @@ const characterSlice = createSlice({
         state.playerInventory = action.payload
       })
       .addCase(addInventoryItem.rejected, (state, action) => {})
-      .addCase(getInventoryItem.pending, (state, action) => {})
+      .addCase(getInventoryItem.pending, (state, action) => {
+        state.requests["getInventoryItem"] = "pending"
+      })
       .addCase(getInventoryItem.fulfilled, (state, action) => {
         state.playerInventory = action.payload.data
+        state.requests["getInventoryItem"] = "fulfilled"
       })
       .addCase(getInventoryItem.rejected, (state, action) => {})
       .addCase(updateInventoryItem.pending, (state, action) => {})
@@ -924,9 +1010,12 @@ const characterSlice = createSlice({
         state.traderProgress = action.payload
       })
       .addCase(addTraderProgress.rejected, (state, action) => {})
-      .addCase(getTraderProgress.pending, (state, action) => {})
+      .addCase(getTraderProgress.pending, (state, action) => {
+        state.requests["getTraderProgress"] = "pending"
+      })
       .addCase(getTraderProgress.fulfilled, (state, action) => {
         state.traderProgress = action.payload
+        state.requests["getTraderProgress"] = "fulfilled"
       })
       .addCase(getTraderProgress.rejected, (state, action) => {})
       .addCase(updateTraderProgress.pending, (state, action) => {})
@@ -939,9 +1028,12 @@ const characterSlice = createSlice({
         state.playerSkill = action.payload
       })
       .addCase(addSkillProgress.rejected, (state, action) => {})
-      .addCase(getSkillProgress.pending, (state, action) => {})
+      .addCase(getSkillProgress.pending, (state, action) => {
+        state.requests["getSkillProgress"] = "pending"
+      })
       .addCase(getSkillProgress.fulfilled, (state, action) => {
         state.playerSkill = action.payload
+        state.requests["getSkillProgress"] = "fulfilled"
       })
       .addCase(getSkillProgress.rejected, (state, action) => {})
       .addCase(updateSkillProgress.pending, (state, action) => {})

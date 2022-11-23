@@ -39,6 +39,14 @@ export const getItemCategory = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().fleamarket.requests["getItemCategory"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -54,12 +62,21 @@ export const getItemHandbook = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().fleamarket.requests["getItemHandbook"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
 export const FleamarketSlice = createSlice({
   name: "fleamarket",
   initialState: {
+    requests: {},
     isLoading: false,
     loadingQueue: 0,
     items: [],
@@ -120,6 +137,7 @@ export const FleamarketSlice = createSlice({
       .addCase(getItemCategory.pending, (state, action) => {
         state.loadingQueue += 1
         state.isLoading = true
+        state.requests["getItemCategory"] = "pending"
       })
       .addCase(getItemCategory.fulfilled, (state, action) => {
         state.success = true
@@ -128,6 +146,7 @@ export const FleamarketSlice = createSlice({
           state.isLoading = false
         }
         state.categories = action.payload.categories
+        state.requests["getItemCategory"] = "fulfilled"
       })
       .addCase(getItemCategory.rejected, (state, action) => {
         state.loadingQueue -= 1
@@ -139,6 +158,7 @@ export const FleamarketSlice = createSlice({
       .addCase(getItemHandbook.pending, (state, action) => {
         state.loadingQueue += 1
         state.isLoading = true
+        state.requests["getItemHandbook"] = "pending"
       })
       .addCase(getItemHandbook.fulfilled, (state, action) => {
         state.success = true
@@ -147,6 +167,7 @@ export const FleamarketSlice = createSlice({
           state.isLoading = false
         }
         state.handbook = action.payload.handbook
+        state.requests["getItemHandbook"] = "fulfilled"
       })
       .addCase(getItemHandbook.rejected, (state, action) => {
         state.loadingQueue -= 1

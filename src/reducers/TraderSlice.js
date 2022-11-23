@@ -21,6 +21,15 @@ export const getLevelReqOfTrader = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus =
+        getState().trader.requests[`getLevelReqOfTrader.${params.trader}`]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -68,6 +77,15 @@ export const getTasksOfTrader = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus =
+        getState().trader.requests[`getTasksOfTrader.${params.trader}`]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -268,6 +286,15 @@ export const getTaskDetail = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus =
+        getState().trader.requests[`getTaskDetail.${params.id}`]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
@@ -282,12 +309,21 @@ export const getTaskItemRequirements = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().trader.requests["getTaskItemRequirements"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
 const traderSlice = createSlice({
   name: "trader",
   initialState: {
+    requests: {},
     initTasks: false,
     isLoading: false,
     isLoadingTasks: false,
@@ -347,21 +383,27 @@ const traderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getTradeResetTime.pending, (state, action) => {})
+      .addCase(getTradeResetTime.pending, (state, action) => {
+        state.requests["getTradeResetTime"] = "pending"
+      })
       .addCase(getTradeResetTime.fulfilled, (state, action) => {
         action.payload.forEach((trader) => {
           state.tradeResetTime[trader.name] = trader.resetTime
         })
+        state.requests["getTradeResetTime"] = "fulfilled"
       })
       .addCase(getTradeResetTime.rejected, (state, action) => {
         throw Error(action.payload)
       })
       .addCase(getTasksOfTrader.pending, (state, action) => {
         state.isLoadingTasks = true
+        state.requests[`getTasksOfTrader.${action.meta.arg.trader}`] = "pending"
       })
       .addCase(getTasksOfTrader.fulfilled, (state, action) => {
         state.isLoadingTasks = false
         state.tasks[action.payload.trader] = action.payload.tasksArr
+        state.requests[`getTasksOfTrader.${action.meta.arg.trader}`] =
+          "fulfilled"
       })
       .addCase(getTasksOfTrader.rejected, (state, action) => {
         state.isLoadingTasks = false
@@ -369,6 +411,7 @@ const traderSlice = createSlice({
       })
       .addCase(getTaskDetail.pending, (state, action) => {
         state.isLoadingTaskDetail = true
+        state.requests[`getTaskDetail.${action.meta.arg.id}`] = "pending"
       })
       .addCase(getTaskDetail.fulfilled, (state, action) => {
         state.tasksDetail[action.payload.traderName] = {
@@ -378,21 +421,27 @@ const traderSlice = createSlice({
         state.tasksDetailFetched[action.payload.traderName].push(
           action.payload.taskId
         )
+        state.requests[`getTaskDetail.${action.meta.arg.id}`] = "fulfilled"
       })
       .addCase(getTaskDetail.rejected, (state, action) => {
         throw Error(action.payload)
       })
       .addCase(getTaskItemRequirements.pending, (state, action) => {
         state.isLoading = true
+        state.requests["getTaskItemRequirements"] = "pending"
       })
       .addCase(getTaskItemRequirements.fulfilled, (state, action) => {
         state.isLoading = false
         state.taskItemRequirement = action.payload
+        state.requests["getTaskItemRequirements"] = "fulfilled"
       })
       .addCase(getTaskItemRequirements.rejected, (state, action) => {
         throw Error(action.payload)
       })
-      .addCase(getLevelReqOfTrader.pending, (state, action) => {})
+      .addCase(getLevelReqOfTrader.pending, (state, action) => {
+        state.requests[`getLevelReqOfTrader.${action.meta.arg.trader}`] =
+          "pending"
+      })
       .addCase(getLevelReqOfTrader.fulfilled, (state, action) => {
         if (state.traderLevels === null) {
           const newTraderLevels = {}
@@ -401,6 +450,8 @@ const traderSlice = createSlice({
         } else {
           state.traderLevels[action.payload.name] = action.payload.levels
         }
+        state.requests[`getLevelReqOfTrader.${action.meta.arg.trader}`] =
+          "fulfilled"
       })
       .addCase(getLevelReqOfTrader.rejected, (state, action) => {
         throw Error(action.payload)

@@ -26,12 +26,21 @@ export const getAllHideout = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().hideout.requests["getAllHideout"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
   }
 )
 
 const hideoutSlice = createSlice({
   name: "hideout",
   initialState: {
+    requests: {},
     isLoading: false,
     hideout: null,
   },
@@ -40,10 +49,12 @@ const hideoutSlice = createSlice({
     builder
       .addCase(getAllHideout.pending, (state, action) => {
         state.isLoading = true
+        state.requests["getAllHideout"] = "pending"
       })
       .addCase(getAllHideout.fulfilled, (state, action) => {
         state.isLoading = false
         state.hideout = action.payload
+        state.requests["getAllHideout"] = "fulfilled"
       })
       .addCase(getAllHideout.rejected, (state, action) => {
         state.isLoading = false
