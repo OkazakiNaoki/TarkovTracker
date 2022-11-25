@@ -956,7 +956,7 @@ const CharacterScreen = () => {
                   {items &&
                     items.length > 0 && [
                       <h2 key="item_search_title" className="sandbeige">
-                        Search result
+                        {`Search result ${statePage}/${statePages}`}
                       </h2>,
                       <div
                         key="search_pagination"
@@ -979,99 +979,122 @@ const CharacterScreen = () => {
                           />
                         )}
                       </div>,
-                      <Table
+                      <div
                         key="item_search_results"
-                        bordered
                         className="mb-5"
                         style={{ color: "white" }}
                       >
-                        <tbody>
+                        <div>
                           {items.map((item) => {
                             return (
-                              <tr key={item.name}>
-                                <td
-                                  style={{ whiteSpace: "nowrap", width: "1%" }}
-                                >
+                              <div
+                                key={item.id}
+                                className="d-flex align-items-center gray-rounded-20 mb-1 px-3 py-2"
+                              >
+                                <div className="d-inline-block mx-3">
                                   <ItemSingleGrid
                                     itemId={item.id}
                                     bgColor={item.backgroundColor}
                                   />
-                                </td>
-                                <td>{item.name}</td>
-                                <td>
+                                </div>
+                                <p className="mb-0 mx-3">{item.name}</p>
+                                <p
+                                  className="mb-0 me-4"
+                                  style={{
+                                    marginLeft: "auto",
+                                    fontSize: "32px",
+                                  }}
+                                >
+                                  x
                                   {getAnotherFieldOfMatchFieldObjArr(
                                     playerInventory,
                                     "itemId",
                                     item.id,
                                     "count"
                                   ) ?? 0}
-                                </td>
-                                <td
-                                  style={{ whiteSpace: "nowrap", width: "1%" }}
-                                >
-                                  <Button
-                                    variant="success"
-                                    className="d-flex justify-content-center align-items-center"
-                                    style={{ width: "64px", height: "64px" }}
-                                    onClick={() => {
-                                      setCurInventoryItem(item)
-                                      setCurInventoryItemCount(
-                                        getAnotherFieldOfMatchFieldObjArr(
-                                          playerInventory,
-                                          "itemId",
-                                          item.id,
-                                          "count"
-                                        ) ?? 0
-                                      )
-                                      openCloseItemModalHandle()
-                                    }}
-                                  >
-                                    <Pencil />
-                                  </Button>
-                                </td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </Table>,
-                    ]}
-                  <h2 className="sandbeige">Inventory</h2>
-                  <Table bordered style={{ color: "white" }}>
-                    <tbody>
-                      {playerInventory &&
-                        playerInventory.map((item) => {
-                          return (
-                            <tr key={item.itemId}>
-                              <td style={{ whiteSpace: "nowrap", width: "1%" }}>
-                                <ItemSingleGrid
-                                  itemId={item.itemId}
-                                  bgColor={item.bgColor}
-                                />
-                              </td>
-                              <td>{item.itemName}</td>
-                              <td>{item.count}</td>
-                              <td style={{ whiteSpace: "nowrap", width: "1%" }}>
+                                </p>
                                 <Button
                                   variant="success"
-                                  className="d-flex justify-content-center align-items-center"
-                                  style={{ width: "64px", height: "64px" }}
+                                  className="mx-2"
+                                  style={{
+                                    width: "32px",
+                                    height: "32px",
+                                  }}
                                   onClick={() => {
-                                    setCurInventoryItem({
-                                      id: item.itemId,
-                                      name: item.itemName,
-                                    })
-                                    setCurInventoryItemCount(item.count)
+                                    setCurInventoryItem(item)
+                                    setCurInventoryItemCount(
+                                      getAnotherFieldOfMatchFieldObjArr(
+                                        playerInventory,
+                                        "itemId",
+                                        item.id,
+                                        "count"
+                                      ) ?? 0
+                                    )
                                     openCloseItemModalHandle()
                                   }}
                                 >
-                                  <Pencil />
+                                  <div className="position-relative">
+                                    <div className="position-absolute top-50 start-50 translate-middle">
+                                      <Pencil size={20} />
+                                    </div>
+                                  </div>
                                 </Button>
-                              </td>
-                            </tr>
-                          )
-                        })}
-                    </tbody>
-                  </Table>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>,
+                    ]}
+                  <h2 className="sandbeige">Inventory</h2>
+                  <div style={{ color: "white" }}>
+                    {playerInventory &&
+                      playerInventory.map((item) => {
+                        return (
+                          <div
+                            key={item.itemId}
+                            className="d-flex align-items-center gray-rounded-20 mb-1 px-3 py-2"
+                          >
+                            <div className="d-inline-block mx-3">
+                              <ItemSingleGrid
+                                itemId={item.itemId}
+                                bgColor={item.bgColor}
+                              />
+                            </div>
+                            <p className="mb-0 mx-3">{item.itemName}</p>
+                            <p
+                              className="mb-0 me-4"
+                              style={{
+                                marginLeft: "auto",
+                                fontSize: "32px",
+                              }}
+                            >
+                              x{item.count}
+                            </p>
+                            <div>
+                              <Button
+                                variant="success"
+                                className="mx-2"
+                                style={{ width: "32px", height: "32px" }}
+                                onClick={() => {
+                                  setCurInventoryItem({
+                                    id: item.itemId,
+                                    name: item.itemName,
+                                  })
+                                  setCurInventoryItemCount(item.count)
+                                  openCloseItemModalHandle()
+                                }}
+                              >
+                                <div className="position-relative">
+                                  <div className="position-absolute top-50 start-50 translate-middle">
+                                    <Pencil size={20} />
+                                  </div>
+                                </div>
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                  </div>
                 </Tab>
 
                 {/* Quest item */}

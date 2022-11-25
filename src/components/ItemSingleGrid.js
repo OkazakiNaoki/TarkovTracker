@@ -17,6 +17,7 @@ const ItemSingleGrid = ({
   transparent = 255,
   useBgImg = true,
   useNameBox = false,
+  useInline = false,
 }) => {
   // hooks state
   const [mainX, setMainX] = useState(0)
@@ -38,6 +39,7 @@ const ItemSingleGrid = ({
 
   return (
     <div
+      className={useInline ? "d-inline" : ""}
       style={{
         width: "64px",
         height: "64px",
