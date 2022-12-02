@@ -5,50 +5,51 @@ import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 export const getTasksOfTraderWithLevel = createAsyncThunk(
   "character/getTasksOfTraderWithLevel",
   async (params, { getState }) => {
-    const { trader = "", playerLvl = 1 } = params
+    const { trader = "" } = params
     try {
       const { user } = getState().user
+      const { playerLevel } = getState().character
 
-      // completed
+      // completed tasks
       const config = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
       }
-      const allCompleteTasksId = await axios.get(
+      const completedTaskId = await axios.get(
         `/api/player/task/complete`,
         config
       )
-      const allCompleteTasksIdData = allCompleteTasksId.data.completeTasks
+      const completedTaskIdData = completedTaskId.data.completeTasks
 
-      // all tasks from the trader
-      const allTasks = await axios.get(`/api/task?trader=${trader}`)
-      const allTasksArr = allTasks.data
+      // all tasks from given trader
+      const allTasksArr = [...getState().trader.tasks[trader]]
 
-      const completeTasksArr = []
-      for (let i = 0; i < allCompleteTasksIdData.length; i++) {
+      // create completed task array according to completed task ID
+      const completedTasksArr = []
+      for (let i = 0; i < completedTaskIdData.length; i++) {
         const index = getIndexOfMatchFieldObjArr(
           allTasksArr,
           "id",
-          allCompleteTasksIdData[i]
+          completedTaskIdData[i]
         )
         if (index > -1) {
           const task = await axios.get(
-            `/api/task/id?id=${allCompleteTasksIdData[i]}`
+            `/api/task/id?id=${completedTaskIdData[i]}`
           )
-          completeTasksArr.push(task.data[0])
+          completedTasksArr.push(task.data[0])
         }
       }
 
-      // remove complete one from tasks
-      for (let i = 0; i < completeTasksArr.length; i++) {
+      // remove completed task from all tasks arrray
+      for (let i = 0; i < completedTasksArr.length; i++) {
         const index = getIndexOfMatchFieldObjArr(
           allTasksArr,
           "id",
-          completeTasksArr[i].id
+          completedTasksArr[i].id
         )
-        if (index > -1) {
+        if (index !== -1) {
           allTasksArr.splice(index, 1)
         }
       }
@@ -59,21 +60,23 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
       for (let i = 0; i < allTasksArr.length; i++) {
         let unlocked = false
         if (
-          allTasksArr[i].minPlayerLevel <= playerLvl &&
+          allTasksArr[i].minPlayerLevel <= playerLevel &&
           allTasksArr[i].taskRequirements.length === 0
         ) {
           unlocked = true
         } else {
+          // check previous task need to be done
           for (let j = 0; j < allTasksArr[i].taskRequirements.length; j++) {
             if (
-              allTasksArr[i].minPlayerLevel <= playerLvl &&
+              allTasksArr[i].minPlayerLevel <= playerLevel &&
               getIndexOfMatchFieldObjArr(
-                completeTasksArr,
+                completedTasksArr,
                 "id",
                 allTasksArr[i].taskRequirements[j].task.id
-              ) > -1
+              ) !== -1
             ) {
               unlocked = true
+              break
             }
           }
         }
@@ -87,7 +90,7 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
       return {
         trader: trader,
         ongoingTasks: ongoingTasksArr,
-        completeTasks: completeTasksArr,
+        completeTasks: completedTasksArr,
         notQualifyTasks: notQualifyTasksArr,
       }
     } catch (error) {
@@ -95,15 +98,6 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
         ? error.response.data.message
         : error.message
     }
-  },
-  {
-    condition: (params, { getState }) => {
-      const fetchStatus =
-        getState().character.requests["getTasksOfTraderWithLevel"]
-      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
-        return false
-      }
-    },
   }
 )
 
@@ -878,24 +872,16 @@ const characterSlice = createSlice({
     setInitSetup: (state, action) => {
       state.initSetup = true
     },
-    initPlayerTasks: (state, action) => {
-      for (let i = 0; i < action.payload.length; i++) {
-        state.playerTasksInfo[`${action.payload[i]}`] = null
-      }
-    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {
-        state.requests["getTasksOfTraderWithLevel"] = "pending"
-      })
+      .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {})
       .addCase(getTasksOfTraderWithLevel.fulfilled, (state, action) => {
         state.playerTasksInfo[`${action.payload.trader}`] = {
           complete: action.payload.completeTasks,
           ongoing: action.payload.ongoingTasks,
           notQualify: action.payload.notQualifyTasks,
         }
-        state.requests["getTasksOfTraderWithLevel"] = "fulfilled"
       })
       .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
       .addCase(updateCompletedTasks.pending, (state, action) => {})
@@ -1045,4 +1031,4 @@ const characterSlice = createSlice({
 })
 
 export default characterSlice.reducer
-export const { setInitSetup, initPlayerTasks } = characterSlice.actions
+export const { setInitSetup } = characterSlice.actions

@@ -29,3 +29,12 @@ export const haveAdditionalElementFromCompareArr = (
   const arr = objArr.map((obj) => obj[field])
   return arr.some((el) => !compareArr.includes(el))
 }
+
+export const haveZeroPropertyEqualTo = (obj, value) => {
+  for (const key in obj) {
+    if (obj[key] === value) {
+      return false
+    }
+  }
+  return true
+}

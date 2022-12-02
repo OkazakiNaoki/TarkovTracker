@@ -19,7 +19,6 @@ import { LoginFirst } from "../components/LoginFirst"
 import {
   getTasksOfTraderWithLevel,
   updateCompletedTasks,
-  initPlayerTasks,
   getCompletedObjectives,
   getObjectiveProgress,
   updateCompletedObjectives,
@@ -33,7 +32,11 @@ import {
   getSkillProgress,
   updateSkillProgress,
 } from "../reducers/CharacterSlice"
-import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
+import {
+  getTaskDetail,
+  getTasksOfTrader,
+  initializeTasks,
+} from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { clearItems, searchItemByName } from "../reducers/FleamarketSlice"
 import { TaskDetail } from "../components/TaskDetail"
@@ -42,6 +45,7 @@ import { EditValueModal } from "../components/EditValueModal"
 import {
   getAnotherFieldOfMatchFieldObjArr,
   getIndexOfMatchFieldObjArr,
+  haveZeroPropertyEqualTo,
 } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
@@ -65,7 +69,7 @@ const CharacterScreen = () => {
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
   const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
   // player task
-  const [playerTaskFetched, setPlayerTaskFetched] = useState({})
+  const [taskInitialized, setTaskInitialized] = useState(false)
   const [showCompleteTask, setShowCompleteTask] = useState(false)
   const [showOngoingTask, setShowOngoingTask] = useState(true)
   const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
@@ -94,9 +98,8 @@ const CharacterScreen = () => {
 
   //// redux state
   const { user } = useSelector((state) => state.user)
-  const { initTasks, traders, tasksDetail, tasksDetailFetched } = useSelector(
-    (state) => state.trader
-  )
+  const { initTasks, traders, tasks, tasksDetail, tasksDetailFetched } =
+    useSelector((state) => state.trader)
   const { hideout } = useSelector((state) => state.hideout)
   const {
     initSetup,
@@ -148,38 +151,37 @@ const CharacterScreen = () => {
     }
   }, [initTasks])
 
-  // initialize fetched record of task list(base on player progress)
+  // initialize task list, get all traders' tasks
   useEffect(() => {
-    if (traders.length !== 0 && Object.keys(playerTaskFetched).length === 0) {
-      const needRefresh = {}
-      for (let i = 0; i < traders.length; i++) {
-        needRefresh[`${traders[i].name}`] = null
-      }
-      setPlayerTaskFetched(needRefresh)
-    }
-  }, [traders])
-
-  // initialize task list
-  useEffect(() => {
-    if (traders.length !== 0 && Object.keys(playerTasksInfo).length === 0) {
-      dispatch(initPlayerTasks(traders.map((trader) => trader.name)))
-    }
-  }, [traders])
-
-  // on fetched record of task list(base on player progress) change, initialize collapse status of each task(of a trader just fetched)
-  useEffect(() => {
-    const newCollapse = { ...collapseDetail }
-    for (const trader in playerTaskFetched) {
-      if (playerTaskFetched[trader] === null) {
-        for (const status in playerTasksInfo[trader]) {
-          playerTasksInfo[trader][status].forEach((task) => {
-            newCollapse[`${task.id}`] = false
+    if (traders.length !== 0 && Object.keys(tasks).length === 0) {
+      traders.forEach((trader) => {
+        dispatch(
+          getTasksOfTrader({
+            trader: trader.name,
           })
-        }
-      }
+        )
+      })
     }
-    setCollapseDetail(newCollapse)
-  }, [traders, playerTaskFetched])
+  }, [traders, tasks])
+
+  // sort traders' tasks into completed/ongoing/not yet available
+  useEffect(() => {
+    if (
+      traders.length > 0 &&
+      Object.keys(tasks).length === traders.length &&
+      haveZeroPropertyEqualTo(tasks, null) &&
+      !taskInitialized
+    ) {
+      traders.forEach((trader) => {
+        dispatch(
+          getTasksOfTraderWithLevel({
+            trader: trader.name,
+          })
+        )
+      })
+      setTaskInitialized(true)
+    }
+  }, [traders, tasks])
 
   // get player task completed objectives
   useEffect(() => {
@@ -282,19 +284,6 @@ const CharacterScreen = () => {
     setCollapseDetail(newCollapse)
   }
 
-  const getTaskOfTraderHandle = (traderName) => {
-    if (!playerTaskFetched[`${traderName}`])
-      dispatch(
-        getTasksOfTraderWithLevel({
-          trader: traderName,
-          playerLvl: playerLevel,
-        })
-      )
-    const newFetched = { ...playerTaskFetched }
-    newFetched[`${traderName}`] = true
-    setPlayerTaskFetched(newFetched)
-  }
-
   const updateObjectiveStatusHandle = (
     taskId,
     objectiveId,
@@ -349,7 +338,6 @@ const CharacterScreen = () => {
     dispatch(
       getTasksOfTraderWithLevel({
         trader: traderName,
-        playerLvl: playerLevel,
       })
     )
     expandTaskDetailHandle(traderName, taskId)
@@ -361,7 +349,6 @@ const CharacterScreen = () => {
       dispatch(
         getTasksOfTraderWithLevel({
           trader: trader.name,
-          playerLvl: level,
         })
       )
     })
@@ -572,7 +559,7 @@ const CharacterScreen = () => {
                       style={{ "--bs-btn-hover-bg": "none" }}
                       className="btn-sm mx-2 mb-3"
                     >
-                      Finished
+                      Completed
                     </ToggleButton>
                     <ToggleButton
                       type="checkbox"
@@ -585,7 +572,7 @@ const CharacterScreen = () => {
                       style={{ "--bs-btn-hover-bg": "none" }}
                       className="btn-sm mx-2 mb-3"
                     >
-                      Active
+                      Available
                     </ToggleButton>
                     <ToggleButton
                       type="checkbox"
@@ -619,15 +606,49 @@ const CharacterScreen = () => {
                             eventKey={`${i}`}
                             key={`${trader.name}_task`}
                           >
-                            <Accordion.Header
-                              onClick={() => getTaskOfTraderHandle(trader.name)}
-                            >
-                              <Image
-                                src={`/asset/${trader.id}.png`}
-                                className="me-3"
-                                style={{ height: "64px", width: "64px" }}
-                              />
-                              <div className="fs-4">{trader.name}</div>
+                            <Accordion.Header>
+                              <div className="d-flex align-items-center fs-4">
+                                <Image
+                                  src={`/asset/${trader.id}.png`}
+                                  className="me-3"
+                                  style={{ height: "64px", width: "64px" }}
+                                />
+                                <div className="mx-3">{trader.name}</div>
+
+                                <div
+                                  className="d-inline mx-3"
+                                  style={{ fontSize: "16px" }}
+                                >
+                                  <span style={{ color: "white" }}>
+                                    {"available: "}
+                                  </span>
+                                  <span style={{ color: "#198754" }}>
+                                    {Object.keys(playerTasksInfo).length > 0 &&
+                                      playerTasksInfo[trader.name] &&
+                                      playerTasksInfo[trader.name].ongoing
+                                        .length}
+                                  </span>
+                                </div>
+
+                                <div
+                                  className="d-inline mx-3"
+                                  style={{ fontSize: "16px" }}
+                                >
+                                  <span style={{ color: "white" }}>
+                                    {"completed: "}
+                                  </span>
+                                  <span style={{ color: "#0d6efd" }}>
+                                    {Object.keys(playerTasksInfo).length > 0 &&
+                                      playerTasksInfo[trader.name] &&
+                                      playerTasksInfo[trader.name].complete
+                                        .length}
+                                    {"/"}
+                                    {Object.keys(tasks).length > 0 &&
+                                      tasks[trader.name] &&
+                                      tasks[trader.name].length}
+                                  </span>
+                                </div>
+                              </div>
                             </Accordion.Header>
                             <Accordion.Body className="p-0">
                               <Table
