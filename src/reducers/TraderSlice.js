@@ -375,7 +375,6 @@ const traderSlice = createSlice({
     },
     initializeTasks: (state, action) => {
       state.traders.forEach((trader) => {
-        state.tasks[`${trader.name}`] = null
         state.tasksDetail[`${trader.name}`] = {}
         state.tasksDetailFetched[`${trader.name}`] = []
       })

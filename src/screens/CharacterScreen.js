@@ -153,14 +153,18 @@ const CharacterScreen = () => {
 
   // initialize task list, get all traders' tasks
   useEffect(() => {
-    if (traders.length !== 0 && Object.keys(tasks).length === 0) {
-      traders.forEach((trader) => {
-        dispatch(
-          getTasksOfTrader({
-            trader: trader.name,
-          })
-        )
-      })
+    if (traders.length !== 0 && Object.keys(tasks).length !== traders.length) {
+      for (let i = 0; i < traders.length; i++) {
+        if (!tasks.hasOwnProperty(traders[i].name)) {
+          dispatch(
+            getTasksOfTrader({
+              trader: traders[i].name,
+            })
+          )
+        } else {
+          continue
+        }
+      }
     }
   }, [traders, tasks])
 

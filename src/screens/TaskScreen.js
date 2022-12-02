@@ -48,7 +48,7 @@ const TaskScreen = () => {
 
   useEffect(() => {
     if (curTrader) {
-      if (!tasks[curTrader]) {
+      if (!tasks.hasOwnProperty(curTrader)) {
         dispatch(getTasksOfTrader({ trader: curTrader }))
       }
     }
