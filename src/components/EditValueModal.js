@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react"
-import { Modal, Button, Row, Col } from "react-bootstrap"
+import {
+  Modal,
+  Button,
+  Row,
+  Col,
+  InputGroup,
+  Form,
+  ButtonGroup,
+  ToggleButton,
+} from "react-bootstrap"
 import { Plus, Dash } from "react-bootstrap-icons"
 
 const EditValueModal = ({
@@ -12,16 +21,36 @@ const EditValueModal = ({
   closeHandle,
 }) => {
   const [localValue, setLocalValue] = useState(value)
+  const [prestep, setPrestep] = useState(1)
+  const [step, setStep] = useState(1)
+  const [stepUnit, setStepUnit] = useState("1")
 
   useEffect(() => {
     setLocalValue(value)
   }, [value, title])
 
-  const fiddleValue = (step) => {
-    if (localValue + step < minValue || localValue + step > maxValue) {
+  useEffect(() => {
+    if (stepUnit === "K") {
+      setStep(prestep * 1000)
+    } else if (stepUnit === "M") {
+      setStep(prestep * 1000000)
+    } else {
+      setStep(prestep)
+    }
+  }, [prestep, stepUnit])
+
+  const fiddleValue = (direction) => {
+    if (
+      localValue + step * direction < minValue ||
+      localValue + step * direction > maxValue
+    ) {
       return
     }
-    setLocalValue(localValue + step)
+    setLocalValue(localValue + step * direction)
+  }
+
+  const prestepValueChangeHandle = (e) => {
+    setPrestep(e.target.value)
   }
 
   return (
@@ -38,11 +67,8 @@ const EditValueModal = ({
       </Modal.Header>
       <Modal.Body style={{ backgroundColor: "#191919" }}>
         <Row>
-          <Col xs={4}>
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ aspectRatio: "1" }}
-            >
+          <Col xs={2}>
+            <div className="d-flex justify-content-center align-items-center h-100">
               <Button
                 className="d-flex justify-content-center align-items-center"
                 variant="danger"
@@ -61,19 +87,13 @@ const EditValueModal = ({
               </Button>
             </div>
           </Col>
-          <Col xs={4}>
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ aspectRatio: "1" }}
-            >
+          <Col xs={8}>
+            <div className="d-flex justify-content-center align-items-center">
               <span style={{ fontSize: "70px" }}>{localValue}</span>
             </div>
           </Col>
-          <Col xs={4}>
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ aspectRatio: "1" }}
-            >
+          <Col xs={2}>
+            <div className="d-flex justify-content-center align-items-center h-100">
               <Button
                 className="d-flex justify-content-center align-items-center"
                 variant="success"
@@ -90,6 +110,53 @@ const EditValueModal = ({
                 <Plus />
               </Button>
             </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <InputGroup>
+              <InputGroup.Text id="step-text">Steps</InputGroup.Text>
+              <Form.Control
+                aria-label="step of value increment"
+                aria-describedby="step-text"
+                onChange={prestepValueChangeHandle}
+                value={prestep}
+                className="text-center"
+              />
+              <ToggleButton
+                type="radio"
+                id="step-1"
+                variant="dark"
+                checked={stepUnit === "1"}
+                onChange={(e) => {
+                  setStepUnit("1")
+                }}
+              >
+                {"1"}
+              </ToggleButton>
+              <ToggleButton
+                type="radio"
+                id="step-K"
+                variant="dark"
+                checked={stepUnit === "K"}
+                onChange={(e) => {
+                  setStepUnit("K")
+                }}
+              >
+                {"K"}
+              </ToggleButton>
+              <ToggleButton
+                type="radio"
+                id="step-M"
+                variant="dark"
+                checked={stepUnit === "M"}
+                onChange={(e) => {
+                  setStepUnit("M")
+                }}
+              >
+                {"M"}
+              </ToggleButton>
+            </InputGroup>
           </Col>
         </Row>
       </Modal.Body>

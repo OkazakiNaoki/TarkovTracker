@@ -59,6 +59,7 @@ import { ItemSearchBar } from "../components/ItemSearchBar"
 import Paginate from "../components/Paginate"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { SkillIcon } from "../components/SkillIcon"
+import { convertKiloMega } from "../helpers/NumberFormat"
 
 const CharacterScreen = () => {
   // router
@@ -1030,13 +1031,15 @@ const CharacterScreen = () => {
                                     fontSize: "32px",
                                   }}
                                 >
-                                  x
-                                  {getAnotherFieldOfMatchFieldObjArr(
-                                    playerInventory,
-                                    "itemId",
-                                    item.id,
-                                    "count"
-                                  ) ?? 0}
+                                  {"x " +
+                                    convertKiloMega(
+                                      getAnotherFieldOfMatchFieldObjArr(
+                                        playerInventory,
+                                        "itemId",
+                                        item.id,
+                                        "count"
+                                      ) ?? 0
+                                    )}
                                 </p>
                                 <Button
                                   variant="success"
@@ -1093,7 +1096,7 @@ const CharacterScreen = () => {
                                 fontSize: "32px",
                               }}
                             >
-                              x{item.count}
+                              {"x " + convertKiloMega(item.count)}
                             </p>
                             <div>
                               <Button
