@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 const inGameTaskDescSchema = mongoose.Schema({
-  id: {
+  taskId: {
     type: String,
     required: true,
   },

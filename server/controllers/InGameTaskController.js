@@ -101,13 +101,13 @@ export const getTaskDesc = asyncHandler(async (req, res) => {
   const aggregateArr = [
     {
       $match: {
-        id: desc_id,
+        taskId: desc_id,
       },
     },
     {
       $project: {
         _id: 0,
-        id: 1,
+        taskId: 1,
         description: 1,
       },
     },

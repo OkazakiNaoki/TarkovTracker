@@ -272,9 +272,7 @@ export const getTaskDetail = createAsyncThunk(
       const taskImg = await axios.get(`/api/task/image?id=${id}`)
       const taskImgData = taskImg.data[0]
 
-      const taskDesc = await axios.get(
-        `/api/task/desc?desc_id=${gqlData.descriptionMessageId}`
-      )
+      const taskDesc = await axios.get(`/api/task/desc?desc_id=${id}`)
       const taskDescData = taskDesc.data[0]
 
       gqlData.image = taskImgData.image

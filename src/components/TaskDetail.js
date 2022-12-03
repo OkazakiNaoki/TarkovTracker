@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Col, Container, Image, Row } from "react-bootstrap"
+import { Button, Col, Container, Image, Row } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
@@ -9,6 +9,7 @@ import expIcon from "../../public/static/images/icon_experience_big.png"
 import standingIcon from "../../public/static/images/standing_icon.png"
 import skillIcon from "../../public/static/images/tab_icon_skills.png"
 import { ItemSingleGrid } from "./ItemSingleGrid"
+import { ConfirmModal } from "./ConfirmModal"
 
 const TaskDetail = ({
   task,
@@ -21,14 +22,19 @@ const TaskDetail = ({
   // hooks
   const [completeObjective, setCompleteObjective] = useState(null)
   const [objectiveProgress, setObjectiveProgress] = useState(null)
-  const [closeAddValueModal, setCloseAddValueModal] = useState(null)
+  const [closeAddValueModal, setCloseAddValueModal] = useState(null) // for each item requirement objective
+  const [closeConfirmModal, setCloseConfirmModal] = useState(null) // for each simple target objective
 
   // redux
   const { playerCompletedObjectives, playerObjectiveProgress } = useSelector(
     (state) => state.character
   )
 
-  // effects
+  // local variables
+  const objectiveTypes = ["visit", "extract"]
+
+  /// effects
+  // get completed objectives of this task, if there's no record then init with empty array
   useEffect(() => {
     if (completeable && playerCompletedObjectives) {
       const index = getIndexOfMatchFieldObjArr(
@@ -44,6 +50,7 @@ const TaskDetail = ({
     }
   }, [playerCompletedObjectives])
 
+  // on completed objectives update, check if all objectives of this task have done
   useEffect(() => {
     if (completeObjective) {
       let allComplete = true
@@ -60,31 +67,40 @@ const TaskDetail = ({
     }
   }, [completeObjective])
 
+  // if objective modal on/off flag object is empty, init one
   useEffect(() => {
-    if (!closeAddValueModal && completeable) {
-      const initModalOnOff = {}
+    if (!closeAddValueModal && !closeConfirmModal && completeable) {
+      const initAddValueModal = {}
+      const initConfirmModal = {}
       task.objectives.forEach((objective) => {
         if ("count" in objective) {
-          initModalOnOff[objective.id] = false
+          initAddValueModal[objective.id] = false
+        } /*if (objectiveTypes.includes(objective.type))*/ else {
+          initConfirmModal[objective.id] = false
         }
       })
-      setCloseAddValueModal(initModalOnOff)
+      setCloseAddValueModal(initAddValueModal)
+      setCloseConfirmModal(initConfirmModal)
     }
-  })
+  }, [closeAddValueModal, closeConfirmModal])
 
+  // get player previous objective progress if there's one
   useEffect(() => {
     if (completeable && playerObjectiveProgress) {
       const newProgress = {}
       task.objectives.forEach((objective) => {
-        const index = getIndexOfMatchFieldObjArr(
-          playerObjectiveProgress,
-          "objectiveId",
-          objective.id
-        )
-        if (index !== -1 && "count" in objective) {
-          newProgress[objective.id] = playerObjectiveProgress[index]["progress"]
-        } else if ("count" in objective) {
-          newProgress[objective.id] = 0
+        if ("count" in objective) {
+          const index = getIndexOfMatchFieldObjArr(
+            playerObjectiveProgress,
+            "objectiveId",
+            objective.id
+          )
+          if (index !== -1) {
+            newProgress[objective.id] =
+              playerObjectiveProgress[index]["progress"]
+          } else {
+            newProgress[objective.id] = 0
+          }
         }
       })
       setObjectiveProgress(newProgress)
@@ -92,11 +108,19 @@ const TaskDetail = ({
   }, [playerObjectiveProgress])
 
   // handles
-  const openCloseModal = (objectiveId) => {
-    if (objectiveId in objectiveProgress) {
+  const openCloseAddValueModal = (objectiveId) => {
+    if (objectiveId in closeAddValueModal) {
       const copy = { ...closeAddValueModal }
       copy[objectiveId] = !copy[objectiveId]
       setCloseAddValueModal(copy)
+    }
+  }
+
+  const openCloseConfirmModal = (objectiveId) => {
+    if (objectiveId in closeConfirmModal) {
+      const copy = { ...closeConfirmModal }
+      copy[objectiveId] = !copy[objectiveId]
+      setCloseConfirmModal(copy)
     }
   }
 
@@ -108,15 +132,27 @@ const TaskDetail = ({
     }
   }
 
+  const completeSimpleObjectiveHandle = (taskId, objectiveId) => {
+    finishClickHandles(taskId, objectiveId, null, true)
+  }
+
+  const turnInHandle = (objectiveId) => {
+    if (objectiveId in closeAddValueModal) {
+      openCloseAddValueModal(objectiveId)
+    } else if (objectiveId in closeConfirmModal) {
+      openCloseConfirmModal(objectiveId)
+    }
+  }
+
   let colIndex = 0
 
   return (
     <div>
       {completeable &&
-        objectiveProgress &&
+        closeAddValueModal &&
         task.objectives.map((objective, i) => {
           return (
-            objective.id in objectiveProgress && (
+            objective.id in closeAddValueModal && (
               <EditValueModal
                 key={`${objective.id}_modal`}
                 show={closeAddValueModal[objective.id]}
@@ -124,10 +160,31 @@ const TaskDetail = ({
                 maxValue={objective.count}
                 setValueHandle={(v) => {
                   confirmTurnInHandle(v, task.id, objective.id, objective.count)
-                  openCloseModal(objective.id)
+                  openCloseAddValueModal(objective.id)
                 }}
                 closeHandle={() => {
-                  openCloseModal(objective.id)
+                  openCloseAddValueModal(objective.id)
+                }}
+              />
+            )
+          )
+        })}
+      {completeable &&
+        closeConfirmModal &&
+        task.objectives.map((objective, i) => {
+          return (
+            objective.id in closeConfirmModal && (
+              <ConfirmModal
+                key={`${objective.id}_modal`}
+                show={closeConfirmModal[objective.id]}
+                title="Objective completed?"
+                content={objective.description}
+                confirmHandle={(v) => {
+                  completeSimpleObjectiveHandle(task.id, objective.id)
+                  openCloseConfirmModal(objective.id)
+                }}
+                closeHandle={() => {
+                  openCloseConfirmModal(objective.id)
                 }}
               />
             )
@@ -145,7 +202,7 @@ const TaskDetail = ({
         return (
           <div
             key={"objective-" + i}
-            className="d-flex justify-content-center mb-2 p-2"
+            className="d-flex align-items-center justify-content-center mb-2 p-2"
             style={{
               backgroundColor: completeable
                 ? completeObjective &&
@@ -155,11 +212,11 @@ const TaskDetail = ({
                 : "#2a2c2e",
             }}
           >
-            <div className="d-inline-block">{objective.description}</div>
+            <p className="mb-0">{objective.description}</p>
             {objectiveProgress &&
-            objective.id in objectiveProgress &&
+            objectiveProgress.hasOwnProperty(objective.id) &&
             showCount &&
-            "count" in objective ? (
+            objective.hasOwnProperty("count") ? (
               <div className="mx-3 fw-bold">{`${
                 objectiveProgress[objective.id]
               }/${objective.count}`}</div>
@@ -171,10 +228,12 @@ const TaskDetail = ({
               ) : disableTurnIn ? null : (
                 <div className="ms-1">
                   <TarkovStyleButton
-                    text="TURN IN"
+                    text={
+                      objective.hasOwnProperty("count") ? "TURN IN" : "DONE"
+                    }
                     height={30}
                     clickHandle={() => {
-                      openCloseModal(objective.id)
+                      turnInHandle(objective.id)
                     }}
                   />
                 </div>

@@ -315,22 +315,24 @@ const CharacterScreen = () => {
         })
       )
     }
-    const newProgress = JSON.parse(JSON.stringify(playerObjectiveProgress))
-    const index = getIndexOfMatchFieldObjArr(
-      newProgress,
-      "objectiveId",
-      objectiveId
-    )
-    if (index !== -1) {
-      newProgress[index]["progress"] = Number(progress)
-    } else {
-      newProgress.push({ objectiveId, progress })
+    if (progress) {
+      const newProgress = JSON.parse(JSON.stringify(playerObjectiveProgress))
+      const index = getIndexOfMatchFieldObjArr(
+        newProgress,
+        "objectiveId",
+        objectiveId
+      )
+      if (index !== -1) {
+        newProgress[index]["progress"] = Number(progress)
+      } else {
+        newProgress.push({ objectiveId, progress })
+      }
+      dispatch(
+        updateObjectiveProgress({
+          objectiveProgress: newProgress,
+        })
+      )
     }
-    dispatch(
-      updateObjectiveProgress({
-        objectiveProgress: newProgress,
-      })
-    )
   }
 
   const completeTaskHandle = (traderName, taskId) => {
