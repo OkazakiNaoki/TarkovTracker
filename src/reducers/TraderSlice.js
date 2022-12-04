@@ -253,7 +253,7 @@ export const getTaskDetail = createAsyncThunk(
               }
               finishRewards{
                 traderStanding{trader{name} standing}
-                items{item{id name} count}
+                items{item{id name backgroundColor} count}
                 offerUnlock{trader{name} level item{id name}}
                 skillLevelReward{name level}
                 traderUnlock{id name}

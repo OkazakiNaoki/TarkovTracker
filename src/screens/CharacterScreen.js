@@ -335,12 +335,38 @@ const CharacterScreen = () => {
     }
   }
 
-  const completeTaskHandle = (traderName, taskId) => {
+  const completeTaskHandle = (traderName, taskId, rewards = null) => {
     const newCompleteTasks = []
     playerTasksInfo[traderName]["complete"].forEach((task) => {
       newCompleteTasks.push(task.id)
     })
     newCompleteTasks.push(taskId)
+    if (rewards) {
+      //TODO
+      // items
+      const itemRewards = []
+      rewards.items.forEach((item) => {
+        itemRewards.push({
+          itemId: item.item.id,
+          itemName: item.item.name,
+          bgColor: item.item.backgroundColor,
+          count: item.count,
+        })
+      })
+      dispatch(
+        updateInventoryItem({
+          items: itemRewards,
+        })
+      )
+      // traderStanding
+      ///trader.name, standing
+      // offerUnlock
+      /// trader.name, level, item.id, item.name
+      // skillLevelReward
+      /// name, level
+      // traderUnlock
+      /// id, name
+    }
     dispatch(updateCompletedTasks({ completeTasks: newCompleteTasks }))
     dispatch(
       getTasksOfTraderWithLevel({
@@ -777,21 +803,25 @@ const CharacterScreen = () => {
                                                                     ? false
                                                                     : true
                                                                 }
-                                                                showCount={true}
                                                                 finishClickHandles={
                                                                   updateObjectiveStatusHandle
                                                                 }
                                                                 taskCompleteHandle={(
-                                                                  taskId
+                                                                  taskId,
+                                                                  rewards
                                                                 ) => {
                                                                   completeTaskHandle(
                                                                     trader.name,
-                                                                    taskId
+                                                                    taskId,
+                                                                    rewards
                                                                   )
                                                                 }}
                                                                 disableTurnIn={
                                                                   status ===
                                                                   "notQualify"
+                                                                }
+                                                                playerInventory={
+                                                                  playerInventory
                                                                 }
                                                               />
                                                             )}

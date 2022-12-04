@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { Button, Col, Container, Image, Row } from "react-bootstrap"
+import { Col, Container, Image, Row } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
@@ -10,25 +10,30 @@ import standingIcon from "../../public/static/images/standing_icon.png"
 import skillIcon from "../../public/static/images/tab_icon_skills.png"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 import { ConfirmModal } from "./ConfirmModal"
+import { updateInventoryItem } from "../reducers/CharacterSlice"
 
 const TaskDetail = ({
   task,
-  showCount = false,
   completeable = false,
   finishClickHandles,
   taskCompleteHandle,
   disableTurnIn = false,
+  playerInventory = null,
 }) => {
   // hooks
   const [completeObjective, setCompleteObjective] = useState(null)
   const [objectiveProgress, setObjectiveProgress] = useState(null)
   const [closeAddValueModal, setCloseAddValueModal] = useState(null) // for each item requirement objective
   const [closeConfirmModal, setCloseConfirmModal] = useState(null) // for each simple target objective
+  const [turnInAble, setTurnInAble] = useState(null) // every objective that is give item type
+  const [ownCount, setOwnCount] = useState(null) // every objective that is give item type
 
   // redux
   const { playerCompletedObjectives, playerObjectiveProgress } = useSelector(
     (state) => state.character
   )
+
+  const dispatch = useDispatch()
 
   // local variables
   const objectiveTypes = ["visit", "extract"]
@@ -62,34 +67,97 @@ const TaskDetail = ({
       }
       if (allComplete) {
         completeable = false
-        taskCompleteHandle(task.id)
+        taskCompleteHandle(task.id, task.finishRewards)
       }
     }
   }, [completeObjective])
 
   // if objective modal on/off flag object is empty, init one
   useEffect(() => {
-    if (!closeAddValueModal && !closeConfirmModal && completeable) {
+    if (
+      completeable &&
+      playerInventory &&
+      !closeAddValueModal &&
+      !closeConfirmModal &&
+      !turnInAble
+    ) {
       const initAddValueModal = {}
       const initConfirmModal = {}
+      const initTurnInAble = {}
+      const initOwnCount = {}
       task.objectives.forEach((objective) => {
-        if ("count" in objective) {
-          initAddValueModal[objective.id] = false
-        } /*if (objectiveTypes.includes(objective.type))*/ else {
+        if (objective.hasOwnProperty("count")) {
+          if (objective.type === "giveItem") {
+            initConfirmModal[objective.id] = false
+            initTurnInAble[objective.id] = false
+            for (const item in playerInventory) {
+              let playerOwnCount = null
+              if (objective.item.id === playerInventory[item].itemId) {
+                playerOwnCount = playerInventory[item].count
+                initOwnCount[objective.id] = playerOwnCount
+              }
+              if (playerOwnCount && playerOwnCount >= objective.count) {
+                initTurnInAble[objective.id] = true
+                break
+              }
+            }
+          } else {
+            initAddValueModal[objective.id] = false
+          }
+        } else {
           initConfirmModal[objective.id] = false
         }
       })
       setCloseAddValueModal(initAddValueModal)
       setCloseConfirmModal(initConfirmModal)
+      setTurnInAble(initTurnInAble)
+      setOwnCount(initOwnCount)
     }
-  }, [closeAddValueModal, closeConfirmModal])
+  }, [playerInventory])
+
+  // on playerInventory change, update give item objective status
+  useEffect(() => {
+    if (completeable && playerInventory && turnInAble) {
+      task.objectives.forEach((objective) => {
+        if (
+          objective.hasOwnProperty("count") &&
+          objective.type === "giveItem"
+        ) {
+          let playerOwnCount = 0
+          for (const item in playerInventory) {
+            if (objective.item.id === playerInventory[item].itemId) {
+              playerOwnCount = playerInventory[item].count
+              if (ownCount[objective.id] !== playerOwnCount) {
+                const copy = { ...ownCount }
+                copy[objective.id] = playerOwnCount
+                setOwnCount(copy)
+              }
+              break
+            }
+          }
+          if (playerOwnCount >= objective.count && !turnInAble[objective.id]) {
+            const copy = { ...turnInAble }
+            copy[objective.id] = true
+            setTurnInAble(copy)
+          } else if (
+            playerOwnCount < objective.count &&
+            turnInAble[objective.id]
+          ) {
+            const copy = { ...turnInAble }
+            copy[objective.id] = false
+            setTurnInAble(copy)
+          }
+        }
+      })
+    }
+  }, [playerInventory])
 
   // get player previous objective progress if there's one
   useEffect(() => {
     if (completeable && playerObjectiveProgress) {
       const newProgress = {}
       task.objectives.forEach((objective) => {
-        if ("count" in objective) {
+        if (objective.hasOwnProperty("count")) {
           const index = getIndexOfMatchFieldObjArr(
             playerObjectiveProgress,
             "objectiveId",
@@ -109,7 +177,7 @@ const TaskDetail = ({
 
   // handles
   const openCloseAddValueModal = (objectiveId) => {
-    if (objectiveId in closeAddValueModal) {
+    if (closeAddValueModal.hasOwnProperty(objectiveId)) {
       const copy = { ...closeAddValueModal }
       copy[objectiveId] = !copy[objectiveId]
       setCloseAddValueModal(copy)
@@ -117,7 +185,7 @@ const TaskDetail = ({
   }
 
   const openCloseConfirmModal = (objectiveId) => {
-    if (objectiveId in closeConfirmModal) {
+    if (closeConfirmModal.hasOwnProperty(objectiveId)) {
       const copy = { ...closeConfirmModal }
       copy[objectiveId] = !copy[objectiveId]
       setCloseConfirmModal(copy)
@@ -132,14 +200,33 @@ const TaskDetail = ({
     }
   }
 
-  const completeSimpleObjectiveHandle = (taskId, objectiveId) => {
+  const completeSimpleObjectiveHandle = (
+    taskId,
+    objectiveId,
+    itemId = null,
+    count
+  ) => {
+    if (itemId) {
+      dispatch(
+        updateInventoryItem({
+          items: [
+            {
+              itemId: itemId,
+              itemName: "",
+              bgColor: "",
+              count: count,
+            },
+          ],
+        })
+      )
+    }
     finishClickHandles(taskId, objectiveId, null, true)
   }
 
   const turnInHandle = (objectiveId) => {
-    if (objectiveId in closeAddValueModal) {
+    if (closeAddValueModal.hasOwnProperty(objectiveId)) {
       openCloseAddValueModal(objectiveId)
-    } else if (objectiveId in closeConfirmModal) {
+    } else if (closeConfirmModal.hasOwnProperty(objectiveId)) {
       openCloseConfirmModal(objectiveId)
     }
   }
@@ -152,7 +239,7 @@ const TaskDetail = ({
         closeAddValueModal &&
         task.objectives.map((objective, i) => {
           return (
-            objective.id in closeAddValueModal && (
+            closeAddValueModal.hasOwnProperty(objective.id) && (
               <EditValueModal
                 key={`${objective.id}_modal`}
                 show={closeAddValueModal[objective.id]}
@@ -173,14 +260,23 @@ const TaskDetail = ({
         closeConfirmModal &&
         task.objectives.map((objective, i) => {
           return (
-            objective.id in closeConfirmModal && (
+            closeConfirmModal.hasOwnProperty(objective.id) && (
               <ConfirmModal
                 key={`${objective.id}_modal`}
                 show={closeConfirmModal[objective.id]}
                 title="Objective completed?"
                 content={objective.description}
                 confirmHandle={(v) => {
-                  completeSimpleObjectiveHandle(task.id, objective.id)
+                  if (objective.type === "giveItem") {
+                    completeSimpleObjectiveHandle(
+                      task.id,
+                      objective.id,
+                      objective.item.id,
+                      ownCount[objective.id] - objective.count
+                    )
+                  } else {
+                    completeSimpleObjectiveHandle(task.id, objective.id)
+                  }
                   openCloseConfirmModal(objective.id)
                 }}
                 closeHandle={() => {
@@ -213,24 +309,30 @@ const TaskDetail = ({
             }}
           >
             <p className="mb-0">{objective.description}</p>
-            {objectiveProgress &&
+            {completeable &&
+            objectiveProgress &&
             objectiveProgress.hasOwnProperty(objective.id) &&
-            showCount &&
             objective.hasOwnProperty("count") ? (
-              <div className="mx-3 fw-bold">{`${
-                objectiveProgress[objective.id]
-              }/${objective.count}`}</div>
+              <div className="mx-3 fw-bold">
+                {closeAddValueModal.hasOwnProperty(objective.id)
+                  ? objectiveProgress[objective.id]
+                  : ownCount[objective.id] ?? 0}
+                {`/${objective.count}`}
+              </div>
             ) : null}
+            {!completeable && (
+              <div className="mx-3 fw-bold">{`0/${objective.count}`}</div>
+            )}
             {completeable &&
               completeObjective &&
               (completeObjective.includes(objective.id) ? (
                 <Image src={blueCheck} className="ms-1" />
-              ) : disableTurnIn ? null : (
+              ) : disableTurnIn ||
+                (turnInAble.hasOwnProperty(objective.id) &&
+                  !turnInAble[objective.id]) ? null : (
                 <div className="ms-1">
                   <TarkovStyleButton
-                    text={
-                      objective.hasOwnProperty("count") ? "TURN IN" : "DONE"
-                    }
+                    text={objective.type === "giveItem" ? "TURN IN" : "DONE"}
                     height={30}
                     clickHandle={() => {
                       turnInHandle(objective.id)
