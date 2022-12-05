@@ -13,6 +13,7 @@ import {
   addInventoryItem,
   addTraderProgress,
   addSkillProgress,
+  addUnlockedTrader,
 } from "../reducers/CharacterSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import bearIcon from "../../public/static/images/icon_bear.png"
@@ -124,6 +125,12 @@ const PlayerDataSetup = () => {
         traderSpent[trader.name] = 0
       })
       dispatch(addTraderProgress({ traderLL, traderRep, traderSpent }))
+      // player unlocked traders
+      dispatch(
+        addUnlockedTrader({
+          traders: [{ traderName: "Jaeger", unlocked: false }],
+        })
+      )
       // player inventory data
       dispatch(addInventoryItem({ itemList: [] }))
       // player skill data

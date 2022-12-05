@@ -682,7 +682,11 @@ export const addTraderProgress = createAsyncThunk(
         config
       )
 
-      return traderLL.data
+      return {
+        traderLL: traderLL.data.traderLL,
+        traderRep: traderLL.data.traderRep,
+        traderSpent: traderLL.data.traderSpent,
+      }
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -705,7 +709,11 @@ export const getTraderProgress = createAsyncThunk(
       }
       const traderLL = await axios.get(`/api/player/trader/LL`, config)
 
-      return traderLL.data
+      return {
+        traderLL: traderLL.data.traderLL,
+        traderRep: traderLL.data.traderRep,
+        traderSpent: traderLL.data.traderSpent,
+      }
     } catch (error) {
       return error.response && error.response.data
         ? error.response.data
@@ -744,7 +752,11 @@ export const updateTraderProgress = createAsyncThunk(
         config
       )
 
-      return newTraderLL.data
+      return {
+        traderLL: newTraderLL.data.traderLL,
+        traderRep: newTraderLL.data.traderRep,
+        traderSpent: newTraderLL.data.traderSpent,
+      }
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -842,6 +854,95 @@ export const updateSkillProgress = createAsyncThunk(
   }
 )
 
+export const addUnlockedTrader = createAsyncThunk(
+  "character/addUnlockedTrader",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const traders = await axios.post(
+        `/api/player/trader/unlock`,
+        {
+          traders: params.traders,
+        },
+        config
+      )
+
+      return traders.data.traders
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getUnlockedTrader = createAsyncThunk(
+  "character/getUnlockedTrader",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const traders = await axios.get(`/api/player/trader/unlock`, config)
+
+      return traders.data.traders
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getUnlockedTrader"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
+  }
+)
+
+export const updateUnlockedTrader = createAsyncThunk(
+  "character/updateUnlockedTrader",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const newTraders = await axios.put(
+        `/api/player/trader/unlock`,
+        {
+          trader: { name: params.name, unlocked: params.unlocked },
+        },
+        config
+      )
+
+      return newTraders.data.traders
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -859,7 +960,7 @@ const characterSlice = createSlice({
     playerCompletedObjectives: null,
     playerObjectiveProgress: null,
     // trader progress
-    unlockedJaeger: false, // not use yet
+    unlockedTraders: null,
     traderProgress: null,
     // hideout progress
     playerHideoutLevel: null,
@@ -1027,6 +1128,36 @@ const characterSlice = createSlice({
         state.playerSkill = action.payload
       })
       .addCase(updateSkillProgress.rejected, (state, action) => {})
+      .addCase(addUnlockedTrader.pending, (state, action) => {})
+      .addCase(addUnlockedTrader.fulfilled, (state, action) => {
+        const traders = {}
+        action.payload.forEach((trader) => {
+          traders[trader.traderName] = trader.unlocked
+        })
+        state.unlockedTraders = traders
+      })
+      .addCase(addUnlockedTrader.rejected, (state, action) => {})
+      .addCase(getUnlockedTrader.pending, (state, action) => {
+        state.requests["getUnlockedTrader"] = "pending"
+      })
+      .addCase(getUnlockedTrader.fulfilled, (state, action) => {
+        const traders = {}
+        action.payload.forEach((trader) => {
+          traders[trader.traderName] = trader.unlocked
+        })
+        state.unlockedTraders = traders
+        state.requests["getUnlockedTrader"] = "fulfilled"
+      })
+      .addCase(getUnlockedTrader.rejected, (state, action) => {})
+      .addCase(updateUnlockedTrader.pending, (state, action) => {})
+      .addCase(updateUnlockedTrader.fulfilled, (state, action) => {
+        const traders = {}
+        action.payload.forEach((trader) => {
+          traders[trader.traderName] = trader.unlocked
+        })
+        state.unlockedTraders = traders
+      })
+      .addCase(updateUnlockedTrader.rejected, (state, action) => {})
   },
 })
 

@@ -15,6 +15,9 @@ import {
   getTraderProgress,
   addTraderProgress,
   updateTraderProgress,
+  getTraderUnlock,
+  addTraderUnlock,
+  updateTraderUnlock,
 } from "../controllers/PlayerTraderController.js"
 import {
   addCharacterData,
@@ -68,6 +71,12 @@ router
   .get(protect, getTraderProgress)
   .post(protect, addTraderProgress)
   .put(protect, updateTraderProgress)
+
+router
+  .route("/trader/unlock")
+  .get(protect, getTraderUnlock)
+  .post(protect, addTraderUnlock)
+  .put(protect, updateTraderUnlock)
 
 router
   .route("/hideout/level")

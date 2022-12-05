@@ -31,6 +31,8 @@ import {
   updateInventoryItem,
   getSkillProgress,
   updateSkillProgress,
+  getUnlockedTrader,
+  updateUnlockedTrader,
 } from "../reducers/CharacterSlice"
 import {
   getTaskDetail,
@@ -109,7 +111,7 @@ const CharacterScreen = () => {
     playerFaction,
     gameEdition,
     playerTasksInfo,
-    unlockedJaeger,
+    unlockedTraders,
     traderProgress,
     playerCompletedObjectives,
     playerObjectiveProgress,
@@ -243,6 +245,13 @@ const CharacterScreen = () => {
     }
   }, [traderProgress])
 
+  // get player unlocked traders
+  useEffect(() => {
+    if (!unlockedTraders) {
+      dispatch(getUnlockedTrader())
+    }
+  }, [unlockedTraders])
+
   // get player skill progress
   useEffect(() => {
     if (!playerSkill) {
@@ -365,7 +374,14 @@ const CharacterScreen = () => {
       // skillLevelReward
       /// name, level
       // traderUnlock
-      /// id, name
+      rewards.traderUnlock.forEach((trader) => {
+        dispatch(
+          updateUnlockedTrader({
+            name: trader.name,
+            unlocked: true,
+          })
+        )
+      })
     }
     dispatch(updateCompletedTasks({ completeTasks: newCompleteTasks }))
     dispatch(
@@ -656,10 +672,24 @@ const CharacterScreen = () => {
                                     {"available: "}
                                   </span>
                                   <span style={{ color: "#198754" }}>
-                                    {Object.keys(playerTasksInfo).length > 0 &&
+                                    {unlockedTraders &&
+                                      (!unlockedTraders.hasOwnProperty(
+                                        trader.name
+                                      ) ||
+                                        (unlockedTraders.hasOwnProperty(
+                                          trader.name
+                                        ) &&
+                                          unlockedTraders[trader.name])) &&
+                                      Object.keys(playerTasksInfo).length > 0 &&
                                       playerTasksInfo[trader.name] &&
                                       playerTasksInfo[trader.name].ongoing
                                         .length}
+                                    {unlockedTraders &&
+                                      unlockedTraders.hasOwnProperty(
+                                        trader.name
+                                      ) &&
+                                      !unlockedTraders[trader.name] &&
+                                      "0"}
                                   </span>
                                 </div>
 
@@ -728,14 +758,18 @@ const CharacterScreen = () => {
                                             showOngoingTask) ||
                                           (status === "notQualify" &&
                                             showNotQualifyTask)
-                                        )
+                                        ) {
                                           return playerTasksInfo[
                                             `${trader.name}`
                                           ][`${status}`].map((task) => {
                                             if (
-                                              (trader.name === "Jaeger" &&
-                                                unlockedJaeger) ||
-                                              trader.name !== "Jaeger"
+                                              !unlockedTraders.hasOwnProperty(
+                                                trader.name
+                                              ) ||
+                                              (unlockedTraders.hasOwnProperty(
+                                                trader.name
+                                              ) &&
+                                                unlockedTraders[trader.name])
                                             )
                                               return [
                                                 <tr
@@ -832,6 +866,7 @@ const CharacterScreen = () => {
                                                 </tr>,
                                               ]
                                           })
+                                        }
                                       })
                                       .flat(1)}
                                 </tbody>
