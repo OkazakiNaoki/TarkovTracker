@@ -660,11 +660,37 @@ export const updateInventoryItem = createAsyncThunk(
   }
 )
 
+const calcTraderLL = (traders, traderLevels, traderRep, traderSpent) => {
+  const LL = {}
+  traders.forEach((trader) => {
+    for (let i = 1; i < traderLevels[trader.name].length; i++) {
+      if (
+        traderLevels[trader.name][i].requiredReputation <=
+          traderRep[trader.name] &&
+        traderLevels[trader.name][i].requiredCommerce <=
+          traderSpent[trader.name] * 1000000
+      ) {
+        LL[trader.name] = i + 1
+      } else if (
+        traderLevels[trader.name][i].requiredReputation >
+          traderRep[trader.name] ||
+        traderLevels[trader.name][i].requiredCommerce >
+          traderSpent[trader.name] * 1000000
+      ) {
+        LL[trader.name] = i
+        break
+      }
+    }
+  })
+  return LL
+}
+
 export const addTraderProgress = createAsyncThunk(
   "character/addTraderProgress",
   async (params, { getState }) => {
     try {
       const { user } = getState().user
+      const { traders, traderLevels } = getState().trader
 
       const config = {
         headers: {
@@ -675,15 +701,21 @@ export const addTraderProgress = createAsyncThunk(
       const traderLL = await axios.post(
         `/api/player/trader/LL`,
         {
-          traderLL: params.traderLL,
           traderRep: params.traderRep,
           traderSpent: params.traderSpent,
         },
         config
       )
 
+      const LL = calcTraderLL(
+        traders,
+        traderLevels,
+        traderLL.data.traderRep,
+        traderLL.data.traderSpent
+      )
+
       return {
-        traderLL: traderLL.data.traderLL,
+        traderLL: LL,
         traderRep: traderLL.data.traderRep,
         traderSpent: traderLL.data.traderSpent,
       }
@@ -700,6 +732,7 @@ export const getTraderProgress = createAsyncThunk(
   async (params, { getState }) => {
     try {
       const { user } = getState().user
+      const { traders, traderLevels } = getState().trader
 
       const config = {
         headers: {
@@ -709,8 +742,16 @@ export const getTraderProgress = createAsyncThunk(
       }
       const traderLL = await axios.get(`/api/player/trader/LL`, config)
 
+      // calculate loyalty level base on fetched rep and spent of traders
+      const LL = calcTraderLL(
+        traders,
+        traderLevels,
+        traderLL.data.traderRep,
+        traderLL.data.traderSpent
+      )
+
       return {
-        traderLL: traderLL.data.traderLL,
+        traderLL: LL,
         traderRep: traderLL.data.traderRep,
         traderSpent: traderLL.data.traderSpent,
       }
@@ -735,6 +776,7 @@ export const updateTraderProgress = createAsyncThunk(
   async (params, { getState }) => {
     try {
       const { user } = getState().user
+      const { traders, traderLevels } = getState().trader
 
       const config = {
         headers: {
@@ -745,15 +787,22 @@ export const updateTraderProgress = createAsyncThunk(
       const newTraderLL = await axios.put(
         `/api/player/trader/LL`,
         {
-          traderLL: params.traderLL,
+          traderName: params.traderName,
           traderRep: params.traderRep,
           traderSpent: params.traderSpent,
         },
         config
       )
 
+      const LL = calcTraderLL(
+        traders,
+        traderLevels,
+        newTraderLL.data.traderRep,
+        newTraderLL.data.traderSpent
+      )
+
       return {
-        traderLL: newTraderLL.data.traderLL,
+        traderLL: LL,
         traderRep: newTraderLL.data.traderRep,
         traderSpent: newTraderLL.data.traderSpent,
       }
@@ -962,6 +1011,7 @@ const characterSlice = createSlice({
     // trader progress
     unlockedTraders: null,
     traderProgress: null,
+    traderLL: {},
     // hideout progress
     playerHideoutLevel: null,
     // inventory
@@ -969,11 +1019,7 @@ const characterSlice = createSlice({
     // skill
     playerSkill: null,
   },
-  reducers: {
-    setInitSetup: (state, action) => {
-      state.initSetup = true
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {})
@@ -1029,6 +1075,7 @@ const characterSlice = createSlice({
         state.playerLevel = action.payload.characterLevel
         state.playerFaction = action.payload.characterFaction
         state.gameEdition = action.payload.gameEdition
+        state.initSetup = true
       })
       .addCase(addCharacterData.rejected, (state, action) => {})
       .addCase(updateCharacterData.pending, (state, action) => {})
@@ -1048,8 +1095,6 @@ const characterSlice = createSlice({
           state.playerFaction = action.payload.data.characterFaction
           state.gameEdition = action.payload.data.gameEdition
           state.initSetup = true
-        } else {
-          state.initSetup = false
         }
         state.requests["getCharacterData"] = "fulfilled"
       })
@@ -1162,4 +1207,4 @@ const characterSlice = createSlice({
 })
 
 export default characterSlice.reducer
-export const { setInitSetup } = characterSlice.actions
+//export const {} = characterSlice.actions

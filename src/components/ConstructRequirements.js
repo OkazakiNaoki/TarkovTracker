@@ -12,6 +12,7 @@ import { SkillRequirement } from "./SkillRequirement"
 import { TraderRequirement } from "./TraderRequirement"
 import itemInfoBg from "../../public/static/images/info_window_back.png"
 import { useEffect } from "react"
+import { getLevelReqOfTrader } from "../reducers/TraderSlice"
 
 const ConstructRequirements = ({
   level,
@@ -23,8 +24,14 @@ const ConstructRequirements = ({
   setMeetSkillReq,
 }) => {
   // redux state
-  const { playerHideoutLevel, playerInventory, traderProgress, playerSkill } =
-    useSelector((state) => state.character)
+  const { traders, traderLevels } = useSelector((state) => state.trader)
+  const {
+    initSetup,
+    playerHideoutLevel,
+    playerInventory,
+    traderProgress,
+    playerSkill,
+  } = useSelector((state) => state.character)
   // redux dispatch
   const dispatch = useDispatch()
 
@@ -144,12 +151,6 @@ const ConstructRequirements = ({
       dispatch(getInventoryItem())
     }
   }, [playerInventory])
-
-  useEffect(() => {
-    if (!traderProgress) {
-      dispatch(getTraderProgress())
-    }
-  }, [traderProgress])
 
   useEffect(() => {
     if (!playerSkill) {

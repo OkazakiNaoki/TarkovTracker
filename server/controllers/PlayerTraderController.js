@@ -13,7 +13,6 @@ export const getTraderProgress = asyncHandler(async (req, res) => {
     res.status(404).send("Previous trader progress data not found")
   } else {
     res.json({
-      traderLL: traderProgress.traderLL,
       traderRep: traderProgress.traderRep,
       traderSpent: traderProgress.traderSpent,
     })
@@ -34,7 +33,6 @@ export const addTraderProgress = asyncHandler(async (req, res) => {
     if (!existTraderProgress) {
       const tp = new PlayerTraderProgress({
         user: req.user._id,
-        traderLL: req.body.traderLL,
         traderRep: req.body.traderRep,
         traderSpent: req.body.traderSpent,
       })
@@ -60,9 +58,11 @@ export const updateTraderProgress = asyncHandler(async (req, res) => {
     if (!existTraderProgress) {
       res.status(404).send("Previous trader progress data not found")
     } else {
-      existTraderProgress.traderLL = req.body.traderLL
-      existTraderProgress.traderRep = req.body.traderRep
-      existTraderProgress.traderSpent = req.body.traderSpent
+      existTraderProgress.traderRep[req.body.traderName] = req.body.traderRep
+      existTraderProgress.traderSpent[req.body.traderName] =
+        req.body.traderSpent
+      existTraderProgress.markModified("traderRep")
+      existTraderProgress.markModified("traderSpent")
       const updatedTp = await existTraderProgress.save()
       res.json(updatedTp)
     }

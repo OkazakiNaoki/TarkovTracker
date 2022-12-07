@@ -7,10 +7,6 @@ const playerTraderProgressSchema = mongoose.Schema({
     required: true,
     ref: User,
   },
-  traderLL: {
-    type: Object,
-    required: true,
-  },
   traderRep: {
     type: Object,
     required: true,

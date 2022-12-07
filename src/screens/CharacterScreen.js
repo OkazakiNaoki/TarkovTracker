@@ -33,8 +33,10 @@ import {
   updateSkillProgress,
   getUnlockedTrader,
   updateUnlockedTrader,
+  updateTraderProgress,
 } from "../reducers/CharacterSlice"
 import {
+  getLevelReqOfTrader,
   getTaskDetail,
   getTasksOfTrader,
   initializeTasks,
@@ -101,8 +103,14 @@ const CharacterScreen = () => {
 
   //// redux state
   const { user } = useSelector((state) => state.user)
-  const { initTasks, traders, tasks, tasksDetail, tasksDetailFetched } =
-    useSelector((state) => state.trader)
+  const {
+    initTasks,
+    traders,
+    tasks,
+    tasksDetail,
+    tasksDetailFetched,
+    traderLevels,
+  } = useSelector((state) => state.trader)
   const { hideout } = useSelector((state) => state.hideout)
   const {
     initSetup,
@@ -130,22 +138,13 @@ const CharacterScreen = () => {
   const charState = useSelector((state) => state.character)
 
   //// hooks effects
-  // pick level icon for player's level
+  /// initialization type effects
+  // get character data for the first time
   useEffect(() => {
     if (!initSetup) {
       dispatch(getCharacterData())
     }
-    if (initSetup) {
-      for (let i = 1; i <= 16; i++) {
-        if (playerLevel >= 5 * i) {
-          continue
-        } else {
-          setLevelIcon(`/asset/rank${5 * i}.png`)
-          break
-        }
-      }
-    }
-  }, [initSetup, playerLevel])
+  })
 
   // initialize player task data
   useEffect(() => {
@@ -171,24 +170,12 @@ const CharacterScreen = () => {
     }
   }, [traders, tasks])
 
-  // sort traders' tasks into completed/ongoing/not yet available
+  // get player hideout station level
   useEffect(() => {
-    if (
-      traders.length > 0 &&
-      Object.keys(tasks).length === traders.length &&
-      haveZeroPropertyEqualTo(tasks, null) &&
-      !taskInitialized
-    ) {
-      traders.forEach((trader) => {
-        dispatch(
-          getTasksOfTraderWithLevel({
-            trader: trader.name,
-          })
-        )
-      })
-      setTaskInitialized(true)
+    if (initSetup && !playerHideoutLevel) {
+      dispatch(getHideoutLevel())
     }
-  }, [traders, tasks])
+  }, [initSetup, playerHideoutLevel])
 
   // get player task completed objectives
   useEffect(() => {
@@ -211,6 +198,76 @@ const CharacterScreen = () => {
     }
   }, [hideout])
 
+  // get trader level stage data before getting player's trader progress data
+  useEffect(() => {
+    if (!traderLevels) {
+      traders.forEach((trader) => {
+        dispatch(getLevelReqOfTrader({ trader: trader.name }))
+      })
+    }
+  }, [traderLevels])
+
+  // get player trader progress
+  useEffect(() => {
+    if (
+      initSetup &&
+      traderLevels &&
+      Object.keys(traderLevels).length === traders.length &&
+      !traderProgress
+    ) {
+      dispatch(getTraderProgress())
+    }
+  }, [initSetup, traderLevels, traderProgress])
+
+  // get player unlocked traders
+  useEffect(() => {
+    if (initSetup && !unlockedTraders) {
+      dispatch(getUnlockedTrader())
+    }
+  }, [initSetup, unlockedTraders])
+
+  // get player skill progress
+  useEffect(() => {
+    if (initSetup && !playerSkill) {
+      dispatch(getSkillProgress())
+    }
+  }, [initSetup, playerSkill])
+
+  /// on data change need some update
+  // pick level icon for player's level on level change
+  useEffect(() => {
+    if (initSetup) {
+      for (let i = 1; i <= 16; i++) {
+        if (playerLevel >= 5 * i) {
+          continue
+        } else {
+          setLevelIcon(`/asset/rank${5 * i}.png`)
+          break
+        }
+      }
+    }
+  }, [initSetup, playerLevel])
+
+  // sort traders' tasks into completed/ongoing/not yet available
+  useEffect(() => {
+    if (
+      initSetup &&
+      traders.length > 0 &&
+      Object.keys(tasks).length === traders.length &&
+      haveZeroPropertyEqualTo(tasks, null) &&
+      !taskInitialized
+    ) {
+      traders.forEach((trader) => {
+        dispatch(
+          getTasksOfTraderWithLevel({
+            trader: trader.name,
+          })
+        )
+      })
+      setTaskInitialized(true)
+    }
+  }, [initSetup, traders, tasks])
+
   // get hideout data of current selected station ID
   useEffect(() => {
     if (hideout && hideout.length > 0) {
@@ -218,13 +275,6 @@ const CharacterScreen = () => {
       setCurrentStation(hideout[index])
     }
   }, [hideout, currentStationId])
-
-  // get player hideout station level
-  useEffect(() => {
-    if (!playerHideoutLevel) {
-      dispatch(getHideoutLevel())
-    }
-  }, [playerHideoutLevel])
 
   // set currently selected station's construct detail and craft detail
   useEffect(() => {
@@ -237,27 +287,6 @@ const CharacterScreen = () => {
       setLevelInfoOfCurrentStation(playerHideoutLevel[index])
     }
   }, [currentStationId, playerHideoutLevel])
-
-  // get player trader progress
-  useEffect(() => {
-    if (!traderProgress) {
-      dispatch(getTraderProgress())
-    }
-  }, [traderProgress])
-
-  // get player unlocked traders
-  useEffect(() => {
-    if (!unlockedTraders) {
-      dispatch(getUnlockedTrader())
-    }
-  }, [unlockedTraders])
-
-  // get player skill progress
-  useEffect(() => {
-    if (!playerSkill) {
-      dispatch(getSkillProgress())
-    }
-  }, [playerSkill])
 
   // on search params change
   useEffect(() => {
@@ -368,6 +397,16 @@ const CharacterScreen = () => {
         })
       )
       // traderStanding
+      rewards.traderStanding.forEach((trader) => {
+        dispatch(
+          updateTraderProgress({
+            traderName: trader.trader.name,
+            traderRep:
+              traderProgress.traderRep[trader.trader.name] + trader.standing,
+            traderSpent: traderProgress.traderSpent[trader.trader.name],
+          })
+        )
+      })
       ///trader.name, standing
       // offerUnlock
       /// trader.name, level, item.id, item.name
@@ -529,10 +568,9 @@ const CharacterScreen = () => {
         closeHandle={openCloseSkillSettingModalHandle}
       />
       {Object.keys(user).length === 0 && <LoginFirst />}
-      {Object.keys(user).length > 0 &&
-        initSetup !== null &&
-        !initSetup &&
-        !loadingInitSetup && <PlayerDataSetup />}
+      {Object.keys(user).length > 0 && !initSetup && !loadingInitSetup && (
+        <PlayerDataSetup />
+      )}
       {Object.keys(user).length > 0 && initSetup && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
@@ -763,12 +801,14 @@ const CharacterScreen = () => {
                                             `${trader.name}`
                                           ][`${status}`].map((task) => {
                                             if (
-                                              !unlockedTraders.hasOwnProperty(
-                                                trader.name
-                                              ) ||
-                                              (unlockedTraders.hasOwnProperty(
-                                                trader.name
-                                              ) &&
+                                              (unlockedTraders &&
+                                                !unlockedTraders.hasOwnProperty(
+                                                  trader.name
+                                                )) ||
+                                              (unlockedTraders &&
+                                                unlockedTraders.hasOwnProperty(
+                                                  trader.name
+                                                ) &&
                                                 unlockedTraders[trader.name])
                                             )
                                               return [
@@ -1026,7 +1066,7 @@ const CharacterScreen = () => {
                                 <TraderCard
                                   trader={trader}
                                   standing={
-                                    traderProgress.traderLL &&
+                                    traderProgress &&
                                     traderProgress.traderLL[trader.name]
                                   }
                                   rep={

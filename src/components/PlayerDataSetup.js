@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
 import {
-  setInitSetup,
   addCharacterData,
   addObjectiveProgress,
   addCompletedObjectives,
@@ -91,14 +90,6 @@ const PlayerDataSetup = () => {
   }
   const finishSetupHandle = () => {
     if (hideout && factionPick && gameEditionPick) {
-      // player hideout data
-      const initHideoutLevel = hideout.map((station) => {
-        return {
-          hideoutId: station.id,
-          level: station.id === "5d484fc0654e76006657e0ab" ? 0 : -1,
-        }
-      })
-      dispatch(addHideoutLevel({ hideoutLevel: initHideoutLevel }))
       // player basic data
       dispatch(
         addCharacterData({
@@ -107,16 +98,22 @@ const PlayerDataSetup = () => {
           gameEdition: gameEditionPick,
         })
       )
+      // player hideout data
+      const initHideoutLevel = hideout.map((station) => {
+        return {
+          hideoutId: station.id,
+          level: station.id === "5d484fc0654e76006657e0ab" ? 0 : -1,
+        }
+      })
+      dispatch(addHideoutLevel({ hideoutLevel: initHideoutLevel }))
       // player task data
       dispatch(addCompletedTasks({ completeTasks: [] }))
       dispatch(addCompletedObjectives({ completeObjectives: [] }))
       dispatch(addObjectiveProgress({ objectiveProgress: [] }))
       // player trader progress
-      const traderLL = {}
       const traderRep = {}
       const traderSpent = {}
       traders.forEach((trader) => {
-        traderLL[trader.name] = 1
         traderRep[trader.name] =
           gameEditionPick === "prepare for escape" ||
           gameEditionPick === "edge of darkness"
@@ -124,7 +121,7 @@ const PlayerDataSetup = () => {
             : 0
         traderSpent[trader.name] = 0
       })
-      dispatch(addTraderProgress({ traderLL, traderRep, traderSpent }))
+      dispatch(addTraderProgress({ traderRep, traderSpent }))
       // player unlocked traders
       dispatch(
         addUnlockedTrader({
@@ -139,8 +136,6 @@ const PlayerDataSetup = () => {
         newSkills.push({ skillName: skill, level: 1 })
       })
       dispatch(addSkillProgress({ skills: newSkills }))
-      // initialized flag
-      dispatch(setInitSetup())
     }
   }
 
