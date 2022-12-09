@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { safeGet } from "../helpers/ObjectExt"
 
 export const getTasksOfTraderWithLevel = createAsyncThunk(
   "character/getTasksOfTraderWithLevel",
@@ -8,7 +9,7 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
     const { trader = "" } = params
     try {
       const { user } = getState().user
-      const { playerLevel } = getState().character
+      const { traderProgress, unlockedTraders } = getState().character
 
       // completed tasks
       const config = {
@@ -34,7 +35,7 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
           "id",
           completedTaskIdData[i]
         )
-        if (index > -1) {
+        if (index !== -1) {
           const task = await axios.get(
             `/api/task/id?id=${completedTaskIdData[i]}`
           )
@@ -58,32 +59,63 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
       const ongoingTasksArr = []
       const notQualifyTasksArr = []
       for (let i = 0; i < allTasksArr.length; i++) {
-        let unlocked = false
+        let unlocked = true
+        // Fence's negative reputation task, do not push
         if (
-          allTasksArr[i].minPlayerLevel <= playerLevel &&
-          allTasksArr[i].taskRequirements.length === 0
+          allTasksArr[i].trader.name === "Fence" &&
+          allTasksArr[i].name.includes("Compensation for Damage")
         ) {
-          unlocked = true
-        } else {
-          // check previous task need to be done
-          for (let j = 0; j < allTasksArr[i].taskRequirements.length; j++) {
-            if (
-              allTasksArr[i].minPlayerLevel <= playerLevel &&
-              getIndexOfMatchFieldObjArr(
-                completedTasksArr,
-                "id",
-                allTasksArr[i].taskRequirements[j].task.id
-              ) !== -1
-            ) {
-              unlocked = true
-              break
-            }
+          continue
+        }
+
+        // player level requiement
+        if (allTasksArr[i].minPlayerLevel > params.level) {
+          notQualifyTasksArr.push(allTasksArr[i])
+          continue
+        }
+
+        // task requirements
+        for (let j = 0; j < allTasksArr[i].taskRequirements.length; j++) {
+          if (
+            !completedTaskIdData.includes(
+              allTasksArr[i].taskRequirements[j].task.id
+            )
+          ) {
+            notQualifyTasksArr.push(allTasksArr[i])
+            unlocked = false
+            break
           }
         }
+
+        // trader LL requirements
+        for (
+          let j = 0;
+          j < allTasksArr[i].traderLevelRequirements.length;
+          j++
+        ) {
+          if (
+            allTasksArr[i].traderLevelRequirements[j].level >
+            traderProgress.traderLL[
+              allTasksArr[i].traderLevelRequirements[j].trader.name
+            ]
+          ) {
+            notQualifyTasksArr.push(allTasksArr[i])
+            unlocked = false
+            break
+          }
+        }
+
+        // task offer trader unlocked
+        if (
+          unlockedTraders.hasOwnProperty(allTasksArr[i].trader.name) &&
+          !unlockedTraders[allTasksArr[i].trader.name]
+        ) {
+          notQualifyTasksArr.push(allTasksArr[i])
+          continue
+        }
+
         if (unlocked) {
           ongoingTasksArr.push(allTasksArr[i])
-        } else {
-          notQualifyTasksArr.push(allTasksArr[i])
         }
       }
 
@@ -1030,7 +1062,9 @@ const characterSlice = createSlice({
           notQualify: action.payload.notQualifyTasks,
         }
       })
-      .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
+      .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {
+        console.log(action.payload)
+      })
       .addCase(updateCompletedTasks.pending, (state, action) => {})
       .addCase(updateCompletedTasks.fulfilled, (state, action) => {})
       .addCase(updateCompletedTasks.rejected, (state, action) => {})

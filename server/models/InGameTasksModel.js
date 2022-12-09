@@ -29,6 +29,12 @@ const inGameTasksSchema = mongoose.Schema({
       required: false,
     },
   ],
+  needForTasks: [
+    {
+      type: Object,
+      required: false,
+    },
+  ],
   previousTaskChainCount: {
     type: Number,
     required: true,

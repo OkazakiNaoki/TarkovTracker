@@ -64,6 +64,7 @@ import Paginate from "../components/Paginate"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { SkillIcon } from "../components/SkillIcon"
 import { convertKiloMega } from "../helpers/NumberFormat"
+import { safeGet } from "../helpers/ObjectExt"
 
 const CharacterScreen = () => {
   // router
@@ -79,6 +80,9 @@ const CharacterScreen = () => {
   const [showOngoingTask, setShowOngoingTask] = useState(true)
   const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
   const [collapseDetail, setCollapseDetail] = useState({})
+  const [curShowingTaskLen, setCurShowingTaskLen] = useState(null)
+  const [taskTotalLen, setTaskTotalLen] = useState(null)
+  const [taskNeedToUpdateStatus, setTaskNeedToUpdateStatus] = useState(null)
   // player trader
   const [openTraderSettingModal, setOpenTraderSettingModal] = useState(false)
   const [traderSettingTarget, setTraderSettingTarget] = useState("")
@@ -233,6 +237,26 @@ const CharacterScreen = () => {
     }
   }, [initSetup, playerSkill])
 
+  // initialize length of task showing inside each trader's table
+  useEffect(() => {
+    if (Object.keys(playerTasksInfo).length === traders.length) {
+      const newShowingTaskLen = {}
+      const newTaskTotalLen = {}
+      traders.forEach((trader) => {
+        newShowingTaskLen[trader.name] =
+          (showCompleteTask && playerTasksInfo[trader.name].complete.length) +
+          (showOngoingTask && playerTasksInfo[trader.name].ongoing.length) +
+          (showNotQualifyTask && playerTasksInfo[trader.name].notQualify.length)
+        newTaskTotalLen[trader.name] =
+          playerTasksInfo[trader.name].complete.length +
+          playerTasksInfo[trader.name].ongoing.length +
+          playerTasksInfo[trader.name].notQualify.length
+      })
+      setCurShowingTaskLen(newShowingTaskLen)
+      setTaskTotalLen(newTaskTotalLen)
+    }
+  }, [playerTasksInfo])
+
   /// on data change need some update
   // pick level icon for player's level on level change
   useEffect(() => {
@@ -252,7 +276,9 @@ const CharacterScreen = () => {
   useEffect(() => {
     if (
       initSetup &&
-      traders.length > 0 &&
+      traderProgress &&
+      unlockedTraders &&
+      Object.keys(traderProgress.traderLL).length === traders.length &&
       Object.keys(tasks).length === traders.length &&
       haveZeroPropertyEqualTo(tasks, null) &&
       !taskInitialized
@@ -261,12 +287,13 @@ const CharacterScreen = () => {
         dispatch(
           getTasksOfTraderWithLevel({
             trader: trader.name,
+            level: playerLevel,
           })
         )
       })
       setTaskInitialized(true)
     }
-  }, [initSetup, traders, tasks])
+  }, [initSetup, traders, tasks, unlockedTraders, traderProgress])
 
   // get hideout data of current selected station ID
   useEffect(() => {
@@ -316,6 +343,94 @@ const CharacterScreen = () => {
       dispatch(clearItems())
     }
   }, [searchParams])
+
+  // on task complete flag is set
+  useEffect(() => {
+    if (taskNeedToUpdateStatus) {
+      const updateTaskStatus = async () => {
+        const { traderName, task, rewards } = taskNeedToUpdateStatus
+        const newCompleteTasks = []
+        playerTasksInfo[traderName]["complete"].forEach((task) => {
+          newCompleteTasks.push(task.id)
+        })
+        newCompleteTasks.push(task.id)
+        if (rewards) {
+          //TODO
+          // items
+          const itemRewards = []
+          rewards.items.forEach((item) => {
+            itemRewards.push({
+              itemId: item.item.id,
+              itemName: item.item.name,
+              bgColor: item.item.backgroundColor,
+              count: item.count,
+            })
+          })
+          await dispatch(
+            updateInventoryItem({
+              items: itemRewards,
+            })
+          )
+          // traderStanding
+          for (const trader of rewards.traderStanding) {
+            await dispatch(
+              updateTraderProgress({
+                traderName: trader.trader.name,
+                traderRep:
+                  traderProgress.traderRep[trader.trader.name] +
+                  trader.standing,
+                traderSpent: traderProgress.traderSpent[trader.trader.name],
+              })
+            )
+          }
+          // traderUnlock
+          for (const trader of rewards.traderUnlock) {
+            await dispatch(
+              updateUnlockedTrader({
+                name: trader.name,
+                unlocked: true,
+              })
+            )
+          }
+          // offerUnlock
+          /// trader.name, level, item.id, item.name
+          // skillLevelReward
+          /// name, level
+        }
+        await dispatch(
+          updateCompletedTasks({ completeTasks: newCompleteTasks })
+        )
+        // re-sort tasks of this trader
+        dispatch(
+          getTasksOfTraderWithLevel({
+            trader: traderName,
+            level: playerLevel,
+          })
+        )
+        // re-sort tasks of other traders which require this task to be completed
+        const needThisTaskTraders = []
+        console.log(task)
+        task.needForTasks.forEach((need) => {
+          needThisTaskTraders.push(need.task.trader.name)
+        })
+        const uniqueNeedThisTaskTraders = [...new Set(needThisTaskTraders)]
+        uniqueNeedThisTaskTraders.forEach((trader) => {
+          if (trader !== traderName) {
+            dispatch(
+              getTasksOfTraderWithLevel({
+                trader: trader,
+                level: playerLevel,
+              })
+            )
+          }
+        })
+        expandTaskDetailHandle(traderName, task.id)
+      }
+
+      updateTaskStatus()
+      setTaskNeedToUpdateStatus(null)
+    }
+  }, [taskNeedToUpdateStatus])
 
   //// handles
   const expandTaskDetailHandle = (trader, taskId) => {
@@ -373,62 +488,8 @@ const CharacterScreen = () => {
     }
   }
 
-  const completeTaskHandle = (traderName, taskId, rewards = null) => {
-    const newCompleteTasks = []
-    playerTasksInfo[traderName]["complete"].forEach((task) => {
-      newCompleteTasks.push(task.id)
-    })
-    newCompleteTasks.push(taskId)
-    if (rewards) {
-      //TODO
-      // items
-      const itemRewards = []
-      rewards.items.forEach((item) => {
-        itemRewards.push({
-          itemId: item.item.id,
-          itemName: item.item.name,
-          bgColor: item.item.backgroundColor,
-          count: item.count,
-        })
-      })
-      dispatch(
-        updateInventoryItem({
-          items: itemRewards,
-        })
-      )
-      // traderStanding
-      rewards.traderStanding.forEach((trader) => {
-        dispatch(
-          updateTraderProgress({
-            traderName: trader.trader.name,
-            traderRep:
-              traderProgress.traderRep[trader.trader.name] + trader.standing,
-            traderSpent: traderProgress.traderSpent[trader.trader.name],
-          })
-        )
-      })
-      ///trader.name, standing
-      // offerUnlock
-      /// trader.name, level, item.id, item.name
-      // skillLevelReward
-      /// name, level
-      // traderUnlock
-      rewards.traderUnlock.forEach((trader) => {
-        dispatch(
-          updateUnlockedTrader({
-            name: trader.name,
-            unlocked: true,
-          })
-        )
-      })
-    }
-    dispatch(updateCompletedTasks({ completeTasks: newCompleteTasks }))
-    dispatch(
-      getTasksOfTraderWithLevel({
-        trader: traderName,
-      })
-    )
-    expandTaskDetailHandle(traderName, taskId)
+  const completeTaskHandle = (traderName, task, rewards = null) => {
+    setTaskNeedToUpdateStatus({ traderName, task, rewards })
   }
 
   const adjustPlayerLevelHandle = (level) => {
@@ -437,6 +498,7 @@ const CharacterScreen = () => {
       dispatch(
         getTasksOfTraderWithLevel({
           trader: trader.name,
+          level: level,
         })
       )
     })
@@ -685,236 +747,192 @@ const CharacterScreen = () => {
                       "--bs-accordion-active-color": "#b7ad9c",
                     }}
                   >
-                    {traders.length === 0 && <DivLoading />}
-                    {traders.length !== 0 &&
-                      traders.map((trader, i) => {
-                        return (
-                          <Accordion.Item
-                            eventKey={`${i}`}
-                            key={`${trader.name}_task`}
-                          >
-                            <Accordion.Header>
-                              <div className="d-flex align-items-center fs-4">
-                                <Image
-                                  src={`/asset/${trader.id}.png`}
-                                  className="me-3"
-                                  style={{ height: "64px", width: "64px" }}
-                                />
-                                <div className="mx-3">{trader.name}</div>
+                    {traders.map((trader, i) => {
+                      return (
+                        <Accordion.Item
+                          eventKey={`${i}`}
+                          key={`${trader.name}_task`}
+                        >
+                          <Accordion.Header>
+                            <div className="d-flex align-items-center fs-4">
+                              <Image
+                                src={`/asset/${trader.id}.png`}
+                                className="me-3"
+                                style={{ height: "64px", width: "64px" }}
+                              />
+                              <div className="mx-3">{trader.name}</div>
 
-                                <div
-                                  className="d-inline mx-3"
-                                  style={{ fontSize: "16px" }}
-                                >
-                                  <span style={{ color: "white" }}>
-                                    {"available: "}
-                                  </span>
-                                  <span style={{ color: "#198754" }}>
-                                    {unlockedTraders &&
-                                      (!unlockedTraders.hasOwnProperty(
-                                        trader.name
-                                      ) ||
-                                        (unlockedTraders.hasOwnProperty(
-                                          trader.name
-                                        ) &&
-                                          unlockedTraders[trader.name])) &&
-                                      Object.keys(playerTasksInfo).length > 0 &&
-                                      playerTasksInfo[trader.name] &&
-                                      playerTasksInfo[trader.name].ongoing
-                                        .length}
-                                    {unlockedTraders &&
-                                      unlockedTraders.hasOwnProperty(
-                                        trader.name
-                                      ) &&
-                                      !unlockedTraders[trader.name] &&
-                                      "0"}
-                                  </span>
-                                </div>
-
-                                <div
-                                  className="d-inline mx-3"
-                                  style={{ fontSize: "16px" }}
-                                >
-                                  <span style={{ color: "white" }}>
-                                    {"completed: "}
-                                  </span>
-                                  <span style={{ color: "#0d6efd" }}>
-                                    {Object.keys(playerTasksInfo).length > 0 &&
-                                      playerTasksInfo[trader.name] &&
-                                      playerTasksInfo[trader.name].complete
-                                        .length}
-                                    {"/"}
-                                    {Object.keys(tasks).length > 0 &&
-                                      tasks[trader.name] &&
-                                      tasks[trader.name].length}
-                                  </span>
-                                </div>
-                              </div>
-                            </Accordion.Header>
-                            <Accordion.Body className="p-0">
-                              <Table
-                                variant="dark"
-                                className="m-0"
-                                style={{ "--bs-table-bg": "black" }}
+                              <div
+                                className="d-inline mx-3"
+                                style={{ fontSize: "16px" }}
                               >
-                                <tbody>
-                                  {(!playerCompletedObjectives ||
-                                    !playerObjectiveProgress) && (
+                                <span style={{ color: "white" }}>
+                                  {"available: "}
+                                </span>
+                                <span
+                                  style={{
+                                    color:
+                                      safeGet(playerTasksInfo, trader.name) &&
+                                      playerTasksInfo[trader.name].ongoing
+                                        .length > 0
+                                        ? "#198754"
+                                        : "#212529",
+                                  }}
+                                >
+                                  {safeGet(playerTasksInfo, trader.name) &&
+                                    playerTasksInfo[trader.name].ongoing.length}
+                                </span>
+                              </div>
+
+                              <div
+                                className="d-inline mx-3"
+                                style={{ fontSize: "16px" }}
+                              >
+                                <span style={{ color: "white" }}>
+                                  {"completed: "}
+                                </span>
+                                <span style={{ color: "#0d6efd" }}>
+                                  {safeGet(playerTasksInfo, trader.name) &&
+                                    playerTasksInfo[trader.name].complete
+                                      .length}
+                                  {"/"}
+                                  {taskTotalLen && taskTotalLen[trader.name]}
+                                </span>
+                              </div>
+                            </div>
+                          </Accordion.Header>
+                          <Accordion.Body className="p-0">
+                            <Table
+                              variant="dark"
+                              className="m-0"
+                              style={{ "--bs-table-bg": "black" }}
+                            >
+                              <tbody>
+                                {curShowingTaskLen &&
+                                  curShowingTaskLen[trader.name] === 0 && (
                                     <tr>
                                       <td>
-                                        <div className="d-flex p-3 fs-4 justify-content-center align-items-center">
-                                          <TarkovSpinner />
-                                          Loading player task records...
+                                        <div className="p-3 fs-4 text-center">
+                                          Empty
                                         </div>
                                       </td>
                                     </tr>
                                   )}
-                                  {playerCompletedObjectives &&
-                                    playerObjectiveProgress &&
-                                    Object.keys(playerTasksInfo).length > 0 &&
-                                    !playerTasksInfo[`${trader.name}`] && (
-                                      <tr>
-                                        <td>
-                                          <div className="p-3 fs-4 text-center">
-                                            Empty
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    )}
-                                  {playerCompletedObjectives &&
-                                    playerObjectiveProgress &&
-                                    Object.keys(playerTasksInfo).length > 0 &&
-                                    playerTasksInfo[`${trader.name}`] &&
-                                    Object.keys(
-                                      playerTasksInfo[`${trader.name}`]
-                                    )
-                                      .map((status) => {
-                                        if (
-                                          (status === "complete" &&
-                                            showCompleteTask) ||
-                                          (status === "ongoing" &&
-                                            showOngoingTask) ||
-                                          (status === "notQualify" &&
-                                            showNotQualifyTask)
-                                        ) {
-                                          return playerTasksInfo[
-                                            `${trader.name}`
-                                          ][`${status}`].map((task) => {
-                                            if (
-                                              (unlockedTraders &&
-                                                !unlockedTraders.hasOwnProperty(
-                                                  trader.name
-                                                )) ||
-                                              (unlockedTraders &&
-                                                unlockedTraders.hasOwnProperty(
-                                                  trader.name
-                                                ) &&
-                                                unlockedTraders[trader.name])
-                                            )
-                                              return [
-                                                <tr
-                                                  key={task.id}
-                                                  onClick={() => {
-                                                    expandTaskDetailHandle(
-                                                      trader.name,
-                                                      task.id
-                                                    )
-                                                  }}
+                                {Object.keys(playerTasksInfo).length > 0 &&
+                                  playerTasksInfo[trader.name] &&
+                                  Object.keys(playerTasksInfo[trader.name])
+                                    .map((status) => {
+                                      if (
+                                        (status === "complete" &&
+                                          showCompleteTask) ||
+                                        (status === "ongoing" &&
+                                          showOngoingTask) ||
+                                        (status === "notQualify" &&
+                                          showNotQualifyTask)
+                                      ) {
+                                        return playerTasksInfo[trader.name][
+                                          status
+                                        ].map((task) => {
+                                          return [
+                                            <tr
+                                              key={task.id}
+                                              onClick={() => {
+                                                expandTaskDetailHandle(
+                                                  trader.name,
+                                                  task.id
+                                                )
+                                              }}
+                                            >
+                                              <td
+                                                className="px-5"
+                                                style={{
+                                                  "--bs-table-bg":
+                                                    status === "complete"
+                                                      ? "#0d6efd"
+                                                      : status === "ongoing"
+                                                      ? "#198754"
+                                                      : "#1c1c1c",
+                                                }}
+                                              >
+                                                {task.name}
+                                              </td>
+                                            </tr>,
+                                            <tr key={task.id + "_collapse"}>
+                                              <td className="p-0">
+                                                <Collapse
+                                                  in={
+                                                    (trader.name,
+                                                    collapseDetail[task.id])
+                                                  }
                                                 >
-                                                  <td
-                                                    className="px-5"
-                                                    style={{
-                                                      "--bs-table-bg":
-                                                        status === "complete"
-                                                          ? "#0d6efd"
-                                                          : status === "ongoing"
-                                                          ? "#198754"
-                                                          : "#1c1c1c",
-                                                    }}
-                                                  >
-                                                    {task.name}
-                                                  </td>
-                                                </tr>,
-                                                <tr key={task.id + "_collapse"}>
-                                                  <td className="p-0">
-                                                    <Collapse
-                                                      in={
-                                                        (trader.name,
-                                                        collapseDetail[task.id])
-                                                      }
-                                                    >
-                                                      <div>
-                                                        <div>
-                                                          {Object.keys(
-                                                            tasksDetailFetched
-                                                          ).length > 0 &&
-                                                            !tasksDetailFetched[
-                                                              trader.name
-                                                            ].includes(
-                                                              task.id
-                                                            ) && (
-                                                              <DivLoading
-                                                                height={100}
-                                                              />
-                                                            )}
-                                                          {Object.keys(
-                                                            tasksDetailFetched
-                                                          ).length > 0 &&
-                                                            tasksDetailFetched[
-                                                              trader.name
-                                                            ].includes(
-                                                              task.id
-                                                            ) && (
-                                                              <TaskDetail
-                                                                task={
-                                                                  tasksDetail[
-                                                                    trader.name
-                                                                  ][task.id]
-                                                                }
-                                                                completeable={
-                                                                  status ===
-                                                                  "complete"
-                                                                    ? false
-                                                                    : true
-                                                                }
-                                                                finishClickHandles={
-                                                                  updateObjectiveStatusHandle
-                                                                }
-                                                                taskCompleteHandle={(
-                                                                  taskId,
-                                                                  rewards
-                                                                ) => {
-                                                                  completeTaskHandle(
-                                                                    trader.name,
-                                                                    taskId,
-                                                                    rewards
-                                                                  )
-                                                                }}
-                                                                disableTurnIn={
-                                                                  status ===
-                                                                  "notQualify"
-                                                                }
-                                                                playerInventory={
-                                                                  playerInventory
-                                                                }
-                                                              />
-                                                            )}
-                                                        </div>
-                                                      </div>
-                                                    </Collapse>
-                                                  </td>
-                                                </tr>,
-                                              ]
-                                          })
-                                        }
-                                      })
-                                      .flat(1)}
-                                </tbody>
-                              </Table>
-                            </Accordion.Body>
-                          </Accordion.Item>
-                        )
-                      })}
+                                                  <div>
+                                                    <div>
+                                                      {Object.keys(
+                                                        tasksDetailFetched
+                                                      ).length > 0 &&
+                                                        !tasksDetailFetched[
+                                                          trader.name
+                                                        ].includes(task.id) && (
+                                                          <DivLoading
+                                                            height={100}
+                                                          />
+                                                        )}
+                                                      {Object.keys(
+                                                        tasksDetailFetched
+                                                      ).length > 0 &&
+                                                        tasksDetailFetched[
+                                                          trader.name
+                                                        ].includes(task.id) && (
+                                                          <TaskDetail
+                                                            task={
+                                                              tasksDetail[
+                                                                trader.name
+                                                              ][task.id]
+                                                            }
+                                                            completeable={
+                                                              status ===
+                                                              "complete"
+                                                                ? false
+                                                                : true
+                                                            }
+                                                            finishClickHandles={
+                                                              updateObjectiveStatusHandle
+                                                            }
+                                                            taskCompleteHandle={(
+                                                              taskId,
+                                                              rewards
+                                                            ) => {
+                                                              completeTaskHandle(
+                                                                trader.name,
+                                                                task,
+                                                                rewards
+                                                              )
+                                                            }}
+                                                            disableTurnIn={
+                                                              status ===
+                                                              "notQualify"
+                                                            }
+                                                            playerInventory={
+                                                              playerInventory
+                                                            }
+                                                          />
+                                                        )}
+                                                    </div>
+                                                  </div>
+                                                </Collapse>
+                                              </td>
+                                            </tr>,
+                                          ]
+                                        })
+                                      }
+                                    })
+                                    .flat(1)}
+                              </tbody>
+                            </Table>
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      )
+                    })}
                   </Accordion>
                 </Tab>
 
