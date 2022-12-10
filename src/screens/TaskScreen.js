@@ -141,17 +141,21 @@ const TaskScreen = () => {
               traders.map((trader, i) => {
                 return (
                   <TabPane eventKey={trader.name} key={trader.id}>
-                    <Table bordered hover variant="dark" className="p-4">
+                    <Table className="round-table" hover variant="dark">
                       <thead>
-                        <tr
-                          style={{
-                            "--bs-table-bg": "black",
-                          }}
-                        >
-                          <th>Task name</th>
-                          <th>Level requirement</th>
-                          <th>Previous task</th>
-                          <th>Trader level requirement</th>
+                        <tr>
+                          <th style={{ backgroundColor: "#121212" }}>
+                            Task name
+                          </th>
+                          <th style={{ backgroundColor: "#121212" }}>
+                            Level requirement
+                          </th>
+                          <th style={{ backgroundColor: "#121212" }}>
+                            Previous task
+                          </th>
+                          <th style={{ backgroundColor: "#121212" }}>
+                            Trader level requirement
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -251,6 +255,14 @@ const TaskScreen = () => {
                             ]
                           })}
                       </tbody>
+                      <tfoot>
+                        <tr>
+                          <td
+                            colspan={4}
+                            style={{ backgroundColor: "#121212" }}
+                          ></td>
+                        </tr>
+                      </tfoot>
                     </Table>
                   </TabPane>
                 )

@@ -204,12 +204,12 @@ const ItemScreen = ({}) => {
           justify
         >
           <Tab eventKey="buyFrom" title="Buy from">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Vendor</th>
-                  <th>Price</th>
-                  <th>Currency</th>
+                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
+                  <th style={{ backgroundColor: "#121212" }}>Price</th>
+                  <th style={{ backgroundColor: "#121212" }}>Currency</th>
                 </tr>
               </thead>
               <tbody>
@@ -230,15 +230,20 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
           <Tab eventKey="sellTo" title="Sell to">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Vendor</th>
-                  <th>Price</th>
-                  <th>Currency</th>
+                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
+                  <th style={{ backgroundColor: "#121212" }}>Price</th>
+                  <th style={{ backgroundColor: "#121212" }}>Currency</th>
                 </tr>
               </thead>
               <tbody>
@@ -255,15 +260,20 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
           <Tab eventKey="barterFrom" title="Barter from">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Vendor</th>
-                  <th>Give</th>
-                  <th>Get</th>
+                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
+                  <th style={{ backgroundColor: "#121212" }}>Give</th>
+                  <th style={{ backgroundColor: "#121212" }}>Get</th>
                 </tr>
               </thead>
               <tbody>
@@ -288,16 +298,21 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
           <Tab eventKey="craft" title="Craft">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Module</th>
-                  <th>Give</th>
-                  <th>Duration</th>
-                  <th>Get</th>
+                  <th style={{ backgroundColor: "#121212" }}>Module</th>
+                  <th style={{ backgroundColor: "#121212" }}>Give</th>
+                  <th style={{ backgroundColor: "#121212" }}>Duration</th>
+                  <th style={{ backgroundColor: "#121212" }}>Get</th>
                 </tr>
               </thead>
               <tbody>
@@ -323,14 +338,19 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
           <Tab eventKey="hideout" title="Hideout">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Module</th>
-                  <th>Requirement</th>
+                  <th style={{ backgroundColor: "#121212" }}>Module</th>
+                  <th style={{ backgroundColor: "#121212" }}>Requirement</th>
                 </tr>
               </thead>
               <tbody>
@@ -350,15 +370,20 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
           <Tab eventKey="taskNeed" title="Task need">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Task</th>
-                  <th>Vendor</th>
-                  <th>Requirement</th>
+                  <th style={{ backgroundColor: "#121212" }}>Task</th>
+                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
+                  <th style={{ backgroundColor: "#121212" }}>Requirement</th>
                 </tr>
               </thead>
               <tbody>
@@ -393,15 +418,20 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
           <Tab eventKey="taskReward" title="Task reward">
-            <Table bordered hover variant="dark" className="p-4">
+            <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th>Task</th>
-                  <th>Vendor</th>
-                  <th>Reward</th>
+                  <th style={{ backgroundColor: "#121212" }}>Task</th>
+                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
+                  <th style={{ backgroundColor: "#121212" }}>Reward</th>
                 </tr>
               </thead>
               <tbody>
@@ -422,6 +452,11 @@ const ItemScreen = ({}) => {
                     )
                   })}
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                </tr>
+              </tfoot>
             </Table>
           </Tab>
         </Tabs>
