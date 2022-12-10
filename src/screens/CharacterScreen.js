@@ -255,7 +255,7 @@ const CharacterScreen = () => {
       setCurShowingTaskLen(newShowingTaskLen)
       setTaskTotalLen(newTaskTotalLen)
     }
-  }, [playerTasksInfo])
+  }, [playerTasksInfo, showCompleteTask, showOngoingTask, showNotQualifyTask])
 
   /// on data change need some update
   // pick level icon for player's level on level change
