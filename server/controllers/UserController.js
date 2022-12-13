@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import User from "../models/UserModel.js"
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "360d" })
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" })
 }
 
 // @desc Auth user and get token
@@ -79,33 +79,24 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 })
 
-// @desc Update user profile
-// @route PUT /api/user/profile
+// @desc Update user password
+// @route PUT /api/user/password
 // @access private
-export const updateUserProfile = asyncHandler(async (req, res) => {
-  const userEmailExists = await User.findOne({ email: req.body.email })
+export const updateUserPassword = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id)
-  if (userEmailExists && req.body.email !== user.email) {
-    res.status(400) //bad request
-    throw new Error("Email already in use")
-  } else {
-    if (user) {
-      user.name = req.body.name || user.name
-      user.email = req.body.email || user.email
-      if (req.body.password) {
-        user.password = req.body.password
-      }
 
-      const updateUser = await user.save()
-      res.json({
-        _id: updateUser._id,
-        name: updateUser.name,
-        email: updateUser.email,
-        token: generateToken(updateUser._id),
-      })
-    } else {
-      res.status(404)
-      throw new Error("User not found")
+  if (user) {
+    if (req.body.password) {
+      user.password = req.body.password
     }
+
+    const updateUser = await user.save()
+    res.json({
+      token: generateToken(updateUser._id),
+      msg: "Password successfully changed",
+    })
+  } else {
+    res.status(404)
+    throw new Error("User not found")
   }
 })

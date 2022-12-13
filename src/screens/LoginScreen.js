@@ -41,7 +41,9 @@ const LoginScreen = () => {
           <Col md={6} align="center">
             <h1 className="mb-5 sandbeige">Log in</h1>
             {errorMsg.length > 0 && (
-              <Alert variant="secondary">{errorMsg}</Alert>
+              <Alert variant="secondary" className="text-center">
+                {errorMsg}
+              </Alert>
             )}
             <Form>
               <InputGroup className="mb-5">

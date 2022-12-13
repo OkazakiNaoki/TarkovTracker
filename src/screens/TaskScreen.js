@@ -258,7 +258,7 @@ const TaskScreen = () => {
                       <tfoot>
                         <tr>
                           <td
-                            colspan={4}
+                            colSpan={4}
                             style={{ backgroundColor: "#121212" }}
                           ></td>
                         </tr>
@@ -274,4 +274,4 @@ const TaskScreen = () => {
   )
 }
 
-export default TaskScreen
+export { TaskScreen }

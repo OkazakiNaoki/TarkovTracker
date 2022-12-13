@@ -65,8 +65,8 @@ const Header = () => {
                   title={userName !== "" && userName}
                   id="username"
                 >
-                  <LinkContainer to="/profile">
-                    <NavDropdown.Item>profile</NavDropdown.Item>
+                  <LinkContainer to="/setting">
+                    <NavDropdown.Item>setting</NavDropdown.Item>
                   </LinkContainer>
                   <NavDropdown.Divider />
                   <NavDropdown.Item onClick={logoutHandle}>

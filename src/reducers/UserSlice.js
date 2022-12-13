@@ -43,18 +43,39 @@ export const register = createAsyncThunk("user/register", async (params) => {
   }
 })
 
+export const changePassword = createAsyncThunk(
+  "user/changePassword",
+  async (params, { getState }) => {
+    const { user } = getState().user
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const { data } = await axios.put(
+        "/api/user/password",
+        { password: params.password },
+        config
+      )
+      return data
+    } catch (error) {
+      return error.response && error.response.data
+        ? { error: error.response.data }
+        : { error: error.message }
+    }
+  }
+)
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
     isLoading: false,
     errorMsg: "",
-    user: {
-      _id: "630b0c2a90f70bf99e1a3cf2",
-      name: "test",
-      email: "1",
-      token:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMGIwYzJhOTBmNzBiZjk5ZTFhM2NmMiIsImlhdCI6MTY2MjYzNzEyOSwiZXhwIjoxNjkzNzQxMTI5fQ.m7pIhqjtWii343hHIpsJcothQx6wkX9whCAuSo7zxFY",
-    },
+    successMsg: "",
+    user: {},
   },
   reducers: {
     resetUser: (state, action) => {
@@ -65,6 +86,8 @@ const userSlice = createSlice({
     builder
       .addCase(login.pending, (state, action) => {
         state.isLoading = true
+        state.errorMsg = ""
+        state.successMsg = ""
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false
@@ -72,7 +95,6 @@ const userSlice = createSlice({
           state.errorMsg = action.payload.error
         } else {
           state.user = action.payload
-          state.errorMsg = ""
         }
       })
       .addCase(login.rejected, (state, action) => {
@@ -80,6 +102,8 @@ const userSlice = createSlice({
       })
       .addCase(register.pending, (state, action) => {
         state.isLoading = true
+        state.errorMsg = ""
+        state.successMsg = ""
       })
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false
@@ -87,11 +111,21 @@ const userSlice = createSlice({
           state.errorMsg = action.payload.error
         } else {
           state.user = action.payload
-          state.errorMsg = ""
         }
       })
       .addCase(register.rejected, (state, action) => {
         throw new Error(action.payload)
+      })
+      .addCase(changePassword.pending, (state, action) => {
+        state.errorMsg = ""
+        state.successMsg = ""
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.token = action.payload.token
+        state.successMsg = action.payload.msg
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.errorMsg = action.payload
       })
   },
 })
