@@ -6,11 +6,16 @@ import {
   Nav,
   NavDropdown,
 } from "react-bootstrap"
+import { useNavigate } from "react-router-dom"
 import { LinkContainer } from "react-router-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { resetUser } from "../reducers/UserSlice"
+import { resetCharacter } from "../reducers/CharacterSlice"
+import { resetItem } from "../reducers/ItemSlice"
+import { resetTrader } from "../reducers/TraderSlice"
+import { resetFleamarket } from "../reducers/FleamarketSlice"
+import { resetHideout } from "../reducers/HideoutSlice"
 import logo from "../../public/static/images/escape_from_tarkov_logo.png"
-import { useNavigate } from "react-router-dom"
 
 const Header = () => {
   // redux
@@ -29,6 +34,11 @@ const Header = () => {
   const navigate = useNavigate()
 
   const logoutHandle = () => {
+    dispatch(resetCharacter())
+    dispatch(resetItem())
+    dispatch(resetTrader())
+    dispatch(resetFleamarket())
+    dispatch(resetHideout())
     dispatch(resetUser())
     navigate("/")
   }

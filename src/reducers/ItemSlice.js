@@ -249,7 +249,14 @@ const ItemSlice = createSlice({
     hideout: [],
     loadingQueue: 0,
   },
-  reducers: {},
+  reducers: {
+    resetItem: (state, action) => {
+      state.isLoading = false
+      state.item = { properties: [] }
+      state.hideout = []
+      state.loadingQueue = 0
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(searchItem.pending, (state, action) => {
@@ -292,3 +299,4 @@ const ItemSlice = createSlice({
 })
 
 export default ItemSlice.reducer
+export const { resetItem } = ItemSlice.actions

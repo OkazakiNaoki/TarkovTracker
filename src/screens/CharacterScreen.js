@@ -575,13 +575,6 @@ const CharacterScreen = () => {
 
   return (
     <>
-      <Button
-        onClick={() => {
-          console.log(charState)
-        }}
-      >
-        Redux State
-      </Button>
       <EditValueModal
         title="Player level"
         show={openPlayerLevelModal}

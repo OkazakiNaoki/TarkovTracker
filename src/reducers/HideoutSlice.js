@@ -44,7 +44,13 @@ const hideoutSlice = createSlice({
     isLoading: false,
     hideout: null,
   },
-  reducers: {},
+  reducers: {
+    resetHideout: (state, action) => {
+      state.requests = {}
+      state.isLoading = false
+      state.hideout = null
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllHideout.pending, (state, action) => {
@@ -64,3 +70,4 @@ const hideoutSlice = createSlice({
 })
 
 export default hideoutSlice.reducer
+export const { resetHideout } = hideoutSlice.actions

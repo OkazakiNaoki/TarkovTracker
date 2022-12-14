@@ -110,6 +110,15 @@ export const FleamarketSlice = createSlice({
       })
       state.handbookTree = tree
     },
+    resetFleamarket: (state, action) => {
+      state.requests = {}
+      state.isLoading = false
+      state.loadingQueue = 0
+      state.items = []
+      state.categories = []
+      state.handbook = []
+      state.handbookTree = []
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -180,4 +189,5 @@ export const FleamarketSlice = createSlice({
 })
 
 export default FleamarketSlice.reducer
-export const { setHandbookTree, clearItems } = FleamarketSlice.actions
+export const { setHandbookTree, clearItems, resetFleamarket } =
+  FleamarketSlice.actions

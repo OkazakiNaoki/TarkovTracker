@@ -1051,7 +1051,25 @@ const characterSlice = createSlice({
     // skill
     playerSkill: null,
   },
-  reducers: {},
+  reducers: {
+    resetCharacter: (state, action) => {
+      state.requests = {}
+      state.initSetup = false
+      state.loadingInitSetup = false
+      state.playerLevel = 0
+      state.playerFaction = null
+      state.gameEdition = null
+      state.playerTasksInfo = {}
+      state.playerCompletedObjectives = null
+      state.playerObjectiveProgress = null
+      state.unlockedTraders = null
+      state.traderProgress = null
+      state.traderLL = {}
+      state.playerHideoutLevel = null
+      state.playerInventory = null
+      state.playerSkill = null
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getTasksOfTraderWithLevel.pending, (state, action) => {})
@@ -1241,4 +1259,4 @@ const characterSlice = createSlice({
 })
 
 export default characterSlice.reducer
-//export const {} = characterSlice.actions
+export const { resetCharacter } = characterSlice.actions

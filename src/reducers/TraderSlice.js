@@ -377,6 +377,18 @@ const traderSlice = createSlice({
         state.tasksDetailFetched[`${trader.name}`] = []
       })
     },
+    resetTrader: (state, action) => {
+      state.requests = {}
+      state.initTasks = false
+      state.isLoading = false
+      state.isLoadingTasks = false
+      state.tradeResetTime = {}
+      state.traderLevels = null
+      state.tasks = {}
+      state.tasksDetail = {}
+      state.tasksDetailFetched = {}
+      state.taskItemRequirement = []
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -457,4 +469,5 @@ const traderSlice = createSlice({
 })
 
 export default traderSlice.reducer
-export const { initializeTasks, setTaskCollapse } = traderSlice.actions
+export const { initializeTasks, setTaskCollapse, resetTrader } =
+  traderSlice.actions
