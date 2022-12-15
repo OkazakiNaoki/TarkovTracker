@@ -216,19 +216,29 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={3} />}
                 {!isLoading &&
                   item.buyFor &&
-                  item.buyFor.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>
-                          {el.vendor.name !== "Flea Market"
-                            ? el.vendor.name + " LL" + el.vendor.minTraderLevel
-                            : el.vendor.name}
-                        </td>
-                        <td>{el.price}</td>
-                        <td>{el.currencyItem.name}</td>
-                      </tr>
-                    )
-                  })}
+                  (item.buyFor.length > 0 ? (
+                    item.buyFor.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>
+                            {el.vendor.name !== "Flea Market"
+                              ? el.vendor.name +
+                                " LL" +
+                                el.vendor.minTraderLevel
+                              : el.vendor.name}
+                          </td>
+                          <td>{el.price}</td>
+                          <td>{el.currencyItem.name}</td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>
@@ -250,15 +260,23 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={3} />}
                 {!isLoading &&
                   item.sellFor &&
-                  item.sellFor.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{el.vendor.name}</td>
-                        <td>{el.price}</td>
-                        <td>{el.currencyItem.name}</td>
-                      </tr>
-                    )
-                  })}
+                  (item.sellFor.length > 0 ? (
+                    item.sellFor.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{el.vendor.name}</td>
+                          <td>{el.price}</td>
+                          <td>{el.currencyItem.name}</td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>
@@ -280,23 +298,35 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={3} />}
                 {!isLoading &&
                   item.bartersFor &&
-                  item.bartersFor.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{el.trader.name}</td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.requiredItems.reduce((prev, el) => {
-                            return prev + el.item.name + "  x" + el.count + "\n"
-                          }, "")}
-                        </td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.rewardItems.reduce((prev, el) => {
-                            return prev + el.item.name + "  x" + el.count + "\n"
-                          }, "")}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  (item.bartersFor.length > 0 ? (
+                    item.bartersFor.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{el.trader.name}</td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.requiredItems.reduce((prev, el) => {
+                              return (
+                                prev + el.item.name + "  x" + el.count + "\n"
+                              )
+                            }, "")}
+                          </td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.rewardItems.reduce((prev, el) => {
+                              return (
+                                prev + el.item.name + "  x" + el.count + "\n"
+                              )
+                            }, "")}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>
@@ -319,24 +349,38 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={4} />}
                 {!isLoading &&
                   item.craftsFor &&
-                  item.craftsFor.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{el.station.name + " Level " + el.level}</td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.requiredItems.reduce((prev, el) => {
-                            return prev + el.item.name + "  x" + el.count + "\n"
-                          }, "")}
-                        </td>
-                        <td>{formatInHoursMINsec(getHMSfromS(el.duration))}</td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.rewardItems.reduce((prev, el) => {
-                            return prev + el.item.name + "  x" + el.count + "\n"
-                          }, "")}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  (item.craftsFor.length > 0 ? (
+                    item.craftsFor.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{el.station.name + " Level " + el.level}</td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.requiredItems.reduce((prev, el) => {
+                              return (
+                                prev + el.item.name + "  x" + el.count + "\n"
+                              )
+                            }, "")}
+                          </td>
+                          <td>
+                            {formatInHoursMINsec(getHMSfromS(el.duration))}
+                          </td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.rewardItems.reduce((prev, el) => {
+                              return (
+                                prev + el.item.name + "  x" + el.count + "\n"
+                              )
+                            }, "")}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>
@@ -357,18 +401,28 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={2} />}
                 {!isLoading &&
                   hideout &&
-                  hideout.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{el.name + " Level " + el.levels.level}</td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.levels.itemRequirements.reduce((prev, el) => {
-                            return prev + el.item.name + "  x" + el.count + "\n"
-                          }, "")}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  (hideout.length > 0 ? (
+                    hideout.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{el.name + " Level " + el.levels.level}</td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.levels.itemRequirements.reduce((prev, el) => {
+                              return (
+                                prev + el.item.name + "  x" + el.count + "\n"
+                              )
+                            }, "")}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={2} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>
@@ -390,33 +444,41 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={3} />}
                 {!isLoading &&
                   item.usedInTasks &&
-                  item.usedInTasks.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{el.name}</td>
-                        <td>{el.trader.name}</td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.objectives.reduce((prev, el) => {
-                            if (Object.keys(el).length !== 0) {
-                              return (
-                                prev +
-                                (el.item.name === item.name
-                                  ? titleCase(
-                                      insertSpaceIntoCamelCase(el.type)
-                                    ) +
-                                    " " +
-                                    el.item.name +
-                                    "  x" +
-                                    el.count +
-                                    "\n"
-                                  : "")
-                              )
-                            } else return prev
-                          }, "")}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  (item.usedInTasks.length > 0 ? (
+                    item.usedInTasks.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{el.name}</td>
+                          <td>{el.trader.name}</td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.objectives.reduce((prev, el) => {
+                              if (Object.keys(el).length !== 0) {
+                                return (
+                                  prev +
+                                  (el.item.name === item.name
+                                    ? titleCase(
+                                        insertSpaceIntoCamelCase(el.type)
+                                      ) +
+                                      " " +
+                                      el.item.name +
+                                      "  x" +
+                                      el.count +
+                                      "\n"
+                                    : "")
+                                )
+                              } else return prev
+                            }, "")}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>
@@ -438,19 +500,29 @@ const ItemScreen = ({}) => {
                 {isLoading && <TableRowLoading colSize={3} />}
                 {!isLoading &&
                   item.receivedFromTasks &&
-                  item.receivedFromTasks.map((el, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{el.name}</td>
-                        <td>{el.trader.name}</td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
-                          {el.finishRewards.items.reduce((prev, el) => {
-                            return prev + el.item.name + "  x" + el.count + "\n"
-                          }, "")}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  (item.receivedFromTasks.length > 0 ? (
+                    item.receivedFromTasks.map((el, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{el.name}</td>
+                          <td>{el.trader.name}</td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {el.finishRewards.items.reduce((prev, el) => {
+                              return (
+                                prev + el.item.name + "  x" + el.count + "\n"
+                              )
+                            }, "")}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="text-center">
+                        None
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
               <tfoot>
                 <tr>

@@ -43,7 +43,7 @@ const ConstructRequirements = ({
 
   // hooks effect
   useEffect(() => {
-    if (!playerHideoutLevel) {
+    if (useMeetReq && !playerHideoutLevel) {
       dispatch(getHideoutLevel())
     }
   }, [playerHideoutLevel])
@@ -147,13 +147,13 @@ const ConstructRequirements = ({
   }, [playerSkill, level.skillRequirements])
 
   useEffect(() => {
-    if (!playerInventory) {
+    if (useMeetReq && !playerInventory) {
       dispatch(getInventoryItem())
     }
   }, [playerInventory])
 
   useEffect(() => {
-    if (!playerSkill) {
+    if (useMeetReq && !playerSkill) {
       dispatch(getSkillProgress())
     }
   }, [playerSkill])
