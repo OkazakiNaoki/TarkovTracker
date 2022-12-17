@@ -138,17 +138,14 @@ const CharacterScreen = () => {
   } = useSelector((state) => state.fleamarket)
   const dispatch = useDispatch()
 
-  // redux debug
-  const charState = useSelector((state) => state.character)
-
   //// hooks effects
   /// initialization type effects
   // get character data for the first time
   useEffect(() => {
-    if (!initSetup) {
+    if (Object.keys(user).length > 0 && !initSetup) {
       dispatch(getCharacterData())
     }
-  })
+  }, [user])
 
   // initialize player task data
   useEffect(() => {
