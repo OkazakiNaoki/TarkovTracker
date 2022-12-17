@@ -11,7 +11,10 @@ import {
 } from "react-bootstrap"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import { QuestItem } from "./QuestItem"
-import { haveAdditionalElementFromCompareArr } from "../helpers/LoopThrough"
+import {
+  getIndexOfMatchFieldObjArr,
+  haveAdditionalElementFromCompareArr,
+} from "../helpers/LoopThrough"
 import { getInventoryItem } from "../reducers/CharacterSlice"
 import { useState } from "react"
 import { DivLoading } from "./DivLoading"
@@ -22,11 +25,12 @@ const excludeQuest = [
   "61e6e5e0f5b9633f6719ed95",
 ]
 
-const QuestItems = () => {
+const QuestItems = ({ playerTasksInfo }) => {
   // hooks state
   const [itemFilterMethod, setItemFilterMethod] = useState("Fullname")
   const [itemFilterString, setItemFilterString] = useState("")
   const [questItemList, setQuestItemList] = useState(null)
+  const [showCompleteTaskReq, setShowCompletedTaskReq] = useState(true)
 
   // redux
   const { taskItemRequirement } = useSelector((state) => state.trader)
@@ -47,21 +51,38 @@ const QuestItems = () => {
   }, [playerInventory])
 
   useEffect(() => {
-    if (taskItemRequirement.length !== 0 && !questItemList) {
+    if (taskItemRequirement.length !== 0) {
       const questItems = taskItemRequirement.map((req) => {
-        if (
-          haveAdditionalElementFromCompareArr(
-            req.requiredByTask,
-            "taskId",
-            excludeQuest
-          )
-        ) {
+        const haveNormalQuest = haveAdditionalElementFromCompareArr(
+          req.requiredByTask,
+          "taskId",
+          excludeQuest
+        )
+        let show = true
+        if (!showCompleteTaskReq) {
+          let completeCount = 0
+          req.requiredByTask.forEach((req) => {
+            if (
+              getIndexOfMatchFieldObjArr(
+                playerTasksInfo[req.trader].complete,
+                "id",
+                req.taskId
+              ) !== -1
+            ) {
+              completeCount++
+            }
+          })
+          if (completeCount === req.requiredByTask.length) {
+            show = false
+          }
+        }
+        if (haveNormalQuest && show) {
           return req.item.itemName
         }
       })
       setQuestItemList(questItems)
     }
-  }, [taskItemRequirement])
+  }, [taskItemRequirement, showCompleteTaskReq])
 
   // handles
   const selectFilterMethodHandle = (e) => {
@@ -70,6 +91,10 @@ const QuestItems = () => {
 
   const changeFilterStringHandle = (e) => {
     setItemFilterString(e.target.value)
+  }
+
+  const showCompletedTaskReqHandle = (e) => {
+    setShowCompletedTaskReq(e.target.checked)
   }
 
   return [
@@ -94,6 +119,13 @@ const QuestItems = () => {
         onChange={changeFilterStringHandle}
       />
     </InputGroup>,
+    <Form.Switch
+      key="show_completed_switch"
+      label="show completed task req"
+      className="my-1 ms-2"
+      checked={showCompleteTaskReq}
+      onChange={showCompletedTaskReqHandle}
+    />,
     <Row key="quest_item_cols">
       {taskItemRequirement.length === 0 && <DivLoading height={300} />}
       {taskItemRequirement.map((req) => {

@@ -7,6 +7,7 @@ export const getIndexOfMatchFieldObjArr = (arr, field, value) => {
   return -1
 }
 
+// if match arr[i]["a"], return arr[i]["b"]
 export const getAnotherFieldOfMatchFieldObjArr = (
   arr,
   field,
@@ -21,6 +22,7 @@ export const getAnotherFieldOfMatchFieldObjArr = (
   return null
 }
 
+// compareArr = [a,b], and if you have [a,b,c] then true
 export const haveAdditionalElementFromCompareArr = (
   objArr,
   field,

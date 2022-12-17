@@ -1245,9 +1245,11 @@ const CharacterScreen = () => {
 
                 {/* Quest item */}
                 <Tab eventKey="questItem" title="Quest item">
-                  <div>
-                    <QuestItems />
-                  </div>
+                  {Object.keys(playerTasksInfo).length > 0 && (
+                    <div>
+                      <QuestItems playerTasksInfo={playerTasksInfo} />
+                    </div>
+                  )}
                 </Tab>
               </Tabs>
             </Col>
