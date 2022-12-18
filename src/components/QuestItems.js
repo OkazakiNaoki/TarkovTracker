@@ -35,9 +35,16 @@ const QuestItems = ({ playerTasksInfo }) => {
   // redux
   const { taskItemRequirement } = useSelector((state) => state.trader)
   const { playerInventory } = useSelector((state) => state.character)
+  const { preference } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
-  // effects
+  // hooks effect
+  useEffect(() => {
+    if (preference) {
+      setShowCompletedTaskReq(preference.showCompletedTaskItemReq)
+    }
+  }, [preference])
+
   useEffect(() => {
     if (taskItemRequirement.length === 0) {
       dispatch(getTaskItemRequirements())

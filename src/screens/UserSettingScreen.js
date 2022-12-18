@@ -10,8 +10,9 @@ import {
   InputGroup,
   Alert,
 } from "react-bootstrap"
-import { changePassword } from "../reducers/UserSlice"
+import { changePassword, resetMsg } from "../reducers/UserSlice"
 import { TarkovStyleButton } from "../components/TarkovStyleButton"
+import { SettingOptions } from "../components/SettingOptions"
 
 const UserSettingScreen = () => {
   // hooks
@@ -19,12 +20,23 @@ const UserSettingScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [passwordInvalidMsg, setPasswordInvalidMsg] = useState("")
   const [confirmPasswordInvalidMsg, setConfirmPasswordInvalidMsg] = useState("")
+  const [resetAlertMsgFlag, setResetMsgFlag] = useState(false)
+  const [localMsg, setLocalMsg] = useState("")
 
   // redux
   const { errorMsg, successMsg } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
-  // handle
+  // hooks effect
+  useEffect(() => {
+    if (resetAlertMsgFlag) {
+      dispatch(resetMsg())
+      setLocalMsg("")
+      setResetMsgFlag(false)
+    }
+  }, [resetAlertMsgFlag])
+
+  // handles
   const submitHandle = (e) => {
     e.preventDefault()
     if (password.length >= 8 && password === confirmPassword) {
@@ -43,11 +55,19 @@ const UserSettingScreen = () => {
     }
   }
 
+  const resetAlertMsgHandle = () => {
+    setResetMsgFlag(true)
+  }
+
   return (
     <>
       <Container className="py-5">
         <h1 className="sandbeige mb-5">Setting</h1>
-        <Tab.Container id="user-settings" defaultActiveKey="user-data">
+        <Tab.Container
+          id="user-settings"
+          defaultActiveKey="user-data"
+          onSelect={resetAlertMsgHandle}
+        >
           <Row className="gx-5">
             <Col sm={4}>
               <Nav variant="pills" className="flex-column">
@@ -82,67 +102,86 @@ const UserSettingScreen = () => {
             <Col sm={8}>
               <Tab.Content>
                 <Tab.Pane eventKey="user-data">
-                  {errorMsg.length > 0 && (
-                    <Alert variant="secondary" className="text-center">
-                      {errorMsg}
-                    </Alert>
-                  )}
-                  {successMsg.length > 0 && (
-                    <Alert variant="secondary" className="text-center">
-                      {successMsg}
-                    </Alert>
-                  )}
-                  <Form className="px-5">
-                    <InputGroup className="mb-4" hasValidation>
-                      <InputGroup.Text id="password-input">
-                        Password
-                      </InputGroup.Text>
-                      <Form.Control
-                        type="password"
-                        placeholder="Enter password"
-                        aria-label="password"
-                        aria-describedby="password-input"
-                        isInvalid={passwordInvalidMsg.length > 0}
-                        value={password}
-                        onChange={(e) => {
-                          setPassword(e.target.value)
-                        }}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {passwordInvalidMsg}
-                      </Form.Control.Feedback>
-                    </InputGroup>
-                    <InputGroup className="mb-4" hasValidation>
-                      <InputGroup.Text id="confirmpassword-input">
-                        Confirm password
-                      </InputGroup.Text>
-                      <Form.Control
-                        type="password"
-                        placeholder="Enter password again"
-                        aria-label="confirmpassword"
-                        aria-describedby="confirmpassword-input"
-                        isInvalid={confirmPasswordInvalidMsg.length > 0}
-                        value={confirmPassword}
-                        onChange={(e) => {
-                          setConfirmPassword(e.target.value)
-                        }}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {confirmPasswordInvalidMsg}
-                      </Form.Control.Feedback>
-                    </InputGroup>
-                    <div className="d-flex justify-content-center">
-                      <TarkovStyleButton
-                        text="Change"
-                        clickHandle={submitHandle}
-                        height={40}
-                        fs={20}
-                      />
-                    </div>
-                  </Form>
+                  <div className="px-5">
+                    {errorMsg.length > 0 && (
+                      <Alert variant="secondary" className="text-center">
+                        {errorMsg}
+                      </Alert>
+                    )}
+                    {successMsg.length > 0 && (
+                      <Alert variant="secondary" className="text-center">
+                        {successMsg}
+                      </Alert>
+                    )}
+                    <Form>
+                      <InputGroup className="mb-4" hasValidation>
+                        <InputGroup.Text id="password-input">
+                          Password
+                        </InputGroup.Text>
+                        <Form.Control
+                          type="password"
+                          placeholder="Enter password"
+                          aria-label="password"
+                          aria-describedby="password-input"
+                          isInvalid={passwordInvalidMsg.length > 0}
+                          value={password}
+                          onChange={(e) => {
+                            setPassword(e.target.value)
+                          }}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {passwordInvalidMsg}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                      <InputGroup className="mb-4" hasValidation>
+                        <InputGroup.Text id="confirmpassword-input">
+                          Confirm password
+                        </InputGroup.Text>
+                        <Form.Control
+                          type="password"
+                          placeholder="Enter password again"
+                          aria-label="confirmpassword"
+                          aria-describedby="confirmpassword-input"
+                          isInvalid={confirmPasswordInvalidMsg.length > 0}
+                          value={confirmPassword}
+                          onChange={(e) => {
+                            setConfirmPassword(e.target.value)
+                          }}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {confirmPasswordInvalidMsg}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                      <div className="d-flex justify-content-center">
+                        <TarkovStyleButton
+                          text="Change"
+                          clickHandle={submitHandle}
+                          height={40}
+                          fs={20}
+                        />
+                      </div>
+                    </Form>
+                  </div>
                 </Tab.Pane>
                 <Tab.Pane eventKey="preference">
-                  <div className="px-5">preference option placeholder</div>
+                  <div className="px-5">
+                    {errorMsg.length > 0 && (
+                      <Alert variant="secondary" className="text-center">
+                        {errorMsg}
+                      </Alert>
+                    )}
+                    {successMsg.length > 0 && (
+                      <Alert variant="secondary" className="text-center">
+                        {successMsg}
+                      </Alert>
+                    )}
+                    {localMsg.length > 0 && (
+                      <Alert variant="secondary" className="text-center">
+                        {localMsg}
+                      </Alert>
+                    )}
+                    <SettingOptions setMessage={setLocalMsg} />
+                  </div>
                 </Tab.Pane>
               </Tab.Content>
             </Col>

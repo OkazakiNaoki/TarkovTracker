@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Container, Row, Col, InputGroup, Form, Alert } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
-import { login } from "../reducers/UserSlice"
+import { login, getUserPreference } from "../reducers/UserSlice"
 import { TarkovStyleButton } from "../components/TarkovStyleButton"
 
 const LoginScreen = () => {
@@ -19,6 +19,7 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (Object.keys(user).length > 0) {
+      dispatch(getUserPreference())
       setEmail("")
       setPassword("")
       navigate("/")

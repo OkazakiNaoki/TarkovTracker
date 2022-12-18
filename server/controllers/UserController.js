@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler"
 import jwt from "jsonwebtoken"
 import User from "../models/UserModel.js"
+import UserPreference from "../models/UserPreferenceModel.js"
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" })
@@ -98,5 +99,54 @@ export const updateUserPassword = asyncHandler(async (req, res) => {
   } else {
     res.status(404)
     throw new Error("User not found")
+  }
+})
+
+// @desc add helper preference for user
+// @route POST /api/user/preference
+// @access private
+export const addUserPreference = asyncHandler(async (req, res) => {
+  const preference = req.body.preference
+
+  const existUp = await UserPreference.findOne({ user: req.user._id })
+  if (!existUp) {
+    const up = new UserPreference({
+      user: req.user._id,
+      preference: preference,
+    })
+    const createdUp = await up.save()
+    res.status(201).json(createdUp)
+  } else {
+    res.status(400).send("Exist old user preference data")
+  }
+})
+
+// @desc update helper preference for user
+// @route PUT /api/user/preference
+// @access private
+export const updateUserPreference = asyncHandler(async (req, res) => {
+  const preference = req.body.preference
+
+  const existUp = await UserPreference.findOne({ user: req.user._id })
+  if (!existUp) {
+    res.status(404).send("Previous user preference data not found")
+  } else {
+    existUp.preference = preference
+    const updatedUp = await existUp.save()
+    res.json(updatedUp)
+  }
+})
+
+// @desc get user preference for user
+// @route GET /api/user/preference
+// @access private
+export const getUserPreference = asyncHandler(async (req, res) => {
+  const existUp = await UserPreference.findOne({ user: req.user._id })
+  if (!existUp) {
+    res.status(404).send("Previous user preference data not found")
+  } else {
+    res.json({
+      preference: existUp.preference,
+    })
   }
 })

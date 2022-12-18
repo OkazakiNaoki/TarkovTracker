@@ -15,10 +15,11 @@ import {
   addUnlockedTrader,
 } from "../reducers/CharacterSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
+import { getTaskItemRequirements } from "../reducers/TraderSlice"
+import { addUserPreference } from "../reducers/UserSlice"
+import { skillIconMap } from "../data/SkillIconMap"
 import bearIcon from "../../public/static/images/icon_bear.png"
 import usecIcon from "../../public/static/images/icon_usec.png"
-import { getTaskItemRequirements } from "../reducers/TraderSlice"
-import { skillIconMap } from "../data/SkillIconMap"
 
 const PlayerDataSetup = () => {
   // hooks state
@@ -90,6 +91,10 @@ const PlayerDataSetup = () => {
   }
   const finishSetupHandle = () => {
     if (hideout && factionPick && gameEditionPick) {
+      // user's helper preference
+      dispatch(
+        addUserPreference({ preference: { showCompletedTaskItemReq: false } })
+      )
       // player basic data
       dispatch(
         addCharacterData({
