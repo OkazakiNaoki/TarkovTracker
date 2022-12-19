@@ -43,7 +43,7 @@ const HomeScreen = () => {
   return (
     <>
       <HeadMeta title="Home page" />
-      <Container>
+      <Container className="py-5">
         <h1 className="my-3 sandbeige">News</h1>
         <Row className="my-5">
           <Col className="py-3">
