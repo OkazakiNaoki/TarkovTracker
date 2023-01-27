@@ -110,10 +110,13 @@ export const searchItem = createAsyncThunk(
         config
       )
       const gqlData = gql.data.data.items[0]
+      console.log(gqlData.properties)
       const revProperties = {}
       // main processing part of properties
       for (let key in gqlData.properties) {
-        if (isArrayAndEmpty(gqlData.properties[key])) {
+        if (gqlData.properties[key] === null) {
+          continue
+        } else if (isArrayAndEmpty(gqlData.properties[key])) {
           revProperties[propRevData.propertyRename[key]] = "None"
         } else if (
           isNumArrayArray(gqlData.properties[key]) &&
@@ -132,10 +135,7 @@ export const searchItem = createAsyncThunk(
           revProperties[propRevData.propertyRename[key]] = getStimEffectsString(
             gqlData.properties[key]
           )
-        } else if (
-          isObjectArray(gqlData.properties[key]) &&
-          key === "pouches"
-        ) {
+        } else if (isObjectArray(gqlData.properties[key]) && key === "grids") {
           revProperties[propRevData.propertyRename[key]] = getPouchesString(
             gqlData.properties[key]
           )
@@ -145,11 +145,23 @@ export const searchItem = createAsyncThunk(
         ) {
           revProperties[propRevData.propertyRename[key]] =
             gqlData.properties[key].name
+        } else if (isObjectArray(gqlData.properties[key]) && key === "slots") {
+          revProperties[propRevData.propertyRename[key]] = getSlotsString(
+            gqlData.properties[key]
+          )
+        } else if (
+          isObjectArray(gqlData.properties[key]) &&
+          key === "presets"
+        ) {
+          revProperties[propRevData.propertyRename[key]] = getPresetsString(
+            gqlData.properties[key]
+          )
         } else {
           revProperties[propRevData.propertyRename[key]] =
             gqlData.properties[key]
         }
       }
+      console.log(revProperties)
       const dontRename = [
         "sellFor",
         "buyFor",
@@ -222,6 +234,22 @@ const getPouchesString = (pouches) => {
       (i !== pouches.length - 1 ? ", " : "")
   }
   return pouchesStr
+}
+
+const getSlotsString = (slots) => {
+  let slotsStr = ""
+  for (let i = 0; i < slots.length; i++) {
+    slotsStr += slots[i].name + (i !== slots.length - 1 ? ", " : "")
+  }
+  return slotsStr
+}
+
+const getPresetsString = (presets) => {
+  let presetsStr = ""
+  for (let i = 0; i < presets.length; i++) {
+    presetsStr += presets[i].name + (i !== presets.length - 1 ? ", " : "")
+  }
+  return presetsStr
 }
 
 export const searchHideoutItemReq = createAsyncThunk(

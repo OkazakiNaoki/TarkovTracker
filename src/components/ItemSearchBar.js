@@ -34,7 +34,7 @@ const ItemSearchBar = ({ setSearchParams }) => {
   // hooks effects
   useEffect(() => {
     if (handbook.length === 0) {
-      dispatch(getItemHandbook({ type: "all" }))
+      dispatch(getItemHandbook())
     }
   }, [handbook])
 

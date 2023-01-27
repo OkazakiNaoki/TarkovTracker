@@ -18,6 +18,7 @@ export const searchItemByName = createAsyncThunk(
           return qs.stringify(params)
         },
       })
+      console.log(data)
       return data
     } catch (error) {
       return error.response && error.response.data.message
@@ -53,9 +54,8 @@ export const getItemCategory = createAsyncThunk(
 export const getItemHandbook = createAsyncThunk(
   "fleamarket/getItemHandbook",
   async (params) => {
-    const { type } = params
     try {
-      const { data } = await axios.get(`/api/items/handbook?type=${type}`)
+      const { data } = await axios.get("/api/items/handbook")
       return data
     } catch (error) {
       return error.response && error.response.data.message

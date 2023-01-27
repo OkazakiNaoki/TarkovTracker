@@ -7,7 +7,6 @@ import {
   Tab,
   Tabs,
   Table,
-  Button,
   Placeholder,
 } from "react-bootstrap"
 import { useParams } from "react-router-dom"
@@ -21,6 +20,7 @@ import { getHMSfromS, formatInHoursMINsec } from "../helpers/TimeFormat"
 import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
+import { CheckLg, XLg } from "react-bootstrap-icons"
 
 const ItemScreen = ({}) => {
   // router
@@ -160,7 +160,15 @@ const ItemScreen = ({}) => {
                             className="px-3"
                             style={{ whiteSpace: "break-spaces" }}
                           >
-                            {el[0].value}
+                            {typeof el[0].value === "boolean" ? (
+                              el[0].value ? (
+                                <CheckLg />
+                              ) : (
+                                <XLg />
+                              )
+                            ) : (
+                              el[0].value
+                            )}
                           </div>
                         </div>
                       </Col>
@@ -171,7 +179,15 @@ const ItemScreen = ({}) => {
                             className="px-3"
                             style={{ whiteSpace: "break-spaces" }}
                           >
-                            {el[1].value}
+                            {typeof el[1].value === "boolean" ? (
+                              el[1].value ? (
+                                <CheckLg />
+                              ) : (
+                                <XLg />
+                              )
+                            ) : (
+                              el[1].value
+                            )}
                           </div>
                         </div>
                       </Col>
@@ -187,7 +203,15 @@ const ItemScreen = ({}) => {
                             className="px-3"
                             style={{ whiteSpace: "break-spaces" }}
                           >
-                            {el[0].value}
+                            {typeof el[0].value === "boolean" ? (
+                              el[0].value ? (
+                                <CheckLg />
+                              ) : (
+                                <XLg />
+                              )
+                            ) : (
+                              el[0].value
+                            )}
                           </div>
                         </div>
                       </Col>
@@ -235,7 +259,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={3} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}
@@ -273,7 +297,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={3} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}
@@ -323,7 +347,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={3} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}
@@ -377,7 +401,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={4} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}
@@ -419,7 +443,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={2} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}
@@ -475,7 +499,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={3} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}
@@ -519,7 +543,7 @@ const ItemScreen = ({}) => {
                   ) : (
                     <tr>
                       <td colSpan={3} className="text-center">
-                        None
+                        <XLg color="red" size={40} />
                       </td>
                     </tr>
                   ))}

@@ -199,7 +199,7 @@ const TaskScreen = () => {
                                 <td style={{ whiteSpace: "break-spaces" }}>
                                   {task.taskRequirements.reduce(
                                     (prev, taskReq) => {
-                                      return prev + taskReq.task.name + "\n"
+                                      return prev + taskReq.name + "\n"
                                     },
                                     ""
                                   )}

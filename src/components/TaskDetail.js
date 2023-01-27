@@ -90,10 +90,10 @@ const TaskDetail = ({
           if (objective.type === "giveItem") {
             initConfirmModal[objective.id] = false
             initTurnInAble[objective.id] = false
-            for (const item in playerInventory) {
+            for (let i = 0; i < playerInventory.length; i++) {
               let playerOwnCount = null
-              if (objective.item.id === playerInventory[item].itemId) {
-                playerOwnCount = playerInventory[item].count
+              if (objective.item.id === playerInventory[i].item.id) {
+                playerOwnCount = playerInventory[i].count
                 initOwnCount[objective.id] = playerOwnCount
               }
               if (playerOwnCount && playerOwnCount >= objective.count) {
@@ -124,9 +124,9 @@ const TaskDetail = ({
           objective.type === "giveItem"
         ) {
           let playerOwnCount = 0
-          for (const item in playerInventory) {
-            if (objective.item.id === playerInventory[item].itemId) {
-              playerOwnCount = playerInventory[item].count
+          for (let i = 0; i < playerInventory.length; i++) {
+            if (objective.item.id === playerInventory[i].item.id) {
+              playerOwnCount = playerInventory[i].count
               if (ownCount[objective.id] !== playerOwnCount) {
                 const copy = { ...ownCount }
                 copy[objective.id] = playerOwnCount
@@ -211,9 +211,7 @@ const TaskDetail = ({
         updateInventoryItem({
           items: [
             {
-              itemId: itemId,
-              itemName: "",
-              bgColor: "",
+              item: { id: itemId, name: "", backgroundColor: "" },
               count: count,
             },
           ],

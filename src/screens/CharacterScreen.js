@@ -352,16 +352,12 @@ const CharacterScreen = () => {
         })
         newCompleteTasks.push(task.id)
         if (rewards) {
+          console.dir(rewards)
           //TODO
           // items
           const itemRewards = []
           rewards.items.forEach((item) => {
-            itemRewards.push({
-              itemId: item.item.id,
-              itemName: item.item.name,
-              bgColor: item.item.backgroundColor,
-              count: item.count,
-            })
+            itemRewards.push(item)
           })
           await dispatch(
             updateInventoryItem({
@@ -408,7 +404,7 @@ const CharacterScreen = () => {
         const needThisTaskTraders = []
         console.log(task)
         task.needForTasks.forEach((need) => {
-          needThisTaskTraders.push(need.task.trader.name)
+          needThisTaskTraders.push(need.trader.name)
         })
         const uniqueNeedThisTaskTraders = [...new Set(needThisTaskTraders)]
         uniqueNeedThisTaskTraders.forEach((trader) => {
@@ -533,9 +529,11 @@ const CharacterScreen = () => {
       updateInventoryItem({
         items: [
           {
-            itemId: item.id,
-            itemName: item.name,
-            bgColor: item.backgroundColor,
+            item: {
+              id: item.id,
+              name: item.name,
+              backgroundColor: item.backgroundColor,
+            },
             count: count,
           },
         ],
@@ -555,11 +553,13 @@ const CharacterScreen = () => {
     const items = []
     itemRequirements.forEach((itemReq) => {
       playerInventory.some((item) => {
-        if (item.itemId === itemReq.item.id) {
+        if (item.item.id === itemReq.item.id) {
           const newItem = {
-            itemId: item.itemId,
-            itemName: item.itemName,
-            bgColor: item.bgColor,
+            item: {
+              id: item.item.id,
+              name: item.item.name,
+              backgroundColor: item.item.backgroundColor,
+            },
             count: item.count - itemReq.count,
           }
           items.push(newItem)
@@ -567,7 +567,9 @@ const CharacterScreen = () => {
         }
       })
     })
-    dispatch(updateInventoryItem({ items }))
+    if (items.length > 0) {
+      dispatch(updateInventoryItem({ items }))
+    }
   }
 
   return (
@@ -1150,7 +1152,7 @@ const CharacterScreen = () => {
                                     convertKiloMega(
                                       getAnotherFieldOfMatchFieldObjArr(
                                         playerInventory,
-                                        "itemId",
+                                        "item.id",
                                         item.id,
                                         "count"
                                       ) ?? 0
@@ -1168,7 +1170,7 @@ const CharacterScreen = () => {
                                     setCurInventoryItemCount(
                                       getAnotherFieldOfMatchFieldObjArr(
                                         playerInventory,
-                                        "itemId",
+                                        "item.id",
                                         item.id,
                                         "count"
                                       ) ?? 0
@@ -1199,11 +1201,11 @@ const CharacterScreen = () => {
                           >
                             <div className="d-inline-block mx-3">
                               <ItemSingleGrid
-                                itemId={item.itemId}
-                                bgColor={item.bgColor}
+                                itemId={item.item.id}
+                                bgColor={item.item.backgroundColor}
                               />
                             </div>
-                            <p className="mb-0 mx-3">{item.itemName}</p>
+                            <p className="mb-0 mx-3">{item.item.name}</p>
                             <p
                               className="mb-0 me-4"
                               style={{
@@ -1220,8 +1222,8 @@ const CharacterScreen = () => {
                                 style={{ width: "32px", height: "32px" }}
                                 onClick={() => {
                                   setCurInventoryItem({
-                                    id: item.itemId,
-                                    name: item.itemName,
+                                    id: item.item.id,
+                                    name: item.item.name,
                                   })
                                   setCurInventoryItemCount(item.count)
                                   openCloseItemModalHandle()
@@ -1244,7 +1246,9 @@ const CharacterScreen = () => {
                 <Tab eventKey="questItem" title="Quest item">
                   {Object.keys(playerTasksInfo).length > 0 && (
                     <div>
-                      <QuestItems playerTasksInfo={playerTasksInfo} />
+                      {Object.keys(playerTasksInfo).length === 8 && (
+                        <QuestItems playerTasksInfo={playerTasksInfo} />
+                      )}
                     </div>
                   )}
                 </Tab>

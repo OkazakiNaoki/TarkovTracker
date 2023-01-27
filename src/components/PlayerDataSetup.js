@@ -105,9 +105,17 @@ const PlayerDataSetup = () => {
       )
       // player hideout data
       const initHideoutLevel = hideout.map((station) => {
+        let stashLevelIdx = 0
+        if (gameEditionPick === "edge of darkness") {
+          stashLevelIdx = 3
+        } else if (gameEditionPick === "prepare for escape") {
+          stashLevelIdx = 2
+        } else if (gameEditionPick === "left behind") {
+          stashLevelIdx = 1
+        }
         return {
           hideoutId: station.id,
-          level: station.id === "5d484fc0654e76006657e0ab" ? 0 : -1,
+          level: station.id === "5d484fc0654e76006657e0ab" ? stashLevelIdx : -1,
         }
       })
       dispatch(addHideoutLevel({ hideoutLevel: initHideoutLevel }))

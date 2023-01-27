@@ -1,32 +1,20 @@
 import mongoose from "mongoose"
+import { traderLevelReq } from "./InGameSubModels.js"
 
-const levelsReq = mongoose.Schema({
-  requiredReputation: {
-    type: Number,
-    required: true,
-  },
-  requiredPlayerLevel: {
-    type: Number,
-    required: true,
-  },
-  requiredCommerce: {
-    type: Number,
-    required: true,
-  },
-})
-
-const inGameTraderLevelsSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  levels: [
-    {
-      type: levelsReq,
+const inGameTraderLevelsSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
       required: true,
     },
-  ],
-})
+    levels: [
+      {
+        type: traderLevelReq,
+      },
+    ],
+  },
+  { versionKey: false }
+)
 
 const InGameTraderLevels = mongoose.model(
   "InGameTraderLevels",

@@ -77,9 +77,7 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
         // task requirements
         for (let j = 0; j < allTasksArr[i].taskRequirements.length; j++) {
           if (
-            !completedTaskIdData.includes(
-              allTasksArr[i].taskRequirements[j].task.id
-            )
+            !completedTaskIdData.includes(allTasksArr[i].taskRequirements[j].id)
           ) {
             notQualifyTasksArr.push(allTasksArr[i])
             unlocked = false

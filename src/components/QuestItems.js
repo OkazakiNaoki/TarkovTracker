@@ -8,6 +8,8 @@ import {
   Form,
   DropdownButton,
   Dropdown,
+  ToggleButton,
+  Button,
 } from "react-bootstrap"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import { QuestItem } from "./QuestItem"
@@ -25,12 +27,18 @@ const excludeQuest = [
   "61e6e5e0f5b9633f6719ed95",
 ]
 
+const radios = [
+  { name: "Fullname", value: "full" },
+  { name: "Shortname", value: "short" },
+]
+
 const QuestItems = ({ playerTasksInfo }) => {
   // hooks state
-  const [itemFilterMethod, setItemFilterMethod] = useState("Fullname")
+  const [typingItemFilterStr, setTypingItemFilterStr] = useState("")
   const [itemFilterString, setItemFilterString] = useState("")
   const [questItemList, setQuestItemList] = useState(null)
   const [showCompleteTaskReq, setShowCompletedTaskReq] = useState(true)
+  const [searchFullShort, setSearchFullShort] = useState("full")
 
   // redux
   const { taskItemRequirement } = useSelector((state) => state.trader)
@@ -56,6 +64,15 @@ const QuestItems = ({ playerTasksInfo }) => {
       dispatch(getInventoryItem())
     }
   }, [playerInventory])
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      // Send Axios request here
+      setItemFilterString(typingItemFilterStr)
+    }, 1500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [typingItemFilterStr])
 
   useEffect(() => {
     if (taskItemRequirement.length !== 0) {
@@ -84,7 +101,7 @@ const QuestItems = ({ playerTasksInfo }) => {
           }
         }
         if (haveNormalQuest && show) {
-          return req.item.itemName
+          return req.item.name
         }
       })
       setQuestItemList(questItems)
@@ -92,12 +109,8 @@ const QuestItems = ({ playerTasksInfo }) => {
   }, [taskItemRequirement, showCompleteTaskReq])
 
   // handles
-  const selectFilterMethodHandle = (e) => {
-    setItemFilterMethod(e)
-  }
-
   const changeFilterStringHandle = (e) => {
-    setItemFilterString(e.target.value)
+    setTypingItemFilterStr(e.target.value)
   }
 
   const showCompletedTaskReqHandle = (e) => {
@@ -106,19 +119,23 @@ const QuestItems = ({ playerTasksInfo }) => {
 
   return [
     <InputGroup key="item_name_filter_method">
-      <DropdownButton
-        variant="secondary"
-        title={itemFilterMethod}
-        id="item-filter-type-dropdown"
-        onSelect={selectFilterMethodHandle}
-      >
-        <Dropdown.Item href="#" eventKey="Fullname">
-          Fullname
-        </Dropdown.Item>
-        <Dropdown.Item href="#" eventKey="Shortname">
-          Shortname
-        </Dropdown.Item>
-      </DropdownButton>
+      {radios.map((radio, idx) => (
+        <Button
+          key={idx}
+          id={`radio-${idx}`}
+          variant={
+            searchFullShort === radio.value ? "secondary" : "outline-secondary"
+          }
+          onClick={() => {
+            setSearchFullShort(radio.value)
+          }}
+          style={
+            searchFullShort !== radio.value ? { "--bs-btn-bg": "white" } : null
+          }
+        >
+          {radio.name}
+        </Button>
+      ))}
       <Form.Control
         type="text"
         placeholder="item name filter"
@@ -138,12 +155,12 @@ const QuestItems = ({ playerTasksInfo }) => {
       {taskItemRequirement.map((req) => {
         if (
           questItemList &&
-          questItemList.includes(req.item.itemName) &&
-          ((itemFilterMethod === "Fullname" &&
-            req.item.itemName
+          questItemList.includes(req.item.name) &&
+          ((searchFullShort === "full" &&
+            req.item.name
               .toLowerCase()
               .includes(itemFilterString.toLowerCase())) ||
-            (itemFilterMethod === "Shortname" &&
+            (searchFullShort === "short" &&
               req.item.shortName
                 .toLowerCase()
                 .includes(itemFilterString.toLowerCase())))
@@ -151,7 +168,10 @@ const QuestItems = ({ playerTasksInfo }) => {
           return (
             <Col
               key={
-                req.item.itemName + req.item.foundInRaid + req.item.dogTagLevel
+                req.factionName +
+                req.item.name +
+                req.item.foundInRaid +
+                req.item.dogTagLevel
               }
               sm={12}
               md={6}

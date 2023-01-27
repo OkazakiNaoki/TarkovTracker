@@ -17,6 +17,32 @@ const HideoutStationDetail = ({
   const [meetTraderReq, setMeetTraderReq] = useState(true)
   const [meetSkillReq, setMeetSkillReq] = useState(true)
 
+  // special case when constructing station have no requirement
+  useEffect(() => {
+    if (
+      station.levels[curLevelIndex + 1] &&
+      station.levels[curLevelIndex + 1].itemRequirements.length === 0 &&
+      station.levels[curLevelIndex + 1].skillRequirements.length === 0 &&
+      station.levels[curLevelIndex + 1].stationLevelRequirements.length === 0 &&
+      station.levels[curLevelIndex + 1].traderRequirements.length === 0
+    ) {
+      setMeetHideoutReq(true)
+      setMeetItemReq(true)
+      setMeetTraderReq(true)
+      setMeetSkillReq(true)
+    }
+  })
+
+  useEffect(() => {
+    console.log(
+      station.name,
+      meetHideoutReq,
+      meetItemReq,
+      meetTraderReq,
+      meetSkillReq
+    )
+  }, [station, meetHideoutReq, meetItemReq, meetTraderReq, meetSkillReq])
+
   // hooks effect
   useEffect(() => {
     setShowUpgrade(false)
@@ -72,7 +98,10 @@ const HideoutStationDetail = ({
         }}
       >
         <p className="d-block">
-          {station.levels[curLevelIndex !== -1 ? curLevelIndex : 0].description}
+          {showUpgrade
+            ? station.levels[curLevelIndex + 1].description
+            : station.levels[curLevelIndex !== -1 ? curLevelIndex : 0]
+                .description}
         </p>
       </div>
       {/* station construct/upgrade requirement */}
@@ -89,6 +118,7 @@ const HideoutStationDetail = ({
                 ? "CONSTRUCTION REQUIREMENTS"
                 : `LEVEL 0${curLevelIndex + 2} UPGRADE REQUIREMENTS`}
             </p>
+
             <ConstructRequirements
               level={station.levels[curLevelIndex + 1]}
               showFulfill={true}

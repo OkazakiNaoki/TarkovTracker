@@ -49,6 +49,10 @@ const ConstructRequirements = ({
   }, [playerHideoutLevel])
 
   useEffect(() => {
+    console.dir(level)
+  })
+
+  useEffect(() => {
     if (useMeetReq) {
       let stationFulfillCount = 0
       const fulfillArr = new Array(level.stationLevelRequirements.length).fill(
@@ -84,7 +88,7 @@ const ConstructRequirements = ({
       if (playerInventory && level.itemRequirements.length > 0) {
         level.itemRequirements.forEach((itemReq, i) => {
           playerInventory.some((item) => {
-            if (item.itemId === itemReq.item.id) {
+            if (item.item.id === itemReq.item.id) {
               itemCountArr[i] = item.count
               if (item.count >= itemReq.count) {
                 itemFulfillCount += 1

@@ -1,23 +1,28 @@
 import mongoose from "mongoose"
 
-const inGameItemHandbookSchema = mongoose.Schema({
-  handbookCategoryId: {
-    type: String,
-    required: true,
+const inGameItemHandbookSchema = mongoose.Schema(
+  {
+    handbookCategoryId: {
+      type: String,
+      required: true,
+    },
+    handbookCategoryName: {
+      type: String,
+      required: true,
+    },
+    handbookCategoryParent: {
+      type: String,
+      required: false,
+    },
+    handbookCategoryIcon: {
+      type: String,
+      required: false,
+    },
   },
-  handbookCategoryName: {
-    type: String,
-    required: true,
-  },
-  handbookCategoryIcon: {
-    type: String,
-    required: false,
-  },
-  handbookCategoryParent: {
-    type: String,
-    required: false,
-  },
-})
+  {
+    versionKey: false,
+  }
+)
 
 const InGameItemHandbook = mongoose.model(
   "InGameItemHandbook",

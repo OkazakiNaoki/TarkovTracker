@@ -1,110 +1,41 @@
 import mongoose from "mongoose"
+import {
+  detailItemScheme,
+  requireItemScheme,
+  rewardItemScheme,
+  craftableItemScheme,
+} from "./InGameSubModels.js"
 
-const itemScheme = mongoose.Schema({
-  itemId: {
-    type: String,
-    required: true,
-  },
-  itemName: {
-    type: String,
-    required: true,
-  },
-  shortName: {
-    type: String,
-    required: true,
-  },
-  bgColor: {
-    type: String,
-    required: true,
-  },
-  foundInRaid: {
-    type: Boolean,
-    required: true,
-  },
-  dogTagLevel: {
-    type: Number,
-    required: false,
-    default: null,
-  },
-})
-
-const requireScheme = mongoose.Schema({
-  trader: {
-    type: String,
-    required: true,
-  },
-  taskId: {
-    type: String,
-    required: true,
-  },
-  taskName: {
-    type: String,
-    required: true,
-  },
-  objectiveId: {
-    type: String,
-    required: true,
-  },
-  count: {
-    type: Number,
-    required: true,
-  },
-})
-
-const rewardScheme = mongoose.Schema({
-  trader: {
-    type: String,
-    required: true,
-  },
-  taskId: {
-    type: String,
-    required: true,
-  },
-  taskName: {
-    type: String,
-    required: true,
-  },
-  count: {
-    type: Number,
-    required: true,
-  },
-})
-
-const stationScheme = mongoose.Schema({
-  stationName: {
-    type: String,
-    required: true,
-  },
-  level: {
-    type: Number,
-    required: true,
-  },
-})
-
-const inGameTaskItemRequirementsSchema = mongoose.Schema({
-  item: {
-    type: itemScheme,
-    required: true,
-  },
-  getFromReward: [
-    {
-      type: rewardScheme,
-      required: false,
-    },
-  ],
-  requiredByTask: [
-    {
-      type: requireScheme,
+const inGameTaskItemRequirementsSchema = mongoose.Schema(
+  {
+    factionName: {
+      type: String,
       required: true,
     },
-  ],
-  craftableAt: [
-    {
-      type: stationScheme,
-      required: false,
+    item: {
+      type: detailItemScheme,
+      required: true,
     },
-  ],
-})
+    getFromReward: [
+      {
+        type: rewardItemScheme,
+      },
+    ],
+    requiredByTask: [
+      {
+        type: requireItemScheme,
+      },
+    ],
+    craftableAt: [
+      {
+        type: craftableItemScheme,
+      },
+    ],
+  },
+  {
+    versionKey: false,
+  }
+)
 
 const InGameTaskItemRequirements = mongoose.model(
   "InGameTaskItemRequirements",

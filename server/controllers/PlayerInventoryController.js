@@ -35,10 +35,10 @@ export const updateInventory = asyncHandler(async (req, res) => {
       res.status(404).send("Previous inventory data not found")
     } else {
       items.forEach((item) => {
-        const matchItemIndex = existPi.items.findIndex((i) => {
-          return i.itemId === item.itemId
+        const matchItemIndex = existPi.items.findIndex((element) => {
+          return element.item.id === item.item.id
         })
-        if (matchItemIndex === -1) {
+        if (matchItemIndex === -1 && item.count > 0) {
           existPi.items.push(item)
         } else {
           if (item.count === 0) {

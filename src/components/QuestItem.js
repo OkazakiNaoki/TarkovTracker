@@ -81,8 +81,8 @@ const QuestItem = ({ playerInventory, itemReq }) => {
     if (playerInventory) {
       const count = getAnotherFieldOfMatchFieldObjArr(
         playerInventory,
-        "itemId",
-        itemReq.item.itemId,
+        "id",
+        itemReq.item.id,
         "count"
       )
       if (count !== itemCount) setItemCount(count)
@@ -95,18 +95,20 @@ const QuestItem = ({ playerInventory, itemReq }) => {
       const newInventory = JSON.parse(JSON.stringify(playerInventory))
       const index = getIndexOfMatchFieldObjArr(
         newInventory,
-        "itemId",
-        itemReq.item.itemId
+        "id",
+        itemReq.item.id
       )
       if (index === -1 || newInventory[index].count !== itemCount) {
         dispatch(
           updateInventoryItem({
             items: [
               {
-                itemId: itemReq.item.itemId,
-                itemName: itemReq.item.itemName,
+                item: {
+                  id: itemReq.item.id,
+                  name: itemReq.item.name,
+                  backgroundColor: itemReq.item.backgroundColor,
+                },
                 count: itemCount,
-                bgColor: itemReq.item.bgColor,
               },
             ],
           })
@@ -198,9 +200,9 @@ const QuestItem = ({ playerInventory, itemReq }) => {
       <Card.Title
         className="p-3 two-line-text-trunc sandbeige"
         style={{ height: "68px" }}
-        title={itemReq.item.itemName}
+        title={itemReq.item.name}
       >
-        <strong>{itemReq.item.itemName}</strong>
+        <strong>{itemReq.item.name}</strong>
       </Card.Title>
       <div className="px-3" style={{ fontSize: "8px" }}>
         {itemReq.item.shortName}
@@ -216,9 +218,9 @@ const QuestItem = ({ playerInventory, itemReq }) => {
           style={{ width: "64px", height: "64px" }}
         >
           <ItemSingleGrid
-            itemId={itemReq.item.itemId}
+            itemId={itemReq.item.id}
             foundInRaid={itemReq.item.foundInRaid}
-            bgColor={itemReq.item.bgColor}
+            bgColor={itemReq.item.backgroundColor}
             shortName={
               itemReq.item.dogTagLevel ? itemReq.item.dogTagLevel : null
             }

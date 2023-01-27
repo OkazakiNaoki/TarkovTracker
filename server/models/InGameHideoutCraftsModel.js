@@ -1,35 +1,39 @@
 import mongoose from "mongoose"
+import { itemAmountScheme, simpleStationScheme } from "./InGameSubModels.js"
 
-const inGameHideoutCraftsSchema = mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  station: {
-    type: Object,
-    required: true,
-  },
-  level: {
-    type: Number,
-    required: true,
-  },
-  duration: {
-    type: Number,
-    required: true,
-  },
-  requiredItems: [
-    {
-      type: Object,
+const inGameHideoutCraftsSchema = mongoose.Schema(
+  {
+    id: {
+      type: String,
       required: true,
     },
-  ],
-  rewardItems: [
-    {
-      type: Object,
+    station: {
+      type: simpleStationScheme,
       required: true,
     },
-  ],
-})
+    level: {
+      type: Number,
+      required: true,
+    },
+    duration: {
+      type: Number,
+      required: true,
+    },
+    requiredItems: [
+      {
+        type: itemAmountScheme,
+      },
+    ],
+    rewardItems: [
+      {
+        type: itemAmountScheme,
+      },
+    ],
+  },
+  {
+    versionKey: false,
+  }
+)
 
 const InGameHideoutCrafts = mongoose.model(
   "InGameHideoutCrafts",

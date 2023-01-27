@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler"
 import InGameItem from "../models/InGameItemModel.js"
-import InGameItemCategory from "../models/InGameItemCategoryModel.js"
 import InGameItemHandbook from "../models/InGameItemHandbookModel.js"
 import InGameItemProperty from "../models/InGameItemPropertyModel.js"
 import InGaneItemAmmoCaliber from "../models/InGameItemAmmoCaliberModel.js"
@@ -22,11 +21,17 @@ export const getItems = asyncHandler(async (req, res) => {
 
   let skip = limit * (page - 1)
 
+  let match = keyword
+    ? {
+        name: new RegExp(".*" + keyword + ".*", "i"),
+      }
+    : {
+        _id: { $exists: true },
+      }
+
   const aggregateArr = [
     {
-      $match: {
-        name: keyword ? new RegExp(".*" + keyword + ".*", "i") : /(.*?)/,
-      },
+      $match: match,
     },
     {
       $project: {
@@ -43,7 +48,11 @@ export const getItems = asyncHandler(async (req, res) => {
     {
       $match: {
         handbookCategories: {
-          $in: handbookArr ? [...handbookArr] : [/(.*?)/],
+          $elemMatch: {
+            name: {
+              $in: handbookArr ? [...handbookArr] : [/(.*?)/],
+            },
+          },
         },
       },
     },
@@ -74,18 +83,15 @@ export const getItems = asyncHandler(async (req, res) => {
 })
 
 // @desc Get items
-// @route GET /api/items
+// @route GET /api/item
 // @access public
 export const getItem = asyncHandler(async (req, res) => {
-  const keyword = req.query.keyword
   const id = req.query.id
-  const name = req.query.name
 
   const aggregateArr = [
     {
       $match: {
-        id: id ? id : /(.*?)/,
-        name: id ? /(.*?)/ : name,
+        id: id,
       },
     },
     {
@@ -113,7 +119,9 @@ export const getItemProperties = asyncHandler(async (req, res) => {
   const aggregateArr = [
     {
       $match: {
-        category: category,
+        category: {
+          $in: [category],
+        },
       },
     },
     {
@@ -158,150 +166,16 @@ export const getItemAmmoCaliber = asyncHandler(async (req, res) => {
   res.json(item)
 })
 
-// @desc Get all item categories
-// @route GET /api/items/categories?type=
-// @access public
-export const getItemCategories = asyncHandler(async (req, res) => {
-  const type = req.query.type
-
-  if (type === "root") {
-    const categories = await InGameItemCategory.aggregate([
-      {
-        $match: {
-          parent: {
-            $eq: null,
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-        },
-      },
-    ])
-    res.json({ categories })
-  } else if (type === "child") {
-    const categories = await InGameItemCategory.aggregate([
-      {
-        $match: {
-          parent: {
-            $ne: null,
-          },
-        },
-      },
-      {
-        $lookup: {
-          from: "ingameitemcategories",
-          let: { id: "$parent.id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ["$$id", "$id"] },
-              },
-            },
-            { $project: { _id: 0, name: 1 } },
-          ],
-
-          as: "parentObj",
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-          parentName: { $arrayElemAt: ["$parentObj.name", 0] },
-        },
-      },
-    ])
-    res.json({ categories })
-  } else if (type === "all") {
-    const categories = await InGameItemCategory.aggregate([
-      {
-        $lookup: {
-          from: "ingameitemcategories",
-          let: { id: "$parent.id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ["$$id", "$id"] },
-              },
-            },
-            { $project: { _id: 0, name: 1 } },
-          ],
-
-          as: "parentObj",
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-          parentName: { $arrayElemAt: ["$parentObj.name", 0] },
-        },
-      },
-      {
-        $project: {
-          name: 1,
-          parentName: {
-            $cond: [{ $ifNull: ["$parentName", false] }, "$parentName", null],
-          },
-        },
-      },
-    ])
-    res.json({ categories })
-  }
-})
-
 // @desc Get all item handbook categories
-// @route GET /api/items/handbook?type=
+// @route GET /api/items/handbook
 // @access public
 export const getItemHandbook = asyncHandler(async (req, res) => {
-  const type = req.query.type
-
-  if (type === "root") {
-    const handbook = await InGameItemHandbook.aggregate([
-      {
-        $match: {
-          handbookCategoryParent: {
-            $eq: null,
-          },
-        },
+  const handbook = await InGameItemHandbook.aggregate([
+    {
+      $project: {
+        _id: 0,
       },
-      {
-        $project: {
-          _id: 0,
-          __v: 0,
-        },
-      },
-    ])
-    res.json({ handbook })
-  } else if (type === "child") {
-    const handbook = await InGameItemHandbook.aggregate([
-      {
-        $match: {
-          handbookCategoryParent: {
-            $ne: null,
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          __v: 0,
-        },
-      },
-    ])
-    res.json({ handbook })
-  } else if (type === "all") {
-    const handbook = await InGameItemHandbook.aggregate([
-      {
-        $project: {
-          _id: 0,
-          __v: 0,
-        },
-      },
-    ])
-    res.json({ handbook })
-  }
+    },
+  ])
+  res.json({ handbook })
 })
