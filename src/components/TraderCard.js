@@ -2,9 +2,9 @@ import React from "react"
 import { Image } from "react-bootstrap"
 import { CountdownTimer } from "./CountdownTimer"
 import { TraderIcon } from "./TraderIcon"
-import traderBg from "../../public/static/images/image_diagonal_trader.png"
-import standingIcon from "../../public/static/images/icon_standing_small.png"
-import updateIcon from "../../public/static/images/icon_update_time.png"
+import traderBg from "../../server/public/static/images/image_diagonal_trader.png"
+import standingIcon from "../../server/public/static/images/icon_standing_small.png"
+import updateIcon from "../../server/public/static/images/icon_update_time.png"
 
 const TraderCard = ({ trader, standing = 1, rep = 0.2, resetTime = null }) => {
   return (

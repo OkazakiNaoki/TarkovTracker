@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react"
-import { Card, Container, Placeholder } from "react-bootstrap"
+import { Card, Placeholder } from "react-bootstrap"
 import { Link } from "react-router-dom"
-import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
 import { ItemMultiGrid } from "./ItemMultiGrid"
 import { TarkovSpinner } from "./TarkovSpinner"
+import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
 
 const ItemRow = ({ item, loading = false }) => {
   const [imgSrc, setImgSrc] = useState("")

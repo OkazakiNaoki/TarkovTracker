@@ -1,16 +1,16 @@
 @font-face {
     font-family: "Tarkov";
-    src: url("../public/static/fonts/Jovanny Lemonad - Bender.otf") format("opentype")
+    src: url("../server/public/static/fonts/Jovanny Lemonad - Bender.otf") format("opentype")
 }
 
 @font-face {
     font-family: "TarkovBold";
-    src: url("../public/static/fonts/Jovanny Lemonad - Bender Bold.otf") format("opentype")
+    src: url("../server/public/static/fonts/Jovanny Lemonad - Bender Bold.otf") format("opentype")
 }
 
 @font-face {
     font-family: "TarkovItalic";
-    src: url("../public/static/fonts/Jovanny Lemonad - Bender Italic.otf") format("opentype")
+    src: url("../server/public/static/fonts/Jovanny Lemonad - Bender Italic.otf") format("opentype")
 }
 
 body {

@@ -1,8 +1,8 @@
 import React from "react"
 import { Row, Col, Image } from "react-bootstrap"
 import { bgColors } from "../data/ItemBgColorMap"
-import itemBack from "../../public/static/images/cell_full_border.png"
 import { TextStroke } from "./TextStroke"
+import itemBack from "../../server/public/static/images/cell_full_border.png"
 
 const ItemMultiGrid = ({
   itemId,

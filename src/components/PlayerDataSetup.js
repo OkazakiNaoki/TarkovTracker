@@ -18,8 +18,8 @@ import { getAllHideout } from "../reducers/HideoutSlice"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import { addUserPreference } from "../reducers/UserSlice"
 import { skillIconMap } from "../data/SkillIconMap"
-import bearIcon from "../../public/static/images/icon_bear.png"
-import usecIcon from "../../public/static/images/icon_usec.png"
+import bearIcon from "../../server/public/static/images/icon_bear.png"
+import usecIcon from "../../server/public/static/images/icon_usec.png"
 
 const PlayerDataSetup = () => {
   // hooks state

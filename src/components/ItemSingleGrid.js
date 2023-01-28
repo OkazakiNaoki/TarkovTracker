@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import { bgColors } from "../data/ItemBgColorMap"
-import itemBack from "../../public/static/images/cell_full_border.png"
-import firIcon from "../../public/static/images/icon_foundinraid_small.png"
-import lockIcon from "../../public/static/images/marker_locked.png"
 import { FloatingMessageBox } from "./FloatingMessageBox"
+import itemBack from "../../server/public/static/images/cell_full_border.png"
+import firIcon from "../../server/public/static/images/icon_foundinraid_small.png"
+import lockIcon from "../../server/public/static/images/marker_locked.png"
 
 const ItemSingleGrid = ({
   itemId,

@@ -6,13 +6,13 @@ import { HomeScreen } from "./screens/HomeScreen"
 import { FleamarketScreen } from "./screens/FleamarketScreen"
 import { ItemScreen } from "./screens/ItemScreen"
 import { Header } from "./components/Header"
-import stripedBg from "../public/static/images/striped_background.png"
 import { CharacterScreen } from "./screens/CharacterScreen"
 import { TaskScreen } from "./screens/TaskScreen"
 import { HideoutScreen } from "./screens/HideoutScreen"
 import { LoginScreen } from "./screens/LoginScreen"
 import { RegisterScreen } from "./screens/RegisterScreen"
 import { UserSettingScreen } from "./screens/UserSettingScreen"
+import stripedBg from "../server/public/static/images/striped_background.png"
 
 const history = createBrowserHistory({ window })
 

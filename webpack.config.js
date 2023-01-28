@@ -5,13 +5,13 @@ module.exports = {
   mode: "development",
   entry: "index.js",
   output: {
-    path: path.resolve(__dirname, "public"),
+    path: path.resolve(__dirname, "server/public"),
     filename: "main.js",
   },
   target: "web",
   devServer: {
     port: "3000",
-    static: ["./public"],
+    static: ["./server/public"],
     open: true,
     hot: true,
     liveReload: true,
@@ -21,6 +21,10 @@ module.exports = {
         secure: false,
       },
       "/asset/*": {
+        target: "http://localhost:3333",
+        secure: false,
+      },
+      "/**": {
         target: "http://localhost:3333",
         secure: false,
       },

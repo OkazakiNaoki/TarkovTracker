@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
-import buttonImg from "../../public/static/images/button.png"
+import buttonImg from "../../server/public/static/images/button.png"
 
 const TarkovStyleButton = ({
   text,

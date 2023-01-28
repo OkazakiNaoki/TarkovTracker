@@ -4,13 +4,13 @@ import { Col, Container, Image, Row } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
-import blueCheck from "../../public/static/images/blue_check.png"
-import expIcon from "../../public/static/images/icon_experience_big.png"
-import standingIcon from "../../public/static/images/standing_icon.png"
-import skillIcon from "../../public/static/images/tab_icon_skills.png"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 import { ConfirmModal } from "./ConfirmModal"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
+import blueCheck from "../../server/public/static/images/blue_check.png"
+import expIcon from "../../server/public/static/images/icon_experience_big.png"
+import standingIcon from "../../server/public/static/images/standing_icon.png"
+import skillIcon from "../../server/public/static/images/tab_icon_skills.png"
 
 const TaskDetail = ({
   task,

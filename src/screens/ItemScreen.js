@@ -11,16 +11,16 @@ import {
 } from "react-bootstrap"
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
+import { CheckLg, XLg } from "react-bootstrap-icons"
 import { searchItem, searchHideoutItemReq } from "../reducers/ItemSlice"
 import {
   titleCase,
   insertSpaceIntoCamelCase,
 } from "../helpers/StringCasesFormat"
 import { getHMSfromS, formatInHoursMINsec } from "../helpers/TimeFormat"
-import placeholderImg from "../../public/static/images/m4a1_placeholder.png"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
-import { CheckLg, XLg } from "react-bootstrap-icons"
+import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
 
 const ItemScreen = ({}) => {
   // router

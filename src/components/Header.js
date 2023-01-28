@@ -15,7 +15,7 @@ import { resetItem } from "../reducers/ItemSlice"
 import { resetTrader } from "../reducers/TraderSlice"
 import { resetFleamarket } from "../reducers/FleamarketSlice"
 import { resetHideout } from "../reducers/HideoutSlice"
-import logo from "../../public/static/images/escape_from_tarkov_logo.png"
+import logo from "../../server/public/static/images/escape_from_tarkov_logo.png"
 
 const Header = () => {
   // redux

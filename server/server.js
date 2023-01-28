@@ -54,6 +54,7 @@ app.use(
   express.static(join(__dirname, "public/images/game-edition-images"))
 )
 
+// API
 app.use("/api/items", itemsRoutes)
 app.use("/api/item", itemRoutes)
 app.use("/api/hideout", hideoutRoutes)
@@ -62,6 +63,15 @@ app.use("/api/trader", traderRoutes)
 app.use("/api/user", userRoutes)
 app.use("/api/player", playerRoutes)
 app.use("/api/socialmedia", socialMedia)
+
+// redirect
+app.get("/*", function (req, res) {
+  res.sendFile("index.html", { root: "public" }, function (err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
 
 const PORT = process.env.PORT || 3030
 app.listen(

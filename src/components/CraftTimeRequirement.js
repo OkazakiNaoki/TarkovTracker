@@ -1,7 +1,7 @@
 import React from "react"
 import { Image } from "react-bootstrap"
-import arrowRight from "../../public/static/images/arrow_right.png"
-import timerIcon from "../../public/static/images/icon_timer.png"
+import arrowRight from "../../server/public/static/images/arrow_right.png"
+import timerIcon from "../../server/public/static/images/icon_timer.png"
 
 const CraftTimeRequirement = ({ timeStr }) => {
   return (

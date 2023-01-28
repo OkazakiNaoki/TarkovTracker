@@ -1,7 +1,7 @@
 import React from "react"
 import { Image } from "react-bootstrap"
-import levelBadgeIcon from "../../public/static/images/bind_label.png"
-import maxStandIcon from "../../public/static/images/loyalty_king.png"
+import levelBadgeIcon from "../../server/public/static/images/bind_label.png"
+import maxStandIcon from "../../server/public/static/images/loyalty_king.png"
 
 const TraderIcon = ({ trader, standing = 1 }) => {
   const getRomanNumber = (num) => {

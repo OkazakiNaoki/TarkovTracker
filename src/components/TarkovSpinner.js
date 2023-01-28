@@ -1,6 +1,6 @@
 import React from "react"
-import spinnerBack from "../../public/static/images/progress_spinner_back.png"
-import spinner from "../../public/static/images/spinner_big.png"
+import spinnerBack from "../../server/public/static/images/progress_spinner_back.png"
+import spinner from "../../server/public/static/images/spinner_big.png"
 
 const TarkovSpinner = ({ loading = true }) => {
   return (

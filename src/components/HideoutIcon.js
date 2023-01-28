@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import { TextStroke } from "./TextStroke"
-import hideoutSelectIcon from "../../public/static/images/hideout_selected.png"
-import hideoutSelectedIcon from "../../public/static/images/selected_border.png"
-import hideoutLockIcon from "../../public/static/images/icon_lock.png"
-import hideoutUnlockIcon from "../../public/static/images/icon_status_unlocked.png"
 import { FloatingMessageBox } from "./FloatingMessageBox"
+import hideoutSelectIcon from "../../server/public/static/images/hideout_selected.png"
+import hideoutSelectedIcon from "../../server/public/static/images/selected_border.png"
+import hideoutLockIcon from "../../server/public/static/images/icon_lock.png"
+import hideoutUnlockIcon from "../../server/public/static/images/icon_status_unlocked.png"
 
 const HideoutIcon = ({
   iconName,

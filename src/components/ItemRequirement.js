@@ -1,8 +1,8 @@
 import React from "react"
-import { ItemSingleGrid } from "./ItemSingleGrid"
-import itemFulfillIcon from "../../public/static/images/icon_requirement_fulfilled.png"
-import itemLockedIcon from "../../public/static/images/icon_requirement_locked.png"
 import { Image } from "react-bootstrap"
+import { ItemSingleGrid } from "./ItemSingleGrid"
+import itemFulfillIcon from "../../server/public/static/images/icon_requirement_fulfilled.png"
+import itemLockedIcon from "../../server/public/static/images/icon_requirement_locked.png"
 
 const ItemRequirement = ({
   itemId,

@@ -1,18 +1,15 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
   getHideoutLevel,
   getInventoryItem,
   getSkillProgress,
-  getTraderProgress,
 } from "../reducers/CharacterSlice"
 import { HideoutRequirement } from "./HideoutRequirement"
 import { ItemRequirement } from "./ItemRequirement"
 import { SkillRequirement } from "./SkillRequirement"
 import { TraderRequirement } from "./TraderRequirement"
-import itemInfoBg from "../../public/static/images/info_window_back.png"
-import { useEffect } from "react"
-import { getLevelReqOfTrader } from "../reducers/TraderSlice"
+import itemInfoBg from "../../server/public/static/images/info_window_back.png"
 
 const ConstructRequirements = ({
   level,

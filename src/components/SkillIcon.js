@@ -2,9 +2,9 @@ import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import { skillIconMap } from "../data/SkillIconMap"
 import { FloatingMessageBox } from "./FloatingMessageBox"
-import skillBorder from "../../public/static/images/skill_border.png"
-import levelBadge from "../../public/static/images/skill_level_panel.png"
-import maxStandIcon from "../../public/static/images/loyalty_king.png"
+import skillBorder from "../../server/public/static/images/skill_border.png"
+import levelBadge from "../../server/public/static/images/skill_level_panel.png"
+import maxStandIcon from "../../server/public/static/images/loyalty_king.png"
 
 const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
   // hooks state

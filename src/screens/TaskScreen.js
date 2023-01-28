@@ -16,12 +16,12 @@ import {
   getTaskDetail,
   initializeTasks,
 } from "../reducers/TraderSlice"
-import placeholderImg from "../../public/static/images/default_avatar.png"
 import { TaskDetail } from "../components/TaskDetail"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
 import { TraderCard } from "../components/TraderCard"
-import refreshIcon from "../../public/static/images/icon_refresh.png"
+import placeholderImg from "../../server/public/static/images/default_avatar.png"
+import refreshIcon from "../../server/public/static/images/icon_refresh.png"
 
 const TaskScreen = () => {
   // hooks

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
-import { Modal, Button, Row, Col, Form, Image } from "react-bootstrap"
+import { Modal, Button, Row, Col, Form } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
 import RangeSlider from "react-bootstrap-range-slider"
 import { updateTraderProgress } from "../reducers/CharacterSlice"
-import maxLoyalty from "../../public/static/images/loyalty_king.png"
-import maxLoyaltyWhite from "../../public/static/images/loyalty_king_new.png"
+import maxLoyalty from "../../server/public/static/images/loyalty_king.png"
+import maxLoyaltyWhite from "../../server/public/static/images/loyalty_king_new.png"
 
 const TraderRelationModal = ({ show, traderName, closeHandle }) => {
   const [rep, setRep] = useState(null)
