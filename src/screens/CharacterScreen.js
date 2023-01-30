@@ -352,7 +352,6 @@ const CharacterScreen = () => {
         })
         newCompleteTasks.push(task.id)
         if (rewards) {
-          console.dir(rewards)
           //TODO
           // items
           const itemRewards = []
@@ -402,7 +401,6 @@ const CharacterScreen = () => {
         )
         // re-sort tasks of other traders which require this task to be completed
         const needThisTaskTraders = []
-        console.log(task)
         task.needForTasks.forEach((need) => {
           needThisTaskTraders.push(need.trader.name)
         })
@@ -1196,7 +1194,7 @@ const CharacterScreen = () => {
                       playerInventory.map((item) => {
                         return (
                           <div
-                            key={item.itemId}
+                            key={item.item.id}
                             className="d-flex align-items-center gray-rounded-20 mb-1 px-3 py-2"
                           >
                             <div className="d-inline-block mx-3">

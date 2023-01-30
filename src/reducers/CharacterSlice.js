@@ -1078,9 +1078,7 @@ const characterSlice = createSlice({
           notQualify: action.payload.notQualifyTasks,
         }
       })
-      .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {
-        console.log(action.payload)
-      })
+      .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
       .addCase(updateCompletedTasks.pending, (state, action) => {})
       .addCase(updateCompletedTasks.fulfilled, (state, action) => {})
       .addCase(updateCompletedTasks.rejected, (state, action) => {})

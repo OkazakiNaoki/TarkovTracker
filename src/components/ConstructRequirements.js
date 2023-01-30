@@ -46,10 +46,6 @@ const ConstructRequirements = ({
   }, [playerHideoutLevel])
 
   useEffect(() => {
-    console.dir(level)
-  })
-
-  useEffect(() => {
     if (useMeetReq) {
       let stationFulfillCount = 0
       const fulfillArr = new Array(level.stationLevelRequirements.length).fill(

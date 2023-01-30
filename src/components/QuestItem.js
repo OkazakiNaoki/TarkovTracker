@@ -81,7 +81,7 @@ const QuestItem = ({ playerInventory, itemReq }) => {
     if (playerInventory) {
       const count = getAnotherFieldOfMatchFieldObjArr(
         playerInventory,
-        "id",
+        "item.id",
         itemReq.item.id,
         "count"
       )

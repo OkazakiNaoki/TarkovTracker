@@ -33,16 +33,6 @@ const HideoutStationDetail = ({
     }
   })
 
-  useEffect(() => {
-    console.log(
-      station.name,
-      meetHideoutReq,
-      meetItemReq,
-      meetTraderReq,
-      meetSkillReq
-    )
-  }, [station, meetHideoutReq, meetItemReq, meetTraderReq, meetSkillReq])
-
   // hooks effect
   useEffect(() => {
     setShowUpgrade(false)

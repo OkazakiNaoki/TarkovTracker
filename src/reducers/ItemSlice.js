@@ -110,7 +110,6 @@ export const searchItem = createAsyncThunk(
         config
       )
       const gqlData = gql.data.data.items[0]
-      console.log(gqlData.properties)
       const revProperties = {}
       // main processing part of properties
       for (let key in gqlData.properties) {
@@ -161,7 +160,6 @@ export const searchItem = createAsyncThunk(
             gqlData.properties[key]
         }
       }
-      console.log(revProperties)
       const dontRename = [
         "sellFor",
         "buyFor",
