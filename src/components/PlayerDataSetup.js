@@ -230,7 +230,7 @@ const PlayerDataSetup = () => {
             onMouseEnter={hoverOnBearBtn}
             onMouseLeave={hoverOnBearBtn}
             onClick={() => {
-              setFactionPick("bear")
+              setFactionPick("BEAR")
             }}
           >
             <Image src={bearIcon} />
@@ -247,7 +247,7 @@ const PlayerDataSetup = () => {
             onMouseEnter={hoverOnUsecBtn}
             onMouseLeave={hoverOnUsecBtn}
             onClick={() => {
-              setFactionPick("usec")
+              setFactionPick("USEC")
             }}
           >
             <Image src={usecIcon} />

@@ -1,31 +1,13 @@
 import React from "react"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import {
-  Row,
-  Col,
-  InputGroup,
-  Form,
-  DropdownButton,
-  Dropdown,
-  ToggleButton,
-  Button,
-} from "react-bootstrap"
+import { Row, Col, InputGroup, Form, Button } from "react-bootstrap"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import { QuestItem } from "./QuestItem"
-import {
-  getIndexOfMatchFieldObjArr,
-  haveAdditionalElementFromCompareArr,
-} from "../helpers/LoopThrough"
+import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import { getInventoryItem } from "../reducers/CharacterSlice"
 import { useState } from "react"
 import { DivLoading } from "./DivLoading"
-
-const excludeQuest = [
-  "61e6e60223374d168a4576a6",
-  "61e6e621bfeab00251576265",
-  "61e6e5e0f5b9633f6719ed95",
-]
 
 const radios = [
   { name: "Fullname", value: "full" },
@@ -42,7 +24,9 @@ const QuestItems = ({ playerTasksInfo }) => {
 
   // redux
   const { taskItemRequirement } = useSelector((state) => state.trader)
-  const { playerInventory } = useSelector((state) => state.character)
+  const { playerInventory, playerFaction } = useSelector(
+    (state) => state.character
+  )
   const { preference } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
@@ -77,14 +61,8 @@ const QuestItems = ({ playerTasksInfo }) => {
   useEffect(() => {
     if (taskItemRequirement.length !== 0) {
       const questItems = taskItemRequirement.map((req) => {
-        const haveNormalQuest = haveAdditionalElementFromCompareArr(
-          req.requiredByTask,
-          "taskId",
-          excludeQuest
-        )
-        let show = true
+        let completedTaskCount = 0
         if (!showCompleteTaskReq) {
-          let completeCount = 0
           req.requiredByTask.forEach((req) => {
             if (
               getIndexOfMatchFieldObjArr(
@@ -93,20 +71,17 @@ const QuestItems = ({ playerTasksInfo }) => {
                 req.taskId
               ) !== -1
             ) {
-              completeCount++
+              completedTaskCount++
             }
           })
-          if (completeCount === req.requiredByTask.length) {
-            show = false
-          }
         }
-        if (haveNormalQuest && show) {
+        if (completedTaskCount !== req.requiredByTask.length) {
           return req.item.name
         }
       })
       setQuestItemList(questItems)
     }
-  }, [taskItemRequirement, showCompleteTaskReq])
+  }, [taskItemRequirement, showCompleteTaskReq, playerTasksInfo])
 
   // handles
   const changeFilterStringHandle = (e) => {
@@ -156,6 +131,7 @@ const QuestItems = ({ playerTasksInfo }) => {
         if (
           questItemList &&
           questItemList.includes(req.item.name) &&
+          (req.factionName === playerFaction || req.factionName === "Any") &&
           ((searchFullShort === "full" &&
             req.item.name
               .toLowerCase()
