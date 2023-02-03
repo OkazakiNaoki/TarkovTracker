@@ -142,26 +142,34 @@ const QuestItem = ({ playerInventory, itemReq }) => {
 
   useEffect(() => {
     // set text for infobox (craft)
-    const craftStation = itemReq.craftableAt.map((station) => {
-      return station.stationName + " level " + station.level + "\n"
+    const craftAtStation = []
+    itemReq.craftableAt.forEach((station) => {
+      const taskStr = "[Lv." + station.level + "] " + station.stationName + "\n"
+      if (!craftAtStation.includes(taskStr)) {
+        craftAtStation.push(taskStr)
+      }
     })
-    setCraftInfo(craftStation)
+    setCraftInfo(craftAtStation)
   }, [itemReq, isCraftable])
 
   useEffect(() => {
     // set text for infobox (reward)
     const taskReward = itemReq.getFromReward.map((task) => {
-      return "x" + task.count + " " + task.trader + "'s " + task.taskName + "\n"
+      return "x" + task.count + " [" + task.trader + "] " + task.taskName + "\n"
     })
     setRewardInfo(taskReward)
   }, [itemReq, getFromQuestReward])
 
   useEffect(() => {
     // set text for infobox (needed)
-    const neededQuest = itemReq.requiredByTask.map((req) => {
-      return req.trader + "'s " + req.taskName + "\n"
+    const reqByTask = []
+    itemReq.requiredByTask.forEach((req) => {
+      const taskStr = "[" + req.trader + "] " + req.taskName + "\n"
+      if (!reqByTask.includes(taskStr)) {
+        reqByTask.push(taskStr)
+      }
     })
-    setNeededQuestInfo(neededQuest)
+    setNeededQuestInfo(reqByTask)
   }, [itemReq])
 
   if (itemNeedTotalCount > 0) {
