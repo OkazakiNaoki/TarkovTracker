@@ -5,6 +5,7 @@ import RangeSlider from "react-bootstrap-range-slider"
 import { updateTraderProgress } from "../reducers/CharacterSlice"
 import maxLoyalty from "../../server/public/static/images/loyalty_king.png"
 import maxLoyaltyWhite from "../../server/public/static/images/loyalty_king_new.png"
+import { convertRomanNumeral } from "../helpers/NumberFormat"
 
 const TraderRelationModal = ({ show, traderName, closeHandle }) => {
   const [rep, setRep] = useState(null)
@@ -48,8 +49,10 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
 
   // update loyalty level progress bar
   useEffect(() => {
-    if (localLL) {
-      setLLprogressbar(((localLL - 1) / 3) * 100)
+    if (traderName && traderLevels && localLL) {
+      setLLprogressbar(
+        ((localLL - 1) / (traderLevels[traderName].length - 1)) * 100
+      )
     }
   }, [localLL])
 
@@ -112,105 +115,81 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
                 }}
               ></div>
             </div>
-            <Button
-              type="button"
-              className="position-absolute btn btn-sm rounded-pill"
-              style={{
-                width: "2rem",
-                height: "2rem",
-                transform: "translateX(-50%) translateY(-50%)",
-                top: "0%",
-                left: "0%",
-                "--bs-btn-border-width": "0px",
-                "--bs-btn-bg": localLL >= 1 ? "#b7ad9c" : "black",
-                "--bs-btn-color": localLL >= 1 ? "#191919" : "#d7cdbc",
-                "--bs-btn-hover-bg": "#d7cdbc",
-                "--bs-btn-hover-color": "#191919",
-                "--bs-btn-active-bg": "#d7cdbc",
-                "--bs-btn-active-color": "#191919",
-                "--bs-btn-focus-shadow-rgb": "183,173,156",
-              }}
-              onClick={() => {
-                clickLLbtn(1)
-              }}
-            >
-              I
-            </Button>
-            <Button
-              type="button"
-              className="position-absolute btn btn-sm rounded-pill"
-              style={{
-                width: "2rem",
-                height: "2rem",
-                transform: "translateX(-50%) translateY(-50%)",
-                top: "0%",
-                left: "33.3333%",
-                "--bs-btn-border-width": "0px",
-                "--bs-btn-bg": localLL >= 2 ? "#b7ad9c" : "black",
-                "--bs-btn-color": localLL >= 2 ? "#191919" : "#d7cdbc",
-                "--bs-btn-hover-bg": "#d7cdbc",
-                "--bs-btn-hover-color": "#191919",
-                "--bs-btn-active-bg": "#d7cdbc",
-                "--bs-btn-active-color": "#191919",
-                "--bs-btn-focus-shadow-rgb": "183,173,156",
-              }}
-              onClick={() => {
-                clickLLbtn(2)
-              }}
-            >
-              II
-            </Button>
-            <Button
-              type="button"
-              className="position-absolute btn btn-sm rounded-pill"
-              style={{
-                width: "2rem",
-                height: "2rem",
-                transform: "translateX(-50%) translateY(-50%)",
-                top: "0%",
-                left: "66.6666%",
-                "--bs-btn-border-width": "0px",
-                "--bs-btn-bg": localLL >= 3 ? "#b7ad9c" : "black",
-                "--bs-btn-color": localLL >= 3 ? "#191919" : "#d7cdbc",
-                "--bs-btn-hover-bg": "#d7cdbc",
-                "--bs-btn-hover-color": "#191919",
-                "--bs-btn-active-bg": "#d7cdbc",
-                "--bs-btn-active-color": "#191919",
-                "--bs-btn-focus-shadow-rgb": "183,173,156",
-              }}
-              onClick={() => {
-                clickLLbtn(3)
-              }}
-            >
-              III
-            </Button>
-            <Button
-              type="button"
-              className="position-absolute btn btn-sm rounded-pill"
-              style={{
-                width: "2rem",
-                height: "2rem",
-                transform: "translateX(-50%) translateY(-50%)",
-                top: "0%",
-                left: "100%",
-                "--bs-btn-border-width": "0px",
-                "--bs-btn-bg": localLL >= 4 ? "#b7ad9c" : "black",
-                "--bs-btn-color": localLL >= 4 ? "#191919" : "#d7cdbc",
-                "--bs-btn-hover-bg": "#d7cdbc",
-                "--bs-btn-hover-color": "#191919",
-                "--bs-btn-active-bg": "#d7cdbc",
-                "--bs-btn-active-color": "#191919",
-                "--bs-btn-focus-shadow-rgb": "183,173,156",
-                backgroundImage: `url(${
-                  localLL >= 4 ? maxLoyalty : maxLoyaltyWhite
-                })`,
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-              }}
-              onClick={() => {
-                clickLLbtn(4)
-              }}
-            ></Button>
+            {traderName &&
+              traderLevels &&
+              traderLevels[traderName].map((level, levelIdx) => {
+                if (levelIdx !== traderLevels[traderName].length - 1)
+                  return (
+                    <Button
+                      key={levelIdx}
+                      type="button"
+                      className="position-absolute btn btn-sm rounded-pill"
+                      style={{
+                        width: "2rem",
+                        height: "2rem",
+                        transform: "translateX(-50%) translateY(-50%)",
+                        top: "0%",
+                        left: `${
+                          (levelIdx / (traderLevels[traderName].length - 1)) *
+                          100
+                        }%`,
+                        "--bs-btn-border-width": "0px",
+                        "--bs-btn-bg":
+                          localLL >= levelIdx + 1 ? "#b7ad9c" : "black",
+                        "--bs-btn-color":
+                          localLL >= levelIdx + 1 ? "#191919" : "#d7cdbc",
+                        "--bs-btn-hover-bg": "#d7cdbc",
+                        "--bs-btn-hover-color": "#191919",
+                        "--bs-btn-active-bg": "#d7cdbc",
+                        "--bs-btn-active-color": "#191919",
+                        "--bs-btn-focus-shadow-rgb": "183,173,156",
+                      }}
+                      onClick={() => {
+                        clickLLbtn(levelIdx + 1)
+                      }}
+                    >
+                      {convertRomanNumeral(levelIdx + 1)}
+                    </Button>
+                  )
+              })}
+            {/* Max level */}
+            {traderName && traderLevels && (
+              <Button
+                type="button"
+                className="position-absolute btn btn-sm rounded-pill"
+                style={{
+                  width: "2rem",
+                  height: "2rem",
+                  transform: "translateX(-50%) translateY(-50%)",
+                  top: "0%",
+                  left: "100%",
+                  "--bs-btn-border-width": "0px",
+                  "--bs-btn-bg":
+                    localLL >= traderLevels[traderName].length
+                      ? "#b7ad9c"
+                      : "black",
+                  "--bs-btn-color":
+                    localLL >= traderLevels[traderName].length
+                      ? "#191919"
+                      : "#d7cdbc",
+                  "--bs-btn-hover-bg": "#d7cdbc",
+                  "--bs-btn-hover-color": "#191919",
+                  "--bs-btn-active-bg": "#d7cdbc",
+                  "--bs-btn-active-color": "#191919",
+                  "--bs-btn-focus-shadow-rgb": "183,173,156",
+                  backgroundImage: `url(${
+                    localLL >= traderLevels[traderName].length
+                      ? maxLoyalty
+                      : maxLoyaltyWhite
+                  })`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundPosition: "center",
+                }}
+                onClick={() => {
+                  clickLLbtn(traderLevels[traderName].length)
+                }}
+              ></Button>
+            )}
           </div>
         </div>
         <Form>
@@ -219,7 +198,7 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
               <Form.Label>Reputation</Form.Label>
               <RangeSlider
                 min={0}
-                max={1}
+                max={6}
                 step={0.01}
                 variant="secondary"
                 tooltipPlacement="top"
