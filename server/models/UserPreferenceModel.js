@@ -7,6 +7,10 @@ const preferenceSchema = mongoose.Schema(
       type: Boolean,
       required: true,
     },
+    questItemsFilterDelay: {
+      type: Number,
+      required: true,
+    },
   },
   { _id: false }
 )

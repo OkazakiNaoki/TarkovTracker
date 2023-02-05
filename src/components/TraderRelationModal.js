@@ -32,13 +32,14 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
     if (initSetup && traderName && traderLevels && traderLevels[traderName]) {
       for (let i = 1; i < traderLevels[traderName].length; i++) {
         if (
-          traderLevels[traderName][i].requiredReputation <= rep &&
-          traderLevels[traderName][i].requiredCommerce <= spent * 1000000
+          traderLevels[traderName][i].requiredReputation <= Number(rep) &&
+          traderLevels[traderName][i].requiredCommerce <=
+            Number(spent) * 1000000
         ) {
           setLocalLL(i + 1)
         } else if (
-          traderLevels[traderName][i].requiredReputation > rep ||
-          traderLevels[traderName][i].requiredCommerce > spent * 1000000
+          traderLevels[traderName][i].requiredReputation > Number(rep) ||
+          traderLevels[traderName][i].requiredCommerce > Number(spent) * 1000000
         ) {
           setLocalLL(i)
           break
@@ -60,14 +61,14 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
   // on confirm sent behavior
   const updateTraderProgressHandle = () => {
     if (
-      rep !== traderProgress.traderRep[traderName] ||
-      spent !== traderProgress.traderSpent[traderName]
+      Number(rep) !== traderProgress.traderRep[traderName] ||
+      Number(spent) !== traderProgress.traderSpent[traderName]
     ) {
       dispatch(
         updateTraderProgress({
           traderName: traderName,
-          traderRep: rep,
-          traderSpent: spent,
+          traderRep: Number(rep),
+          traderSpent: Number(spent),
         })
       )
     }
@@ -202,14 +203,14 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
                 step={0.01}
                 variant="secondary"
                 tooltipPlacement="top"
-                value={rep === null ? 0 : rep}
+                value={rep === null ? 0 : Number(rep)}
                 onChange={(e) => setRep(Number(e.target.value))}
               />
             </Col>
             <Col xs="2">
               <Form.Control
-                value={rep === null ? 0 : rep}
-                onChange={(e) => setRep(Number(e.target.value))}
+                value={rep === null ? "0" : rep}
+                onChange={(e) => setRep(e.target.value)}
               />
             </Col>
           </Form.Group>
@@ -223,14 +224,14 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
                 variant="secondary"
                 tooltipPlacement="top"
                 tooltipLabel={(currentValue) => `${currentValue}M`}
-                value={spent === null ? 0 : spent}
+                value={spent === null ? 0 : Number(spent)}
                 onChange={(e) => setSpent(Number(e.target.value))}
               />
             </Col>
             <Col xs="2">
               <Form.Control
-                value={spent === null ? 0 : spent}
-                onChange={(e) => setSpent(Number(e.target.value))}
+                value={spent === null ? "0" : spent}
+                onChange={(e) => setSpent(e.target.value)}
               />
             </Col>
           </Form.Group>

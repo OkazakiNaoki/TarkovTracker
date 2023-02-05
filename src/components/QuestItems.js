@@ -20,6 +20,7 @@ const QuestItems = ({ playerTasksInfo }) => {
   const [itemFilterString, setItemFilterString] = useState("")
   const [questItemList, setQuestItemList] = useState(null)
   const [showCompleteTaskReq, setShowCompletedTaskReq] = useState(true)
+  const [questItemFilterDelay, setQuestItemFilterDelay] = useState(1)
   const [searchFullShort, setSearchFullShort] = useState("full")
 
   // redux
@@ -34,6 +35,7 @@ const QuestItems = ({ playerTasksInfo }) => {
   useEffect(() => {
     if (preference) {
       setShowCompletedTaskReq(preference.showCompletedTaskItemReq)
+      setQuestItemFilterDelay(preference.questItemsFilterDelay)
     }
   }, [preference])
 
@@ -53,7 +55,7 @@ const QuestItems = ({ playerTasksInfo }) => {
     const delayDebounceFn = setTimeout(() => {
       // Send Axios request here
       setItemFilterString(typingItemFilterStr)
-    }, 1500)
+    }, questItemFilterDelay * 1000)
 
     return () => clearTimeout(delayDebounceFn)
   }, [typingItemFilterStr])

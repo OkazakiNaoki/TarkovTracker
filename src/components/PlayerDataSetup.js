@@ -93,7 +93,12 @@ const PlayerDataSetup = () => {
     if (hideout && factionPick && gameEditionPick) {
       // user's helper preference
       dispatch(
-        addUserPreference({ preference: { showCompletedTaskItemReq: false } })
+        addUserPreference({
+          preference: {
+            showCompletedTaskItemReq: false,
+            questItemsFilterDelay: 1,
+          },
+        })
       )
       // player basic data
       dispatch(

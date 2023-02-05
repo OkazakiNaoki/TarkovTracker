@@ -94,7 +94,7 @@ const UserSettingScreen = () => {
                       "--bs-nav-link-color": "white",
                     }}
                   >
-                    Helper preference
+                    Tarkov guide preference
                   </Nav.Link>
                 </Nav.Item>
               </Nav>

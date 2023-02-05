@@ -220,9 +220,11 @@ const userSlice = createSlice({
       .addCase(updateUserPreference.fulfilled, (state, action) => {
         state.preference = action.payload.preference
         state.successMsg = "User preference saved"
+        state.errorMsg = ""
       })
       .addCase(updateUserPreference.rejected, (state, action) => {
         state.errorMsg = "Fail to save user preference"
+        state.successMsg = ""
       })
   },
 })
