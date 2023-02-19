@@ -56,7 +56,7 @@ const HideoutIcon = ({
           posX={mainX}
           posY={mainY}
           display={msgBoxDisplay}
-          content={stationName}
+          content={[stationName]}
         />
       )}
       {!greenOutlined && !redOutlined && (

@@ -1,19 +1,17 @@
 import React from "react"
 import { useEffect } from "react"
 import { useState } from "react"
-import { Button, Card, Placeholder } from "react-bootstrap"
+import { Button, Card } from "react-bootstrap"
 import { useDispatch } from "react-redux"
 import {
   getAnotherFieldOfMatchFieldObjArr,
   getIndexOfMatchFieldObjArr,
 } from "../helpers/LoopThrough"
-import {
-  addInventoryItem,
-  updateInventoryItem,
-} from "../reducers/CharacterSlice"
+import { updateInventoryItem } from "../reducers/CharacterSlice"
 import { EditValueModal } from "./EditValueModal"
-import { DivLoading } from "./DivLoading"
+import { FloatingHideoutIcons } from "./FloatingHideoutIcons"
 import { FloatingMessageBox } from "./FloatingMessageBox"
+import { FloatingTaskSimpleInfo } from "./FloatingTaskSimpleInfo"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 
@@ -21,43 +19,19 @@ const QuestItem = ({ playerInventory, itemReq }) => {
   const [mainX, setMainX] = useState(0)
   const [mainY, setMainY] = useState(0)
   const [displayGainItemDetail, setDisplayGainItemDetail] = useState("none")
-  const [isCraftable, setIsCraftable] = useState(false)
-  const [getFromQuestReward, setGetFromQuestReward] = useState(false)
-  const [forCollection, setForCollection] = useState(false)
-  const [craftInfo, setCraftInfo] = useState(null)
-  const [rewardInfo, setRewardInfo] = useState(null)
-  const [hoverOnBadge, setHoverOnBadge] = useState(null)
-  const [currentInfo, setCurrentInfo] = useState(null)
-  const [neededQuestInfo, setNeededQuestInfo] = useState(null)
+  const [displayTaskReqInfo, setDisplayTaskReqInfo] = useState("none")
+  const [displayCraftInfo, setDisplayCraftInfo] = useState("none")
+  const [displayTaskRewardInfo, setDisplayTaskRewardInfo] = useState("none")
+
+  const [currentInfo, setCurrentInfo] = useState([])
   const [itemCount, setItemCount] = useState(null)
   const [itemNeedTotalCount, setItemNeedTotalCount] = useState(0)
   const [itemModalOnOff, setItemModalOnOff] = useState(false)
 
-  const mouseMoveHandle = (e) => {
-    const { clientX, clientY } = e
-    setMainX(clientX)
-    setMainY(clientY)
-  }
-
-  const badgeEnterHandle = () => {
-    setDisplayGainItemDetail("block")
-  }
-
-  const badgeLeaveHandle = () => {
-    setDisplayGainItemDetail("none")
-  }
-
-  const badgeHoverHandle = (badge) => {
-    setHoverOnBadge(badge)
-  }
-
-  const openItemCountModal = () => {
-    setItemModalOnOff(!itemModalOnOff)
-  }
-
-  // redux
+  //// redux
   const dispatch = useDispatch()
 
+  //// effect
   useEffect(() => {
     // calculate total requirement amount of quest item
     if (itemNeedTotalCount === 0) {
@@ -109,68 +83,58 @@ const QuestItem = ({ playerInventory, itemReq }) => {
     }
   }, [itemCount])
 
-  useEffect(() => {
-    if (hoverOnBadge === "needed") {
-      setCurrentInfo(neededQuestInfo)
-    } else if (hoverOnBadge === "craft") {
-      setCurrentInfo(craftInfo)
-    } else if (hoverOnBadge === "reward") {
-      setCurrentInfo(rewardInfo)
-    } else if (hoverOnBadge === "collect") {
-      setCurrentInfo("Kappa!!")
-    }
-  }, [hoverOnBadge])
+  //// handle
+  const mouseMoveHandle = (e) => {
+    const { clientX, clientY } = e
+    setMainX(clientX)
+    setMainY(clientY)
+  }
 
-  useEffect(() => {
-    // setup label of quest item
-    if (itemReq.craftableAt.length > 0) {
-      setIsCraftable(true)
-    }
-    if (itemReq.getFromReward.length > 0) {
-      setGetFromQuestReward(true)
-    }
-    if (
-      getIndexOfMatchFieldObjArr(
-        itemReq.requiredByTask,
-        "taskId",
-        "5c51aac186f77432ea65c552"
-      ) !== -1
-    ) {
-      setForCollection(true)
-    }
-  }, [itemReq])
+  // set text box text
+  const setTextBoxTextHandle = (text) => {
+    setCurrentInfo(text)
+  }
 
-  useEffect(() => {
-    // set text for infobox (craft)
-    const craftAtStation = []
-    itemReq.craftableAt.forEach((station) => {
-      const taskStr = "[Lv." + station.level + "] " + station.stationName + "\n"
-      if (!craftAtStation.includes(taskStr)) {
-        craftAtStation.push(taskStr)
-      }
-    })
-    setCraftInfo(craftAtStation)
-  }, [itemReq, isCraftable])
+  // item icon mouse enter/leave
+  const itemIconEnterHandle = () => {
+    setDisplayTaskReqInfo("block")
+  }
 
-  useEffect(() => {
-    // set text for infobox (reward)
-    const taskReward = itemReq.getFromReward.map((task) => {
-      return "x" + task.count + " [" + task.trader + "] " + task.taskName + "\n"
-    })
-    setRewardInfo(taskReward)
-  }, [itemReq, getFromQuestReward])
+  const itemIconLeaveHandle = () => {
+    setDisplayTaskReqInfo("none")
+  }
 
-  useEffect(() => {
-    // set text for infobox (needed)
-    const reqByTask = []
-    itemReq.requiredByTask.forEach((req) => {
-      const taskStr = "[" + req.trader + "] " + req.taskName + "\n"
-      if (!reqByTask.includes(taskStr)) {
-        reqByTask.push(taskStr)
-      }
-    })
-    setNeededQuestInfo(reqByTask)
-  }, [itemReq])
+  // text badge mouse enter/leave
+  const textBadgeEnterHandle = () => {
+    setDisplayGainItemDetail("block")
+  }
+
+  const textBadgeLeaveHandle = () => {
+    setDisplayGainItemDetail("none")
+  }
+
+  // craft badge mouse enter/leave
+  const craftBadgeEnterHandle = () => {
+    setDisplayCraftInfo("block")
+  }
+
+  const craftBadgeLeaveHandle = () => {
+    setDisplayCraftInfo("none")
+  }
+
+  // task reward badge mouse enter/leave
+  const rewardBadgeEnterHandle = () => {
+    setDisplayTaskRewardInfo("block")
+  }
+
+  const rewardBadgeLeaveHandle = () => {
+    setDisplayTaskRewardInfo("none")
+  }
+
+  // on/off modal
+  const openItemCountModal = () => {
+    setItemModalOnOff(!itemModalOnOff)
+  }
 
   if (itemNeedTotalCount > 0) {
     return [
@@ -181,8 +145,32 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         display={displayGainItemDetail}
         content={currentInfo}
       />,
+      <FloatingHideoutIcons
+        key="craftable_stations"
+        posX={mainX}
+        posY={mainY}
+        display={displayCraftInfo}
+        colSize={5}
+        stations={itemReq.craftableStations}
+      />,
+      <FloatingTaskSimpleInfo
+        key="item_rew_task_info"
+        posX={mainX}
+        posY={mainY}
+        display={displayTaskRewardInfo}
+        taskInfo={itemReq.rewardTasks}
+        scale={0.5}
+      />,
+      <FloatingTaskSimpleInfo
+        key="item_req_task_info"
+        posX={mainX}
+        posY={mainY}
+        display={displayTaskReqInfo}
+        taskInfo={itemReq.requiredByTask}
+        scale={0.5}
+      />,
       <EditValueModal
-        title={itemReq.item.itemName}
+        title={itemReq.item.name}
         key="modal_of_item_count"
         show={itemModalOnOff}
         value={itemCount ?? 0}
@@ -209,11 +197,11 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         </div>
         <div className="d-flex position-relative my-3 justify-content-center">
           <div
-            onMouseOver={() => {
-              badgeHoverHandle("needed")
+            onMouseEnter={() => {
+              setTextBoxTextHandle("needed")
+              itemIconEnterHandle()
             }}
-            onMouseEnter={badgeEnterHandle}
-            onMouseLeave={badgeLeaveHandle}
+            onMouseLeave={itemIconLeaveHandle}
             onMouseMove={mouseMoveHandle}
             style={{ width: "64px", height: "64px" }}
           >
@@ -229,12 +217,16 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         </div>
         <div onMouseMove={itemReq ? mouseMoveHandle : null} className="px-3">
           <GainItemMethodBadge
-            craft={isCraftable}
-            reward={getFromQuestReward}
-            collect={forCollection}
-            badgeEnterHandle={badgeEnterHandle}
-            badgeLeaveHandle={badgeLeaveHandle}
-            badgeHoverHandle={badgeHoverHandle}
+            craftableStations={itemReq.craftableStations}
+            questRewards={itemReq.rewardTasks}
+            collection={itemReq.requiredByTask}
+            setTextBoxTextHandle={setTextBoxTextHandle}
+            textBadgeEnterHandle={textBadgeEnterHandle}
+            textBadgeLeaveHandle={textBadgeLeaveHandle}
+            craftBadgeEnterHandle={craftBadgeEnterHandle}
+            craftBadgeLeaveHandle={craftBadgeLeaveHandle}
+            rewardBadgeEnterHandle={rewardBadgeEnterHandle}
+            rewardBadgeLeaveHandle={rewardBadgeLeaveHandle}
           />
         </div>
         <Card.Text className="text-center my-3">

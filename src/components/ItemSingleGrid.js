@@ -58,7 +58,7 @@ const ItemSingleGrid = ({
           posX={mainX}
           posY={mainY}
           display={msgBoxDisplay}
-          content={itemName}
+          content={[itemName]}
         />
       )}
       <div className="position-relative">

@@ -37,12 +37,36 @@ export const getAllHideout = createAsyncThunk(
   }
 )
 
+export const getAllHideoutReqItem = createAsyncThunk(
+  "hideout/getAllHideoutReqItem",
+  async (params) => {
+    try {
+      const { data } = await axios.get("/api/hideout/itemreq")
+
+      return data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().hideout.requests["getAllHideoutReqItem"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
+  }
+)
+
 const hideoutSlice = createSlice({
   name: "hideout",
   initialState: {
     requests: {},
     isLoading: false,
     hideout: null,
+    hideoutItemRequirement: null,
   },
   reducers: {
     resetHideout: (state, action) => {
@@ -63,6 +87,19 @@ const hideoutSlice = createSlice({
         state.requests["getAllHideout"] = "fulfilled"
       })
       .addCase(getAllHideout.rejected, (state, action) => {
+        state.isLoading = false
+        throw Error(action.payload)
+      })
+      .addCase(getAllHideoutReqItem.pending, (state, action) => {
+        state.isLoading = true
+        state.requests["getAllHideoutReqItem"] = "pending"
+      })
+      .addCase(getAllHideoutReqItem.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.hideoutItemRequirement = action.payload
+        state.requests["getAllHideoutReqItem"] = "fulfilled"
+      })
+      .addCase(getAllHideoutReqItem.rejected, (state, action) => {
         state.isLoading = false
         throw Error(action.payload)
       })

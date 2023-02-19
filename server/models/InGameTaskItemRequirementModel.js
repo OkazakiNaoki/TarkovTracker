@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 import {
   detailItemScheme,
-  requireItemScheme,
-  rewardItemScheme,
-  craftableItemScheme,
+  itemRequireByTaskScheme,
+  taskItemRewardScheme,
+  stationLevelScheme,
 } from "./InGameSubModels.js"
 
 const inGameTaskItemRequirementsSchema = mongoose.Schema(
@@ -16,19 +16,19 @@ const inGameTaskItemRequirementsSchema = mongoose.Schema(
       type: detailItemScheme,
       required: true,
     },
-    getFromReward: [
+    rewardTasks: [
       {
-        type: rewardItemScheme,
+        type: taskItemRewardScheme,
       },
     ],
     requiredByTask: [
       {
-        type: requireItemScheme,
+        type: itemRequireByTaskScheme,
       },
     ],
-    craftableAt: [
+    craftableStations: [
       {
-        type: craftableItemScheme,
+        type: stationLevelScheme,
       },
     ],
   },

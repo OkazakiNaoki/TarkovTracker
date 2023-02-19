@@ -1048,6 +1048,9 @@ const characterSlice = createSlice({
     playerInventory: null,
     // skill
     playerSkill: null,
+    // player input
+    itemFilterKeyword: "",
+    itemFilterType: "full",
   },
   reducers: {
     resetCharacter: (state, action) => {
@@ -1066,6 +1069,12 @@ const characterSlice = createSlice({
       state.playerHideoutLevel = null
       state.playerInventory = null
       state.playerSkill = null
+    },
+    setItemFilterKeyword: (state, action) => {
+      state.itemFilterKeyword = action.payload
+    },
+    setItemFilterType: (state, action) => {
+      state.itemFilterType = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -1255,4 +1264,5 @@ const characterSlice = createSlice({
 })
 
 export default characterSlice.reducer
-export const { resetCharacter } = characterSlice.actions
+export const { resetCharacter, setItemFilterKeyword, setItemFilterType } =
+  characterSlice.actions

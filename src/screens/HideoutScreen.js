@@ -159,20 +159,22 @@ const HideoutScreen = () => {
                                 key={el.name + craft.level + "craft_" + i}
                                 className="d-flex justify-content-center my-3"
                               >
-                                {craft.requiredItems.map((itemReq, i) => {
-                                  return (
-                                    <div
-                                      key={`itemRequire_${i}`}
-                                      className="px-1"
-                                    >
-                                      <ItemRequirement
-                                        itemId={itemReq.item.id}
-                                        itemName={itemReq.item.name}
-                                        reqAmount={itemReq.count}
-                                      />
-                                    </div>
-                                  )
-                                })}
+                                {Array.isArray(craft.requiredItems) &&
+                                  craft.requiredItems.map((itemReq, i) => {
+                                    return (
+                                      <div
+                                        key={`itemRequire_${i}`}
+                                        className="px-1"
+                                      >
+                                        <ItemRequirement
+                                          itemId={itemReq.item.id}
+                                          itemName={itemReq.item.name}
+                                          bgColor={itemReq.item.backgroundColor}
+                                          reqAmount={itemReq.count}
+                                        />
+                                      </div>
+                                    )
+                                  })}
                                 <div
                                   className="px-1"
                                   style={{ paddingTop: "5px" }}
@@ -184,20 +186,22 @@ const HideoutScreen = () => {
                                   />
                                 </div>
 
-                                {craft.rewardItems.map((itemRew) => {
-                                  return (
-                                    <div
-                                      key={`itemReward_${i}`}
-                                      className="px-1"
-                                    >
-                                      <ItemRequirement
-                                        itemId={itemRew.item.id}
-                                        itemName={itemRew.item.name}
-                                        reqAmount={itemRew.count}
-                                      />
-                                    </div>
-                                  )
-                                })}
+                                {Array.isArray(craft.rewardItems) &&
+                                  craft.rewardItems.map((itemRew) => {
+                                    return (
+                                      <div
+                                        key={`itemReward_${i}`}
+                                        className="px-1"
+                                      >
+                                        <ItemRequirement
+                                          itemId={itemRew.item.id}
+                                          itemName={itemRew.item.name}
+                                          bgColor={itemRew.item.backgroundColor}
+                                          reqAmount={itemRew.count}
+                                        />
+                                      </div>
+                                    )
+                                  })}
                               </div>
                             )
                           })}

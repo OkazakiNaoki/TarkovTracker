@@ -1,34 +1,38 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Row, Col, InputGroup, Form, Button } from "react-bootstrap"
-import { getTaskItemRequirements } from "../reducers/TraderSlice"
+import { getAllHideoutReqItem } from "../reducers/HideoutSlice"
 import {
+  getHideoutLevel,
   getInventoryItem,
   setItemFilterKeyword,
   setItemFilterType,
 } from "../reducers/CharacterSlice"
-import { QuestItem } from "./QuestItem"
 import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
 import { DivLoading } from "./DivLoading"
+import { HideoutReqItem } from "./HideoutReqItem"
 
 const radios = [
   { name: "Fullname", value: "full" },
   { name: "Shortname", value: "short" },
 ]
 
-const QuestItems = ({ playerTasksInfo }) => {
+const HideoutReqItems = () => {
   //// hooks state
   const [typingItemFilterStr, setTypingItemFilterStr] = useState("")
-  const [questItemList, setQuestItemList] = useState(null)
   const [updateItemFilterType, setUpdateItemFilterType] = useState("full")
-  // preferences
-  const [showCompleteTaskReq, setShowCompletedTaskReq] = useState(true)
-  const [questItemFilterDelay, setQuestItemFilterDelay] = useState(1)
+  const [showContructedHideoutItemReq, setShowContructedHideoutItemReq] =
+    useState(false)
+  const [hideoutItemList, setHideoutItemList] = useState(null)
 
   //// redux
-  const { taskItemRequirement } = useSelector((state) => state.trader)
-  const { playerInventory, playerFaction, itemFilterKeyword, itemFilterType } =
-    useSelector((state) => state.character)
+  const { hideoutItemRequirement } = useSelector((state) => state.hideout)
+  const {
+    playerInventory,
+    playerHideoutLevel,
+    itemFilterKeyword,
+    itemFilterType,
+  } = useSelector((state) => state.character)
   const { preference } = useSelector((state) => state.user)
   const dispatch = useDispatch()
 
@@ -53,16 +57,14 @@ const QuestItems = ({ playerTasksInfo }) => {
 
   useEffect(() => {
     if (preference) {
-      setShowCompletedTaskReq(preference.showCompletedTaskItemReq)
-      setQuestItemFilterDelay(preference.questItemsFilterDelay)
     }
   }, [preference])
 
   useEffect(() => {
-    if (taskItemRequirement.length === 0) {
-      dispatch(getTaskItemRequirements())
+    if (!hideoutItemRequirement) {
+      dispatch(getAllHideoutReqItem())
     }
-  }, [taskItemRequirement])
+  }, [hideoutItemRequirement])
 
   useEffect(() => {
     if (!playerInventory) {
@@ -71,46 +73,50 @@ const QuestItems = ({ playerTasksInfo }) => {
   }, [playerInventory])
 
   useEffect(() => {
+    if (!playerHideoutLevel) {
+      dispatch(getHideoutLevel())
+    }
+  }, [playerHideoutLevel])
+
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       dispatch(setItemFilterKeyword(typingItemFilterStr))
-    }, questItemFilterDelay * 1000)
+    }, 1 * 1000)
 
     return () => clearTimeout(delayDebounceFn)
   }, [typingItemFilterStr])
 
+  // filter out item requirement that's for contructed/upgraded hideout station
   useEffect(() => {
-    if (taskItemRequirement.length !== 0) {
-      const questItems = taskItemRequirement.map((req) => {
-        let completedTaskCount = 0
-        if (!showCompleteTaskReq) {
-          req.requiredByTask.forEach((task) => {
+    if (hideoutItemRequirement) {
+      const hideoutItems = hideoutItemRequirement.map((req) => {
+        let constructedStationCount = 0
+        if (!showContructedHideoutItemReq) {
+          req.levels.forEach((level) => {
+            const index = getIndexOfMatchFieldObjArr(
+              playerHideoutLevel,
+              "hideoutId",
+              level.station.id
+            )
             if (
-              task.trader !== "Lightkeeper" &&
-              getIndexOfMatchFieldObjArr(
-                playerTasksInfo[task.trader].complete,
-                "id",
-                task.id
-              ) !== -1
+              index !== -1 &&
+              playerHideoutLevel[index].level + 1 >= level.level
             ) {
-              completedTaskCount++
+              constructedStationCount++
             }
           })
         }
-        if (completedTaskCount !== req.requiredByTask.length) {
+        if (constructedStationCount !== req.levels.length) {
           return req.item.name
         }
       })
-      setQuestItemList(questItems)
+      setHideoutItemList(hideoutItems)
     }
-  }, [taskItemRequirement, showCompleteTaskReq, playerTasksInfo])
+  }, [hideoutItemRequirement, showContructedHideoutItemReq, playerHideoutLevel])
 
   //// handles
   const changeFilterStringHandle = (e) => {
     setTypingItemFilterStr(e.target.value)
-  }
-
-  const showCompletedTaskReqHandle = (e) => {
-    setShowCompletedTaskReq(e.target.checked)
   }
 
   const changeFilterTypeHandle = (value) => {
@@ -144,49 +150,40 @@ const QuestItems = ({ playerTasksInfo }) => {
         onChange={changeFilterStringHandle}
       />
     </InputGroup>,
-    <Form.Switch
-      key="show_completed_switch"
-      label="show completed task req"
-      className="my-1 ms-2"
-      checked={showCompleteTaskReq}
-      onChange={showCompletedTaskReqHandle}
-    />,
-    <Row key="quest_item_cols">
-      {taskItemRequirement.length === 0 && <DivLoading height={300} />}
-      {taskItemRequirement.map((req) => {
-        if (
-          questItemList &&
-          questItemList.includes(req.item.name) &&
-          (req.factionName === playerFaction || req.factionName === "Any") &&
-          ((itemFilterType === "full" &&
-            req.item.name
-              .toLowerCase()
-              .includes(itemFilterKeyword.toLowerCase())) ||
+    <Row key="hideout_item_cols">
+      {!hideoutItemRequirement && <DivLoading height={300} />}
+      {hideoutItemRequirement &&
+        hideoutItemRequirement.map((req) => {
+          if (
+            (hideoutItemList &&
+              hideoutItemList.includes(req.item.name) &&
+              itemFilterType === "full" &&
+              req.item.name
+                .toLowerCase()
+                .includes(itemFilterKeyword.toLowerCase())) ||
             (itemFilterType === "short" &&
               req.item.shortName
                 .toLowerCase()
-                .includes(itemFilterKeyword.toLowerCase())))
-        )
-          return (
-            <Col
-              key={
-                req.factionName +
-                req.item.name +
-                req.item.foundInRaid +
-                req.item.dogTagLevel
-              }
-              sm={12}
-              md={6}
-              lg={4}
-              xl={3}
-              className="d-flex justify-content-center align-items-stretch"
-            >
-              <QuestItem playerInventory={playerInventory} itemReq={req} />
-            </Col>
+                .includes(itemFilterKeyword.toLowerCase()))
           )
-      })}
+            return (
+              <Col
+                key={req.item.name}
+                sm={12}
+                md={6}
+                lg={4}
+                xl={3}
+                className="d-flex justify-content-center align-items-stretch"
+              >
+                <HideoutReqItem
+                  playerInventory={playerInventory}
+                  itemReq={req}
+                />
+              </Col>
+            )
+        })}
     </Row>,
   ]
 }
 
-export { QuestItems }
+export { HideoutReqItems }

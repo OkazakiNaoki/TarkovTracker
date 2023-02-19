@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler"
 import InGameHideoutCrafts from "../models/InGameHideoutCraftsModel.js"
+import InGameHideoutItemRequirements from "../models/InGameHideoutItemRequirementModel.js"
 import InGameHideoutLevels from "../models/InGameHideoutLevelsModel.js"
 
 // @desc Get hideout levels
@@ -111,4 +112,26 @@ export const getAllHideoutCrafts = asyncHandler(async (req, res) => {
   const craft = await InGameHideoutCrafts.aggregate(aggregateArr)
 
   res.json(craft)
+})
+
+// @desc Get all hideout construct item requirement
+// @route GET /api/hideout/itemreq
+// @access public
+export const getAllHideoutReqItems = asyncHandler(async (req, res) => {
+  const aggregateArr = [
+    {
+      $project: {
+        _id: 0,
+        levels: 1,
+        item: 1,
+        count: 1,
+      },
+    },
+  ]
+
+  const hideoutItemReq = await InGameHideoutItemRequirements.aggregate(
+    aggregateArr
+  )
+
+  res.json(hideoutItemReq)
 })

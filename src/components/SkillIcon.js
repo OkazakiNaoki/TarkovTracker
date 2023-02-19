@@ -36,7 +36,7 @@ const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
           posX={mainX}
           posY={mainY}
           display={msgBoxDisplay}
-          content={skillName}
+          content={[skillName]}
         />
       )}
       <div

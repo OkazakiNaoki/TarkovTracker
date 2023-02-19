@@ -65,6 +65,7 @@ import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { SkillIcon } from "../components/SkillIcon"
 import { convertKiloMega } from "../helpers/NumberFormat"
 import { safeGet } from "../helpers/ObjectExt"
+import { HideoutReqItems } from "../components/HideoutReqItems"
 
 const CharacterScreen = () => {
   // router
@@ -1246,6 +1247,17 @@ const CharacterScreen = () => {
                     <div>
                       {Object.keys(playerTasksInfo).length === 8 && (
                         <QuestItems playerTasksInfo={playerTasksInfo} />
+                      )}
+                    </div>
+                  )}
+                </Tab>
+
+                {/* Hideout item */}
+                <Tab eventKey="hideoutItem" title="Hideout item">
+                  {Object.keys(playerTasksInfo).length > 0 && (
+                    <div>
+                      {Object.keys(playerTasksInfo).length === 8 && (
+                        <HideoutReqItems />
                       )}
                     </div>
                   )}

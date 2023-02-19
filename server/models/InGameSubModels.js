@@ -10,6 +10,20 @@ export const itemCategoryScheme = mongoose.Schema(
   { _id: false }
 )
 
+export const simpleTaskScheme = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+)
+
 export const simpleHandbookScheme = mongoose.Schema(
   {
     name: {
@@ -125,7 +139,7 @@ export const itemAmountScheme = mongoose.Schema(
   { _id: false }
 )
 
-const stationLevelScheme = mongoose.Schema(
+export const stationLevelScheme = mongoose.Schema(
   {
     station: {
       type: simpleStationScheme,
@@ -212,17 +226,17 @@ export const hideoutLevels = mongoose.Schema(
   }
 )
 
-export const requireItemScheme = mongoose.Schema(
+export const itemRequireByTaskScheme = mongoose.Schema(
   {
     trader: {
       type: String,
       required: true,
     },
-    taskId: {
+    id: {
       type: String,
       required: true,
     },
-    taskName: {
+    name: {
       type: String,
       required: true,
     },
@@ -238,35 +252,21 @@ export const requireItemScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const rewardItemScheme = mongoose.Schema(
+export const taskItemRewardScheme = mongoose.Schema(
   {
     trader: {
       type: String,
       required: true,
     },
-    taskId: {
+    id: {
       type: String,
       required: true,
     },
-    taskName: {
+    name: {
       type: String,
       required: true,
     },
     count: {
-      type: Number,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
-export const craftableItemScheme = mongoose.Schema(
-  {
-    stationName: {
-      type: String,
-      required: true,
-    },
-    level: {
       type: Number,
       required: true,
     },

@@ -1,6 +1,12 @@
 import React from "react"
 
-const FloatingMessageBox = ({ posX, posY, display, content }) => {
+const FloatingMessageBox = ({
+  posX,
+  posY,
+  display,
+  content,
+  lineLimit = 4,
+}) => {
   return (
     <div
       style={{
@@ -22,7 +28,14 @@ const FloatingMessageBox = ({ posX, posY, display, content }) => {
           whiteSpace: "break-spaces",
         }}
       >
-        {content}
+        {Array.isArray(content) &&
+          content.map((line, i) => {
+            if (i <= lineLimit) {
+              return line
+            } else if (i === lineLimit + 1) {
+              return "..."
+            }
+          })}
       </div>
     </div>
   )
