@@ -97,6 +97,7 @@ const PlayerDataSetup = () => {
           preference: {
             showCompletedTaskItemReq: false,
             questItemsFilterDelay: 1,
+            fleaMarketItemIconResolution: 64,
           },
         })
       )

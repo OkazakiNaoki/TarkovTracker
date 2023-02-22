@@ -4,6 +4,11 @@ import { bgColors } from "../data/ItemBgColorMap"
 import { TextStroke } from "./TextStroke"
 import itemBack from "../../server/public/static/images/cell_full_border.png"
 
+const iconRes = {
+  64: "",
+  128: "-128",
+}
+
 const ItemMultiGrid = ({
   itemId,
   foundInRaid = false,
@@ -12,6 +17,7 @@ const ItemMultiGrid = ({
   width = 1,
   height = 1,
   resize = 1,
+  resolution,
 }) => {
   return (
     <div
@@ -64,7 +70,7 @@ const ItemMultiGrid = ({
         <div className="w-100">
           {itemId && (
             <Image
-              src={`/asset/${itemId}-icon-128.png`}
+              src={`/asset/${itemId}-icon${iconRes[resolution]}.png`}
               className="ms-auto me-auto"
               style={{
                 objectFit: "contain",

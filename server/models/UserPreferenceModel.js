@@ -11,6 +11,10 @@ const preferenceSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    fleaMarketItemIconResolution: {
+      type: Number,
+      required: true,
+    },
   },
   { _id: false }
 )

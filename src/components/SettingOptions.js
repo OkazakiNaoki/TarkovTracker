@@ -8,6 +8,8 @@ const SettingOptions = ({ setMessage }) => {
   //// hooks state
   const [showCompletedTaskItemReq, setShowCompletedTaskItemReq] = useState(true)
   const [questItemsFilterDelay, setQuestItemsFilterDelay] = useState(1)
+  const [fleaMarketItemIconResolution, setFleaMarketItemIconResolution] =
+    useState(64)
   const [saveTriggerFlag, setSaveTriggerFlag] = useState(false)
 
   //// redux
@@ -20,6 +22,7 @@ const SettingOptions = ({ setMessage }) => {
     if (preference) {
       setShowCompletedTaskItemReq(preference.showCompletedTaskItemReq)
       setQuestItemsFilterDelay(preference.questItemsFilterDelay)
+      setFleaMarketItemIconResolution(preference.fleaMarketItemIconResolution)
     }
   }, [preference])
 
@@ -29,6 +32,7 @@ const SettingOptions = ({ setMessage }) => {
       const newPreference = { ...preference }
       newPreference.showCompletedTaskItemReq = showCompletedTaskItemReq
       newPreference.questItemsFilterDelay = questItemsFilterDelay
+      newPreference.fleaMarketItemIconResolution = fleaMarketItemIconResolution
 
       let modified = false
       for (const key in preference) {
@@ -61,6 +65,10 @@ const SettingOptions = ({ setMessage }) => {
     setQuestItemsFilterDelay(e.target.value)
   }
 
+  const fleaMarketItemIconResolutionHandle = (e) => {
+    setFleaMarketItemIconResolution(e.target.value)
+  }
+
   const savePreferenceHandle = () => {
     let allowSave = true
     // [Quest item] Filter delay of quest item
@@ -87,6 +95,19 @@ const SettingOptions = ({ setMessage }) => {
   return (
     <Form>
       <div className="gray-rounded-20 py-3 px-5 mb-3">
+        <h2 className="sandbeige">Flea market</h2>
+        <div className="my-1 py-3">
+          <Form.Label className="fw-bold">
+            Item icon resolution at item searching page
+          </Form.Label>
+          <Form.Select
+            onChange={fleaMarketItemIconResolutionHandle}
+            value={fleaMarketItemIconResolution}
+          >
+            <option value={64}>64px per item grid</option>
+            <option value={128}>128px per item grid</option>
+          </Form.Select>
+        </div>
         <h2 className="sandbeige">Quest item</h2>
         <div className="my-1 py-3">
           <Form.Label className="fw-bold">
