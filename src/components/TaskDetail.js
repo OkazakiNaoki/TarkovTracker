@@ -318,7 +318,7 @@ const TaskDetail = ({
                 {`/${objective.count}`}
               </div>
             ) : null}
-            {!completeable && (
+            {!completeable && objective.count && (
               <div className="mx-3 fw-bold">{`0/${objective.count}`}</div>
             )}
             {completeable &&

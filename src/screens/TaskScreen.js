@@ -24,11 +24,11 @@ import placeholderImg from "../../server/public/static/images/default_avatar.png
 import refreshIcon from "../../server/public/static/images/icon_refresh.png"
 
 const TaskScreen = () => {
-  // hooks
+  //// state
   const [curTrader, setCurTrader] = useState(null)
   const [collapseDetail, setCollapseDetail] = useState({})
 
-  // redux
+  //// redux state
   const {
     initTasks,
     tradeResetTime,
@@ -40,6 +40,7 @@ const TaskScreen = () => {
   } = useSelector((state) => state.trader)
   const dispatch = useDispatch()
 
+  //// effect
   useEffect(() => {
     if (!initTasks) {
       dispatch(initializeTasks())
@@ -64,8 +65,21 @@ const TaskScreen = () => {
     }
   }, [tasks])
 
+  //// handle
   const imgLoadErrHandle = (e) => {
     e.target.src = placeholderImg
+  }
+
+  const taskTableClickHandle = (traderName, taskId) => {
+    if (!tasksDetailFetched[traderName].includes(taskId)) {
+      dispatch(
+        getTaskDetail({
+          id: taskId,
+          traderName: traderName,
+        })
+      )
+    }
+    collapseExpandTaskDetail(taskId)
   }
 
   const collapseExpandTaskDetail = (taskId) => {
@@ -78,6 +92,7 @@ const TaskScreen = () => {
     <>
       <Container className="py-5">
         <div className="d-flex justify-content-center">
+          {/* Trader icons */}
           <div style={{ width: "696px" }}>
             <Row xs={2} sm={3} md={4} className="g-3">
               {traders.length !== 0 &&
@@ -117,6 +132,7 @@ const TaskScreen = () => {
           />
         </div>
 
+        {/* Task table of active trader */}
         {curTrader && (
           <Tabs activeKey={curTrader} className="py-3">
             {isLoadingTasks && (
@@ -160,24 +176,13 @@ const TaskScreen = () => {
                       </thead>
                       <tbody>
                         {tasks[trader.name] &&
-                          tasks[trader.name].map((task, j) => {
+                          tasks[trader.name].map((task) => {
                             return [
+                              /* task button */
                               <tr
                                 key={task.id}
                                 onClick={() => {
-                                  if (
-                                    !tasksDetailFetched[trader.name].includes(
-                                      task.id
-                                    )
-                                  ) {
-                                    dispatch(
-                                      getTaskDetail({
-                                        id: task.id,
-                                        traderName: trader.name,
-                                      })
-                                    )
-                                  }
-                                  collapseExpandTaskDetail(task.id)
+                                  taskTableClickHandle(trader.name, task.id)
                                 }}
                                 style={{
                                   color: "var(--bs-table-color)",
@@ -220,6 +225,7 @@ const TaskScreen = () => {
                                 </td>
                               </tr>,
 
+                              /* task detail area */
                               <tr
                                 key={task.id + "_collapse"}
                                 style={{ "--bs-table-hover-bg": "none" }}

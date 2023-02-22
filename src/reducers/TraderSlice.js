@@ -376,6 +376,7 @@ const traderSlice = createSlice({
         state.tasksDetail[`${trader.name}`] = {}
         state.tasksDetailFetched[`${trader.name}`] = []
       })
+      state.initTasks = true
     },
     resetTrader: (state, action) => {
       state.requests = {}
