@@ -8,6 +8,7 @@ import {
   isObjectArray,
   isNumArrayArray,
 } from "../helpers/CheckIsArrayOf"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 
 export const searchItem = createAsyncThunk(
   "item/searchItem",
@@ -62,11 +63,13 @@ export const searchItem = createAsyncThunk(
                     }
                     bartersFor{
                       trader{name}
-                      requiredItems{item{name id} count}
-                      rewardItems{item{name id} count}
+                      requiredItems{item{name id backgroundColor} count}
+                      rewardItems{item{name id backgroundColor} count}
+                      level
                     }
                     craftsFor{
                       station{
+                        id
                         name
                       }
                       level
@@ -81,7 +84,8 @@ export const searchItem = createAsyncThunk(
                       }
                     }
                     usedInTasks{
-                      id name
+                      id
+                      name
                       trader{name}
                       objectives{
                         ... on TaskObjectiveItem {
@@ -92,6 +96,7 @@ export const searchItem = createAsyncThunk(
                       }
                     }
                     receivedFromTasks{
+                        id
                         name
                         trader{name}
                         finishRewards{
@@ -272,10 +277,20 @@ const ItemSlice = createSlice({
   initialState: {
     isLoading: false,
     item: { properties: [] },
+    searchedItemId: [],
+    searchedItem: [],
     hideout: [],
     loadingQueue: 0,
   },
   reducers: {
+    recoverItem: (state, action) => {
+      const index = getIndexOfObjArrWhereFieldEqualTo(
+        state.searchedItem,
+        "id",
+        action.payload
+      )
+      state.item = state.searchedItem[index]
+    },
     resetItem: (state, action) => {
       state.isLoading = false
       state.item = { properties: [] }
@@ -293,6 +308,10 @@ const ItemSlice = createSlice({
         state.loadingQueue -= 1
         if (state.loadingQueue === 0) {
           state.isLoading = false
+        }
+        if (state.item.hasOwnProperty("id")) {
+          state.searchedItemId.push(state.item.id)
+          state.searchedItem.push(state.item)
         }
         state.item = action.payload
       })
@@ -325,4 +344,4 @@ const ItemSlice = createSlice({
 })
 
 export default ItemSlice.reducer
-export const { resetItem } = ItemSlice.actions
+export const { resetItem, recoverItem } = ItemSlice.actions

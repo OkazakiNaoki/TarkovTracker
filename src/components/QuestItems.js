@@ -8,7 +8,7 @@ import {
   setItemFilterType,
 } from "../reducers/CharacterSlice"
 import { QuestItem } from "./QuestItem"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { DivLoading } from "./DivLoading"
 
 const radios = [
@@ -86,7 +86,7 @@ const QuestItems = ({ playerTasksInfo }) => {
           req.requiredByTask.forEach((task) => {
             if (
               task.trader !== "Lightkeeper" &&
-              getIndexOfMatchFieldObjArr(
+              getIndexOfObjArrWhereFieldEqualTo(
                 playerTasksInfo[task.trader].complete,
                 "id",
                 task.id

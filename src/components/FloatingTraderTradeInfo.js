@@ -1,7 +1,7 @@
 import React from "react"
 import { useSelector } from "react-redux"
 import { Image } from "react-bootstrap"
-import { getAnotherFieldOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getArrObjFieldBWhereFieldAEqualTo } from "../helpers/LoopThrough"
 import { TraderIconLevel } from "./TraderIconLevel"
 
 const FloatingTraderTraderInfo = ({
@@ -43,7 +43,7 @@ const FloatingTraderTraderInfo = ({
               ? null
               : [
                   <Image
-                    src={`/asset/${getAnotherFieldOfMatchFieldObjArr(
+                    src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
                       traders,
                       "name",
                       trade.trader,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Badge } from "react-bootstrap"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 
 const GainItemMethodBadge = ({
   craftableStations = null,
@@ -50,7 +50,7 @@ const GainItemMethodBadge = ({
   useEffect(() => {
     if (
       collection &&
-      getIndexOfMatchFieldObjArr(
+      getIndexOfObjArrWhereFieldEqualTo(
         collection,
         "id",
         "5c51aac186f77432ea65c552"

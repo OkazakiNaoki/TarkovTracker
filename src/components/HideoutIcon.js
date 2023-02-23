@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
+import { useImageSize } from "react-image-size"
 import { TextStroke } from "./TextStroke"
 import { FloatingMessageBox } from "./FloatingMessageBox"
 import hideoutSelectIcon from "../../server/public/static/images/hideout_selected.png"
@@ -20,12 +21,17 @@ const HideoutIcon = ({
   asButton = false,
   useNameBox = false,
   constructUnlock = false,
+  scale = 1,
 }) => {
   // hooks state
   const [hoverHidden, setHoverHidden] = useState(true)
   const [mainX, setMainX] = useState(0)
   const [mainY, setMainY] = useState(0)
   const [msgBoxDisplay, setMsgBoxDisplay] = useState("none")
+
+  const [hideoutIconImgSize, { loading, error }] = useImageSize(
+    `/asset/${iconName}.png`
+  )
 
   // handles
   const mouseMoveHandle = (e) => {
@@ -45,7 +51,7 @@ const HideoutIcon = ({
   return (
     <div
       className="position-relative"
-      style={{ width: "104px", height: "110px" }}
+      style={{ width: `${104 * scale}px`, height: `${110 * scale}px` }}
       role={asButton ? "button" : null}
       onMouseEnter={noHover ? null : mouseEnterHandle}
       onMouseLeave={noHover ? null : mouseLeaveHandle}
@@ -90,6 +96,12 @@ const HideoutIcon = ({
       <Image
         src={`/asset/${iconName}.png`}
         className="position-absolute top-50 start-50 translate-middle"
+        style={{
+          width: `${hideoutIconImgSize && hideoutIconImgSize.width * scale}px`,
+          height: `${
+            hideoutIconImgSize && hideoutIconImgSize.height * scale
+          }px`,
+        }}
       />
       <Image
         src={hideoutSelectIcon}
@@ -101,7 +113,7 @@ const HideoutIcon = ({
         className="position-absolute top-50 start-50 translate-middle"
         hidden={!selected}
       />
-      {level !== null && level === 0 && !constructUnlock && (
+      {scale === 1 && level !== null && level === 0 && !constructUnlock && (
         <Image
           src={hideoutLockIcon}
           className="position-absolute end-0 bottom-0"
@@ -110,7 +122,7 @@ const HideoutIcon = ({
           }}
         />
       )}
-      {level !== null && level === 0 && constructUnlock && (
+      {scale === 1 && level !== null && level === 0 && constructUnlock && (
         <Image
           src={hideoutUnlockIcon}
           className="position-absolute end-0 bottom-0"
@@ -123,15 +135,16 @@ const HideoutIcon = ({
         <div
           className="position-absolute start-50 top-50 tarkov-bold-700"
           style={{
-            transform:
-              "translateX(calc(-50% + 25px)) translateY(calc(-50% + 26px))",
+            transform: `translateX(calc(-50% + ${
+              25 * scale
+            }px)) translateY(calc(-50% + ${26 * scale}px))`,
           }}
         >
           <TextStroke
-            fontSize={18}
+            fontSize={18 * scale}
             bold={true}
             content={String(level).padStart(2, "0")}
-            strokeWidth={4}
+            strokeWidth={scale >= 1 ? 4 : 0}
             selectable={false}
           />
         </div>

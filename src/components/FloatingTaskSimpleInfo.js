@@ -1,7 +1,7 @@
 import React from "react"
 import { useSelector } from "react-redux"
 import { Image } from "react-bootstrap"
-import { getAnotherFieldOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getArrObjFieldBWhereFieldAEqualTo } from "../helpers/LoopThrough"
 
 const FloatingTaskSimpleInfo = ({
   posX,
@@ -44,7 +44,7 @@ const FloatingTaskSimpleInfo = ({
                 className="d-flex align-items-center m-1"
               >
                 <Image
-                  src={`/asset/${getAnotherFieldOfMatchFieldObjArr(
+                  src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
                     traders,
                     "name",
                     task.trader,

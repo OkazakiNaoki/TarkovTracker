@@ -47,8 +47,8 @@ import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
 import { EditValueModal } from "../components/EditValueModal"
 import {
-  getAnotherFieldOfMatchFieldObjArr,
-  getIndexOfMatchFieldObjArr,
+  getArrObjFieldBWhereFieldAEqualTo,
+  getIndexOfObjArrWhereFieldEqualTo,
   haveZeroPropertyEqualTo,
 } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
@@ -296,7 +296,11 @@ const CharacterScreen = () => {
   // get hideout data of current selected station ID
   useEffect(() => {
     if (hideout && hideout.length > 0) {
-      const index = getIndexOfMatchFieldObjArr(hideout, "id", currentStationId)
+      const index = getIndexOfObjArrWhereFieldEqualTo(
+        hideout,
+        "id",
+        currentStationId
+      )
       setCurrentStation(hideout[index])
     }
   }, [hideout, currentStationId])
@@ -304,7 +308,7 @@ const CharacterScreen = () => {
   // set currently selected station's construct detail and craft detail
   useEffect(() => {
     if (playerHideoutLevel) {
-      const index = getIndexOfMatchFieldObjArr(
+      const index = getIndexOfObjArrWhereFieldEqualTo(
         playerHideoutLevel,
         "hideoutId",
         currentStationId
@@ -444,7 +448,7 @@ const CharacterScreen = () => {
       const newCompleteObjectives = JSON.parse(
         JSON.stringify(playerCompletedObjectives)
       )
-      const index = getIndexOfMatchFieldObjArr(
+      const index = getIndexOfObjArrWhereFieldEqualTo(
         newCompleteObjectives,
         "taskId",
         taskId
@@ -462,7 +466,7 @@ const CharacterScreen = () => {
     }
     if (progress) {
       const newProgress = JSON.parse(JSON.stringify(playerObjectiveProgress))
-      const index = getIndexOfMatchFieldObjArr(
+      const index = getIndexOfObjArrWhereFieldEqualTo(
         newProgress,
         "objectiveId",
         objectiveId
@@ -506,7 +510,7 @@ const CharacterScreen = () => {
 
   const increaseStationLevelHandle = (hideoutId, levelIndex) => {
     const newHideoutLevel = JSON.parse(JSON.stringify(playerHideoutLevel))
-    const index = getIndexOfMatchFieldObjArr(
+    const index = getIndexOfObjArrWhereFieldEqualTo(
       newHideoutLevel,
       "hideoutId",
       hideoutId
@@ -1149,7 +1153,7 @@ const CharacterScreen = () => {
                                 >
                                   {"x " +
                                     convertKiloMega(
-                                      getAnotherFieldOfMatchFieldObjArr(
+                                      getArrObjFieldBWhereFieldAEqualTo(
                                         playerInventory,
                                         "item.id",
                                         item.id,
@@ -1167,7 +1171,7 @@ const CharacterScreen = () => {
                                   onClick={() => {
                                     setCurInventoryItem(item)
                                     setCurInventoryItemCount(
-                                      getAnotherFieldOfMatchFieldObjArr(
+                                      getArrObjFieldBWhereFieldAEqualTo(
                                         playerInventory,
                                         "item.id",
                                         item.id,

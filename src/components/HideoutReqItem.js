@@ -4,8 +4,8 @@ import { useState } from "react"
 import { Button, Card } from "react-bootstrap"
 import { useDispatch } from "react-redux"
 import {
-  getAnotherFieldOfMatchFieldObjArr,
-  getIndexOfMatchFieldObjArr,
+  getArrObjFieldBWhereFieldAEqualTo,
+  getIndexOfObjArrWhereFieldEqualTo,
 } from "../helpers/LoopThrough"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
 import { EditValueModal } from "./EditValueModal"
@@ -37,7 +37,7 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
   //// effect
   useEffect(() => {
     if (playerInventory) {
-      const count = getAnotherFieldOfMatchFieldObjArr(
+      const count = getArrObjFieldBWhereFieldAEqualTo(
         playerInventory,
         "item.id",
         itemReq.item.id,
@@ -51,7 +51,7 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
     // update player's inventory once own amount of quest item changed
     if (playerInventory && itemCount !== null) {
       const newInventory = JSON.parse(JSON.stringify(playerInventory))
-      const index = getIndexOfMatchFieldObjArr(
+      const index = getIndexOfObjArrWhereFieldEqualTo(
         newInventory,
         "id",
         itemReq.item.id

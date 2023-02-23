@@ -8,7 +8,7 @@ import {
   setItemFilterKeyword,
   setItemFilterType,
 } from "../reducers/CharacterSlice"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { DivLoading } from "./DivLoading"
 import { HideoutReqItem } from "./HideoutReqItem"
 
@@ -93,7 +93,7 @@ const HideoutReqItems = () => {
         let constructedStationCount = 0
         if (!showContructedHideoutItemReq) {
           req.levels.forEach((level) => {
-            const index = getIndexOfMatchFieldObjArr(
+            const index = getIndexOfObjArrWhereFieldEqualTo(
               playerHideoutLevel,
               "hideoutId",
               level.station.id

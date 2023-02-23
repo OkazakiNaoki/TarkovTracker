@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Col, Container, Image, Row } from "react-bootstrap"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 import { ConfirmModal } from "./ConfirmModal"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
@@ -42,7 +42,7 @@ const TaskDetail = ({
   // get completed objectives of this task, if there's no record then init with empty array
   useEffect(() => {
     if (completeable && playerCompletedObjectives) {
-      const index = getIndexOfMatchFieldObjArr(
+      const index = getIndexOfObjArrWhereFieldEqualTo(
         playerCompletedObjectives,
         "taskId",
         task.id
@@ -158,7 +158,7 @@ const TaskDetail = ({
       const newProgress = {}
       task.objectives.forEach((objective) => {
         if (objective.hasOwnProperty("count")) {
-          const index = getIndexOfMatchFieldObjArr(
+          const index = getIndexOfObjArrWhereFieldEqualTo(
             playerObjectiveProgress,
             "objectiveId",
             objective.id

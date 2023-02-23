@@ -1,7 +1,7 @@
 const resolvePath = (object, path, defaultValue) =>
   path.split(".").reduce((o, p) => (o && o[p] ? o[p] : defaultValue), object)
 
-export const getIndexOfMatchFieldObjArr = (arr, field, value) => {
+export const getIndexOfObjArrWhereFieldEqualTo = (arr, field, value) => {
   for (let i = 0; i < arr.length; i++) {
     if (arr[i][field] === value) {
       return i
@@ -11,15 +11,15 @@ export const getIndexOfMatchFieldObjArr = (arr, field, value) => {
 }
 
 // if match arr[i]["a"], return arr[i]["b"]
-export const getAnotherFieldOfMatchFieldObjArr = (
+export const getArrObjFieldBWhereFieldAEqualTo = (
   arr,
-  field,
+  fieldA,
   value,
-  field2
+  fieldB
 ) => {
   for (let i = 0; i < arr.length; i++) {
-    if (resolvePath(arr[i], field, null) === value) {
-      return resolvePath(arr[i], field2, null)
+    if (resolvePath(arr[i], fieldA, null) === value) {
+      return resolvePath(arr[i], fieldB, null)
     }
   }
   return null

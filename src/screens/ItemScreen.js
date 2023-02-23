@@ -12,7 +12,11 @@ import {
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { CheckLg, XLg } from "react-bootstrap-icons"
-import { searchItem, searchHideoutItemReq } from "../reducers/ItemSlice"
+import {
+  searchItem,
+  searchHideoutItemReq,
+  recoverItem,
+} from "../reducers/ItemSlice"
 import {
   titleCase,
   insertSpaceIntoCamelCase,
@@ -21,35 +25,50 @@ import { getHMSfromS, formatInHoursMINsec } from "../helpers/TimeFormat"
 import { TarkovSpinner } from "../components/TarkovSpinner"
 import { TableRowLoading } from "../components/TableRowLoading"
 import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
+import { getArrObjFieldBWhereFieldAEqualTo } from "../helpers/LoopThrough"
+import { TraderIconLevel } from "../components/TraderIconLevel"
+import { ItemSingleGrid } from "../components/ItemSingleGrid"
+import { HideoutIcon } from "../components/HideoutIcon"
+import { safeGet } from "../helpers/ObjectExt"
 
 const ItemScreen = ({}) => {
-  // router
+  //// router
   const params = useParams()
 
-  // redux
+  //// redux
   const dispatch = useDispatch()
-  const { item, hideout, isLoading } = useSelector((state) => state.item)
 
-  // hooks state
-  const [imgSrc, setImgSrc] = useState("")
+  //// redux state
+  const { item, hideout, isLoading, searchedItemId } = useSelector(
+    (state) => state.item
+  )
+  const { traders } = useSelector((state) => state.trader)
+
+  //// state
+  const [mainItemIconSrc, setMainItemIconSrc] = useState("")
   const [itemPropertyRow, setItemPropertyRow] = useState([])
 
-  // hooks effect
+  //// effect
   useEffect(() => {
-    dispatch(searchItem({ id: params.itemId }))
+    if (safeGet(item, "id") === params.itemId) {
+    } else if (searchedItemId.includes(params.itemId)) {
+      dispatch(recoverItem(params.itemId))
+    } else {
+      dispatch(searchItem({ id: params.itemId }))
+    }
     dispatch(searchHideoutItemReq({ itemId: params.itemId }))
   }, [params.itemId])
 
   useEffect(() => {
     if (item) {
-      setImgSrc(`/asset/${item.id}-icon-128.png`)
+      setMainItemIconSrc(`/asset/${item.id}-icon-128.png`)
       calcPropertyPerRow()
     }
   }, [item])
 
-  // handler
+  //// handle
   const imgLoadErrHandle = () => {
-    setImgSrc(placeholderImg)
+    setMainItemIconSrc(placeholderImg)
   }
 
   const calcPropertyPerRow = () => {
@@ -116,7 +135,7 @@ const ItemScreen = ({}) => {
               <TarkovSpinner />
             ) : (
               <Image
-                src={imgSrc}
+                src={mainItemIconSrc}
                 alt={params.itemId}
                 onError={imgLoadErrHandle}
                 style={{ maxWidth: "100%", maxHeight: "100%" }}
@@ -241,18 +260,33 @@ const ItemScreen = ({}) => {
                 {!isLoading &&
                   item.buyFor &&
                   (item.buyFor.length > 0 ? (
-                    item.buyFor.map((el, i) => {
+                    item.buyFor.map((buy, i) => {
                       return (
                         <tr key={i}>
-                          <td>
-                            {el.vendor.name !== "Flea Market"
-                              ? el.vendor.name +
-                                " LL" +
-                                el.vendor.minTraderLevel
-                              : el.vendor.name}
+                          <td className="px-3">
+                            <div className="d-flex align-items-center">
+                              {buy.vendor.name !== "Flea Market" && (
+                                <Image
+                                  src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                    traders,
+                                    "name",
+                                    buy.vendor.name,
+                                    "id"
+                                  )}.png`}
+                                  className="me-2"
+                                  style={{ width: `${64 * 0.5}px` }}
+                                />
+                              )}
+                              {buy.vendor.name}
+                              {buy.vendor.name !== "Flea Market" && (
+                                <TraderIconLevel
+                                  level={buy.vendor.minTraderLevel}
+                                />
+                              )}
+                            </div>
                           </td>
-                          <td>{el.price}</td>
-                          <td>{el.currencyItem.name}</td>
+                          <td>{buy.price}</td>
+                          <td>{buy.currencyItem.name}</td>
                         </tr>
                       )
                     })
@@ -285,12 +319,26 @@ const ItemScreen = ({}) => {
                 {!isLoading &&
                   item.sellFor &&
                   (item.sellFor.length > 0 ? (
-                    item.sellFor.map((el, i) => {
+                    item.sellFor.map((sell, i) => {
                       return (
                         <tr key={i}>
-                          <td>{el.vendor.name}</td>
-                          <td>{el.price}</td>
-                          <td>{el.currencyItem.name}</td>
+                          <td className="px-3">
+                            {sell.vendor.name !== "Flea Market" && (
+                              <Image
+                                src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                  traders,
+                                  "name",
+                                  sell.vendor.name,
+                                  "id"
+                                )}.png`}
+                                className="me-2"
+                                style={{ width: `${64 * 0.5}px` }}
+                              />
+                            )}
+                            {sell.vendor.name}
+                          </td>
+                          <td>{sell.price}</td>
+                          <td>{sell.currencyItem.name}</td>
                         </tr>
                       )
                     })
@@ -323,23 +371,61 @@ const ItemScreen = ({}) => {
                 {!isLoading &&
                   item.bartersFor &&
                   (item.bartersFor.length > 0 ? (
-                    item.bartersFor.map((el, i) => {
+                    item.bartersFor.map((barter, i) => {
                       return (
                         <tr key={i}>
-                          <td>{el.trader.name}</td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.requiredItems.reduce((prev, el) => {
-                              return (
-                                prev + el.item.name + "  x" + el.count + "\n"
-                              )
-                            }, "")}
+                          <td className="px-3">
+                            <Image
+                              src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                traders,
+                                "name",
+                                barter.trader.name,
+                                "id"
+                              )}.png`}
+                              className="me-2"
+                              style={{ width: `${64 * 0.5}px` }}
+                            />
+                            {barter.trader.name}
                           </td>
                           <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.rewardItems.reduce((prev, el) => {
-                              return (
-                                prev + el.item.name + "  x" + el.count + "\n"
+                            {barter.requiredItems.reduce((prev, req, i) => {
+                              prev.push(
+                                <div
+                                  className="d-flex align-items-center"
+                                  key={`batter_require_item_${i}`}
+                                >
+                                  <div className="me-2">
+                                    <ItemSingleGrid
+                                      itemId={req.item.id}
+                                      bgColor={req.item.backgroundColor}
+                                      scale={0.5}
+                                    />
+                                  </div>
+                                  {req.item.name + "  x" + req.count}
+                                </div>
                               )
-                            }, "")}
+                              return prev
+                            }, [])}
+                          </td>
+                          <td style={{ whiteSpace: "break-spaces" }}>
+                            {barter.rewardItems.reduce((prev, rew, i) => {
+                              prev.push(
+                                <div
+                                  className="d-flex align-items-center"
+                                  key={`reward_item_${i}`}
+                                >
+                                  <div className="me-2">
+                                    <ItemSingleGrid
+                                      itemId={rew.item.id}
+                                      bgColor={rew.item.backgroundColor}
+                                      scale={0.5}
+                                    />
+                                  </div>
+                                  {rew.item.name + "  x" + rew.count}
+                                </div>
+                              )
+                              return prev
+                            }, [])}
                           </td>
                         </tr>
                       )
@@ -377,23 +463,63 @@ const ItemScreen = ({}) => {
                     item.craftsFor.map((el, i) => {
                       return (
                         <tr key={i}>
-                          <td>{el.station.name + " Level " + el.level}</td>
+                          <td className="px-3">
+                            <div className="d-flex align-items-center">
+                              <div className="me-2">
+                                <HideoutIcon
+                                  iconName={el.station.id}
+                                  level={el.level}
+                                  noHover={true}
+                                  scale={0.5}
+                                />
+                              </div>
+                              {el.station.name + " Level " + el.level}
+                            </div>
+                          </td>
                           <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.requiredItems.reduce((prev, el) => {
-                              return (
-                                prev + el.item.name + "  x" + el.count + "\n"
+                            {el.requiredItems.reduce((prev, req, i) => {
+                              prev.push(
+                                <div
+                                  className="d-flex align-items-center"
+                                  key={`craft_require_item_${i}`}
+                                >
+                                  <div className="me-2">
+                                    <ItemSingleGrid
+                                      itemId={req.item.id}
+                                      bgColor={req.item.backgroundColor}
+                                      scale={0.5}
+                                    />
+                                  </div>
+                                  {req.item.name + "  x" + req.count}
+                                </div>
                               )
-                            }, "")}
+                              return prev
+                            }, [])}
                           </td>
                           <td>
                             {formatInHoursMINsec(getHMSfromS(el.duration))}
                           </td>
                           <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.rewardItems.reduce((prev, el) => {
-                              return (
-                                prev + el.item.name + "  x" + el.count + "\n"
-                              )
-                            }, "")}
+                            <div className="h-100">
+                              {el.rewardItems.reduce((prev, rew, i) => {
+                                prev.push(
+                                  <div
+                                    className="d-flex align-items-center"
+                                    key={`reward_item_${i}`}
+                                  >
+                                    <div className="me-2">
+                                      <ItemSingleGrid
+                                        itemId={rew.item.id}
+                                        bgColor={rew.item.backgroundColor}
+                                        scale={0.5}
+                                      />
+                                    </div>
+                                    {rew.item.name + "  x" + rew.count}
+                                  </div>
+                                )
+                                return prev
+                              }, [])}
+                            </div>
                           </td>
                         </tr>
                       )
@@ -426,16 +552,44 @@ const ItemScreen = ({}) => {
                 {!isLoading &&
                   hideout &&
                   (hideout.length > 0 ? (
-                    hideout.map((el, i) => {
+                    hideout.map((station, i) => {
                       return (
                         <tr key={i}>
-                          <td>{el.name + " Level " + el.levels.level}</td>
+                          <td className="px-3">
+                            <div className="d-flex align-items-center">
+                              <div className="me-2">
+                                <HideoutIcon
+                                  iconName={station.id}
+                                  level={station.levels.level}
+                                  noHover={true}
+                                  scale={0.5}
+                                />
+                              </div>
+                              {station.name + " Level " + station.levels.level}
+                            </div>
+                          </td>
                           <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.levels.itemRequirements.reduce((prev, el) => {
-                              return (
-                                prev + el.item.name + "  x" + el.count + "\n"
-                              )
-                            }, "")}
+                            {station.levels.itemRequirements.reduce(
+                              (prev, req, i) => {
+                                prev.push(
+                                  <div
+                                    className="d-flex align-items-center"
+                                    key={`hideout_require_item_${i}`}
+                                  >
+                                    <div className="me-2">
+                                      <ItemSingleGrid
+                                        itemId={req.item.id}
+                                        bgColor={req.item.backgroundColor}
+                                        scale={0.5}
+                                      />
+                                    </div>
+                                    {req.item.name + "  x" + req.count}
+                                  </div>
+                                )
+                                return prev
+                              },
+                              []
+                            )}
                           </td>
                         </tr>
                       )
@@ -469,29 +623,59 @@ const ItemScreen = ({}) => {
                 {!isLoading &&
                   item.usedInTasks &&
                   (item.usedInTasks.length > 0 ? (
-                    item.usedInTasks.map((el, i) => {
+                    item.usedInTasks.map((task, i) => {
                       return (
                         <tr key={i}>
-                          <td>{el.name}</td>
-                          <td>{el.trader.name}</td>
+                          <td className="px-3">{task.name}</td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <Image
+                                src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                  traders,
+                                  "name",
+                                  task.trader.name,
+                                  "id"
+                                )}.png`}
+                                className="me-2"
+                                style={{ width: `${64 * 0.5}px` }}
+                              />
+                              {task.trader.name}
+                            </div>
+                          </td>
                           <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.objectives.reduce((prev, el) => {
-                              if (Object.keys(el).length !== 0) {
-                                return (
-                                  prev +
-                                  (el.item.name === item.name
-                                    ? titleCase(
-                                        insertSpaceIntoCamelCase(el.type)
-                                      ) +
-                                      " " +
-                                      el.item.name +
-                                      "  x" +
-                                      el.count +
-                                      "\n"
-                                    : "")
-                                )
-                              } else return prev
-                            }, "")}
+                            {task.objectives.reduce((prev, objectives, i) => {
+                              if (Object.keys(objectives).length !== 0) {
+                                if (objectives.item.name === item.name) {
+                                  prev.push(
+                                    <div
+                                      className="d-flex align-items-center"
+                                      key={`task_obj_${i}`}
+                                    >
+                                      <div className="me-2">
+                                        {titleCase(
+                                          insertSpaceIntoCamelCase(
+                                            objectives.type
+                                          )
+                                        )}
+                                      </div>
+                                      <div className="me-2">
+                                        <ItemSingleGrid
+                                          itemId={objectives.item.id}
+                                          bgColor={
+                                            objectives.item.backgroundColor
+                                          }
+                                          scale={0.5}
+                                        />
+                                      </div>
+                                      {objectives.item.name +
+                                        "  x" +
+                                        objectives.count}
+                                    </div>
+                                  )
+                                }
+                                return prev
+                              }
+                            }, [])}
                           </td>
                         </tr>
                       )
@@ -525,17 +709,44 @@ const ItemScreen = ({}) => {
                 {!isLoading &&
                   item.receivedFromTasks &&
                   (item.receivedFromTasks.length > 0 ? (
-                    item.receivedFromTasks.map((el, i) => {
+                    item.receivedFromTasks.map((task, i) => {
                       return (
                         <tr key={i}>
-                          <td>{el.name}</td>
-                          <td>{el.trader.name}</td>
+                          <td className="px-3">{task.name}</td>
+                          <td>
+                            <div className="d-flex align-items-center">
+                              <Image
+                                src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                  traders,
+                                  "name",
+                                  task.trader.name,
+                                  "id"
+                                )}.png`}
+                                className="me-2"
+                                style={{ width: `${64 * 0.5}px` }}
+                              />
+                              {task.trader.name}
+                            </div>
+                          </td>
                           <td style={{ whiteSpace: "break-spaces" }}>
-                            {el.finishRewards.items.reduce((prev, el) => {
-                              return (
-                                prev + el.item.name + "  x" + el.count + "\n"
+                            {task.finishRewards.items.reduce((prev, rew, i) => {
+                              prev.push(
+                                <div
+                                  className="d-flex align-items-center"
+                                  key={`task_rew_${i}`}
+                                >
+                                  <div className="me-2">
+                                    <ItemSingleGrid
+                                      itemId={rew.item.id}
+                                      bgColor={rew.item.backgroundColor}
+                                      scale={0.5}
+                                    />
+                                  </div>
+                                  {rew.item.name + "  x" + rew.count}
+                                </div>
                               )
-                            }, "")}
+                              return prev
+                            }, [])}
                           </td>
                         </tr>
                       )

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
-import { getIndexOfMatchFieldObjArr } from "../helpers/LoopThrough"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { safeGet } from "../helpers/ObjectExt"
 
 export const getTasksOfTraderWithLevel = createAsyncThunk(
@@ -30,7 +30,7 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
       // create completed task array according to completed task ID
       const completedTasksArr = []
       for (let i = 0; i < completedTaskIdData.length; i++) {
-        const index = getIndexOfMatchFieldObjArr(
+        const index = getIndexOfObjArrWhereFieldEqualTo(
           allTasksArr,
           "id",
           completedTaskIdData[i]
@@ -45,7 +45,7 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
 
       // remove completed task from all tasks arrray
       for (let i = 0; i < completedTasksArr.length; i++) {
-        const index = getIndexOfMatchFieldObjArr(
+        const index = getIndexOfObjArrWhereFieldEqualTo(
           allTasksArr,
           "id",
           completedTasksArr[i].id

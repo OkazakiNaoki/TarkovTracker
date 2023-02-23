@@ -18,6 +18,7 @@ const ItemSingleGrid = ({
   useBgImg = true,
   useNameBox = false,
   useInline = false,
+  scale = 1,
 }) => {
   // hooks state
   const [mainX, setMainX] = useState(0)
@@ -41,8 +42,8 @@ const ItemSingleGrid = ({
     <div
       className={useInline ? "d-inline" : ""}
       style={{
-        width: "64px",
-        height: "64px",
+        width: `${64 * scale}px`,
+        height: `${64 * scale}px`,
         backgroundImage: useBgImg ? `url(${itemBack})` : "none",
         backgroundColor: `${bgColors[bgColor]}${transparent.toString(16)}`,
         boxShadow: "inset 0px 0px 0px 1px #495154",
@@ -64,10 +65,7 @@ const ItemSingleGrid = ({
       <div className="position-relative">
         <div
           className="d-flex justify-content-center"
-          style={{
-            width: "64px",
-            height: "64px",
-          }}
+          style={{ width: `${64 * scale}px`, height: `${64 * scale}px` }}
         >
           {itemId && (
             <Image
@@ -80,16 +78,18 @@ const ItemSingleGrid = ({
             />
           )}
         </div>
-        <div
-          className="position-absolute top-0 end-0"
-          style={{
-            fontSize: "8px",
-            transform: "translateX(-1px) translateY(-2px)",
-          }}
-        >
-          {shortName && shortName}
-        </div>
-        {foundInRaid && (
+        {scale === 1 && (
+          <div
+            className="position-absolute top-0 end-0"
+            style={{
+              fontSize: "8px",
+              transform: "translateX(-1px) translateY(-2px)",
+            }}
+          >
+            {shortName && shortName}
+          </div>
+        )}
+        {scale === 1 && foundInRaid && (
           <Image
             src={firIcon}
             className="position-absolute bottom-0 end-0"
@@ -100,7 +100,7 @@ const ItemSingleGrid = ({
             }}
           />
         )}
-        {amount && (
+        {scale === 1 && amount && (
           <p
             src={firIcon}
             className="position-absolute bottom-0 end-0 mb-0"
@@ -113,7 +113,7 @@ const ItemSingleGrid = ({
             {amount}
           </p>
         )}
-        {locked && (
+        {scale === 1 && locked && (
           <Image
             src={lockIcon}
             className="position-absolute bottom-0 start-0"
