@@ -41,11 +41,11 @@ const HideoutIcon = ({
   }
   const mouseEnterHandle = () => {
     if (useNameBox) setMsgBoxDisplay("block")
-    if (!selected) setHoverHidden(false)
+    setHoverHidden(false)
   }
   const mouseLeaveHandle = () => {
     if (useNameBox) setMsgBoxDisplay("none")
-    if (!selected) setHoverHidden(true)
+    setHoverHidden(true)
   }
 
   return (
@@ -106,7 +106,7 @@ const HideoutIcon = ({
       <Image
         src={hideoutSelectIcon}
         className="position-absolute top-50 start-50 translate-middle"
-        hidden={!selected && hoverHidden}
+        hidden={selected || hoverHidden}
       />
       <Image
         src={hideoutSelectedIcon}
