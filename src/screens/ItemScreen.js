@@ -16,6 +16,8 @@ import {
   searchItem,
   searchHideoutItemReq,
   recoverItem,
+  refectchFleaMarketBuyPrice,
+  refectchFleaMarketSellPrice,
 } from "../reducers/ItemSlice"
 import {
   titleCase,
@@ -30,6 +32,8 @@ import { TraderIconLevel } from "../components/TraderIconLevel"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { safeGet } from "../helpers/ObjectExt"
+import defaultAvatar from "../../server/public/images/trader-icons/default_avatar.png"
+import refreshIcon from "../../server/public/static/images/icon_refresh.png"
 
 const ItemScreen = ({}) => {
   //// router
@@ -39,9 +43,7 @@ const ItemScreen = ({}) => {
   const dispatch = useDispatch()
 
   //// redux state
-  const { item, hideout, isLoading, searchedItemId } = useSelector(
-    (state) => state.item
-  )
+  const { item, isLoading, searchedItemId } = useSelector((state) => state.item)
   const { traders } = useSelector((state) => state.trader)
 
   //// state
@@ -51,12 +53,13 @@ const ItemScreen = ({}) => {
   //// effect
   useEffect(() => {
     if (safeGet(item, "id") === params.itemId) {
+      // current item is the target item, do nothing
     } else if (searchedItemId.includes(params.itemId)) {
       dispatch(recoverItem(params.itemId))
     } else {
       dispatch(searchItem({ id: params.itemId }))
+      dispatch(searchHideoutItemReq({ itemId: params.itemId }))
     }
-    dispatch(searchHideoutItemReq({ itemId: params.itemId }))
   }, [params.itemId])
 
   useEffect(() => {
@@ -89,6 +92,14 @@ const ItemScreen = ({}) => {
       properties.push(propertyRow)
     }
     setItemPropertyRow(properties)
+  }
+
+  const refetchFleaMarketBuyPriceHandle = () => {
+    dispatch(refectchFleaMarketBuyPrice({ id: params.itemId }))
+  }
+
+  const refetchFleaMarketSellPriceHandle = () => {
+    dispatch(refectchFleaMarketSellPrice({ id: params.itemId }))
   }
 
   return (
@@ -265,22 +276,31 @@ const ItemScreen = ({}) => {
                         <tr key={i}>
                           <td className="px-3">
                             <div className="d-flex align-items-center">
-                              {buy.vendor.name !== "Flea Market" && (
-                                <Image
-                                  src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
-                                    traders,
-                                    "name",
-                                    buy.vendor.name,
-                                    "id"
-                                  )}.png`}
-                                  className="me-2"
-                                  style={{ width: `${64 * 0.5}px` }}
-                                />
-                              )}
+                              <Image
+                                src={
+                                  buy.vendor.name === "Flea Market"
+                                    ? defaultAvatar
+                                    : `/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                        traders,
+                                        "name",
+                                        buy.vendor.name,
+                                        "id"
+                                      )}.png`
+                                }
+                                className="me-2"
+                                style={{ width: "32px" }}
+                              />
                               {buy.vendor.name}
                               {buy.vendor.name !== "Flea Market" && (
                                 <TraderIconLevel
                                   level={buy.vendor.minTraderLevel}
+                                />
+                              )}
+                              {buy.vendor.name === "Flea Market" && (
+                                <Image
+                                  src={refreshIcon}
+                                  onClick={refetchFleaMarketBuyPriceHandle}
+                                  role="button"
                                 />
                               )}
                             </div>
@@ -323,19 +343,28 @@ const ItemScreen = ({}) => {
                       return (
                         <tr key={i}>
                           <td className="px-3">
-                            {sell.vendor.name !== "Flea Market" && (
+                            <Image
+                              src={
+                                sell.vendor.name === "Flea Market"
+                                  ? defaultAvatar
+                                  : `/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                      traders,
+                                      "name",
+                                      sell.vendor.name,
+                                      "id"
+                                    )}.png`
+                              }
+                              className="me-2"
+                              style={{ width: `${64 * 0.5}px` }}
+                            />
+                            {sell.vendor.name}
+                            {sell.vendor.name === "Flea Market" && (
                               <Image
-                                src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
-                                  traders,
-                                  "name",
-                                  sell.vendor.name,
-                                  "id"
-                                )}.png`}
-                                className="me-2"
-                                style={{ width: `${64 * 0.5}px` }}
+                                src={refreshIcon}
+                                onClick={refetchFleaMarketSellPriceHandle}
+                                role="button"
                               />
                             )}
-                            {sell.vendor.name}
                           </td>
                           <td>{sell.price}</td>
                           <td>{sell.currencyItem.name}</td>
@@ -550,57 +579,58 @@ const ItemScreen = ({}) => {
               <tbody>
                 {isLoading && <TableRowLoading colSize={2} />}
                 {!isLoading &&
-                  hideout &&
-                  (hideout.length > 0 ? (
-                    hideout.map((station, i) => {
-                      return (
-                        <tr key={i}>
-                          <td className="px-3">
-                            <div className="d-flex align-items-center">
-                              <div className="me-2">
-                                <HideoutIcon
-                                  iconName={station.id}
-                                  level={station.levels.level}
-                                  noHover={true}
-                                  scale={0.5}
-                                />
-                              </div>
-                              {station.name + " Level " + station.levels.level}
+                item &&
+                item.hideout &&
+                item.hideout.length > 0 ? (
+                  item.hideout.map((station, i) => {
+                    return (
+                      <tr key={i}>
+                        <td className="px-3">
+                          <div className="d-flex align-items-center">
+                            <div className="me-2">
+                              <HideoutIcon
+                                iconName={station.id}
+                                level={station.levels.level}
+                                noHover={true}
+                                scale={0.5}
+                              />
                             </div>
-                          </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
-                            {station.levels.itemRequirements.reduce(
-                              (prev, req, i) => {
-                                prev.push(
-                                  <div
-                                    className="d-flex align-items-center"
-                                    key={`hideout_require_item_${i}`}
-                                  >
-                                    <div className="me-2">
-                                      <ItemSingleGrid
-                                        itemId={req.item.id}
-                                        bgColor={req.item.backgroundColor}
-                                        scale={0.5}
-                                      />
-                                    </div>
-                                    {req.item.name + "  x" + req.count}
+                            {station.name + " Level " + station.levels.level}
+                          </div>
+                        </td>
+                        <td style={{ whiteSpace: "break-spaces" }}>
+                          {station.levels.itemRequirements.reduce(
+                            (prev, req, i) => {
+                              prev.push(
+                                <div
+                                  className="d-flex align-items-center"
+                                  key={`hideout_require_item_${i}`}
+                                >
+                                  <div className="me-2">
+                                    <ItemSingleGrid
+                                      itemId={req.item.id}
+                                      bgColor={req.item.backgroundColor}
+                                      scale={0.5}
+                                    />
                                   </div>
-                                )
-                                return prev
-                              },
-                              []
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={2} className="text-center">
-                        <XLg color="red" size={40} />
-                      </td>
-                    </tr>
-                  ))}
+                                  {req.item.name + "  x" + req.count}
+                                </div>
+                              )
+                              return prev
+                            },
+                            []
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={2} className="text-center">
+                      <XLg color="red" size={40} />
+                    </td>
+                  </tr>
+                )}
               </tbody>
               <tfoot>
                 <tr>

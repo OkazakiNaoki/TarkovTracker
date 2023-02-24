@@ -199,6 +199,85 @@ export const searchItem = createAsyncThunk(
   }
 )
 
+export const refectchFleaMarketBuyPrice = createAsyncThunk(
+  "item/refectchFleaMarketBuyPrice",
+  async (params) => {
+    const { id } = params
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+      const body = {
+        query: `{
+                  items(ids: "${id}") {
+                    buyFor{
+                      vendor{
+                        name
+                        ... on TraderOffer{
+                          minTraderLevel
+                        }
+                      }
+                      price
+                      currencyItem{name id}
+                    }
+                  }
+              }`,
+      }
+      const gql = await axios.post(
+        `https://api.tarkov.dev/graphql`,
+        body,
+        config
+      )
+      const gqlData = gql.data.data.items[0]
+      return gqlData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const refectchFleaMarketSellPrice = createAsyncThunk(
+  "item/refectchFleaMarketSellPrice",
+  async (params) => {
+    const { id } = params
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+      const body = {
+        query: `{
+                  items(ids: "${id}") {
+                    sellFor{
+                      vendor{name}
+                      price
+                      currencyItem{id name}
+                    }
+                  }
+              }`,
+      }
+      const gql = await axios.post(
+        `https://api.tarkov.dev/graphql`,
+        body,
+        config
+      )
+      const gqlData = gql.data.data.items[0]
+      return gqlData
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const getZoomLevelsString = (zoomLevels) => {
   let zoomLevelsStr = ""
   for (let i = 0; i < zoomLevels[0].length; i++) {
@@ -263,7 +342,7 @@ export const searchHideoutItemReq = createAsyncThunk(
       const hideoutLevelData = await axios.get(
         `/api/hideout/levels?itemName=${itemName}&itemId=${itemId}`
       )
-      return hideoutLevelData.data
+      return { hideout: hideoutLevelData.data, itemId: itemId }
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -276,14 +355,22 @@ const ItemSlice = createSlice({
   name: "item",
   initialState: {
     isLoading: false,
-    item: { properties: [] },
+    item: { properties: [], hideout: null },
     searchedItemId: [],
     searchedItem: [],
-    hideout: [],
     loadingQueue: 0,
   },
   reducers: {
     recoverItem: (state, action) => {
+      // backup current item
+      if (
+        state.item.hasOwnProperty("id") &&
+        !state.searchedItemId.includes(state.item.id)
+      ) {
+        state.searchedItemId.push(state.item.id)
+        state.searchedItem.push(state.item)
+      }
+      // then recover
       const index = getIndexOfObjArrWhereFieldEqualTo(
         state.searchedItem,
         "id",
@@ -293,8 +380,7 @@ const ItemSlice = createSlice({
     },
     resetItem: (state, action) => {
       state.isLoading = false
-      state.item = { properties: [] }
-      state.hideout = []
+      state.item = { properties: [], hideout: null }
       state.loadingQueue = 0
     },
   },
@@ -309,13 +395,68 @@ const ItemSlice = createSlice({
         if (state.loadingQueue === 0) {
           state.isLoading = false
         }
-        if (state.item.hasOwnProperty("id")) {
+        if (
+          state.item.hasOwnProperty("id") &&
+          !state.searchedItemId.includes(state.item.id)
+        ) {
           state.searchedItemId.push(state.item.id)
           state.searchedItem.push(state.item)
         }
-        state.item = action.payload
+        state.item = { ...action.payload, hideout: null }
       })
       .addCase(searchItem.rejected, (state, action) => {
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
+        state.error = action.payload
+      })
+      .addCase(refectchFleaMarketBuyPrice.pending, (state, action) => {
+        state.loadingQueue += 1
+        state.isLoading = true
+      })
+      .addCase(refectchFleaMarketBuyPrice.fulfilled, (state, action) => {
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
+        state.item.buyFor = action.payload.buyFor
+        if (state.searchedItemId.includes(state.item.id)) {
+          const index = getIndexOfObjArrWhereFieldEqualTo(
+            state.searchedItem,
+            "id",
+            state.item.id
+          )
+          state.searchedItem[index] = state.item
+        }
+      })
+      .addCase(refectchFleaMarketBuyPrice.rejected, (state, action) => {
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
+        state.error = action.payload
+      })
+      .addCase(refectchFleaMarketSellPrice.pending, (state, action) => {
+        state.loadingQueue += 1
+        state.isLoading = true
+      })
+      .addCase(refectchFleaMarketSellPrice.fulfilled, (state, action) => {
+        state.loadingQueue -= 1
+        if (state.loadingQueue === 0) {
+          state.isLoading = false
+        }
+        state.item.sellFor = action.payload.sellFor
+        if (state.searchedItemId.includes(state.item.id)) {
+          const index = getIndexOfObjArrWhereFieldEqualTo(
+            state.searchedItem,
+            "id",
+            state.item.id
+          )
+          state.searchedItem[index] = state.item
+        }
+      })
+      .addCase(refectchFleaMarketSellPrice.rejected, (state, action) => {
         state.loadingQueue -= 1
         if (state.loadingQueue === 0) {
           state.isLoading = false
@@ -331,7 +472,7 @@ const ItemSlice = createSlice({
         if (state.loadingQueue === 0) {
           state.isLoading = false
         }
-        state.hideout = action.payload
+        state.item.hideout = action.payload.hideout
       })
       .addCase(searchHideoutItemReq.rejected, (state, action) => {
         state.loadingQueue -= 1
