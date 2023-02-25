@@ -75,11 +75,11 @@ export const searchItem = createAsyncThunk(
                       level
                       duration
                       requiredItems{
-                        item{id name}
+                        item{id name backgroundColor}
                         count
                       }
                       rewardItems{
-                        item{id name}
+                        item{id name backgroundColor}
                         count
                       }
                     }
@@ -90,7 +90,7 @@ export const searchItem = createAsyncThunk(
                       objectives{
                         ... on TaskObjectiveItem {
                           type
-                          item{name id}
+                          item{name id backgroundColor}
                           count
                         }
                       }
@@ -101,7 +101,7 @@ export const searchItem = createAsyncThunk(
                         trader{name}
                         finishRewards{
                           items{
-                            item{id name}
+                            item{id name backgroundColor}
                             count
                           }
                         }
