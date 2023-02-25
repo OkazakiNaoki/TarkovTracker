@@ -66,6 +66,8 @@ import { SkillIcon } from "../components/SkillIcon"
 import { convertKiloMega } from "../helpers/NumberFormat"
 import { safeGet } from "../helpers/ObjectExt"
 import { HideoutReqItems } from "../components/HideoutReqItems"
+import leftArrow from "../../server/public/static/images/left_arrow.png"
+import rightArrow from "../../server/public/static/images/icon_right_bracket.png"
 
 const CharacterScreen = () => {
   // router
@@ -73,6 +75,7 @@ const CharacterScreen = () => {
 
   //// hooks state
   // player basic data
+  const [hideLevelPanel, setHideLevelPanel] = useState(false)
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
   const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
   // player task
@@ -575,8 +578,19 @@ const CharacterScreen = () => {
     }
   }
 
+  const hideShowCharacterLevelHandle = () => {
+    setHideLevelPanel(!hideLevelPanel)
+  }
+
   return (
     <>
+      <div
+        className="hide-level-sticky-btn"
+        role="button"
+        onClick={hideShowCharacterLevelHandle}
+      >
+        <Image src={hideLevelPanel ? rightArrow : leftArrow} />
+      </div>
       <EditValueModal
         title="Player level"
         show={openPlayerLevelModal}
@@ -631,58 +645,65 @@ const CharacterScreen = () => {
       {Object.keys(user).length > 0 && initSetup && (
         <Container>
           <Row className="my-5 gx-5 align-items-start">
-            <Col lg={3} className="p-0 gray-rounded-40">
-              <Row
-                className="p-0 m-0"
-                style={{
-                  borderRadius: "40px 40px 0 0",
-                  backgroundColor: "#292929",
-                }}
-              >
-                <p className="my-3 text-center sandbeige">
-                  {gameEdition && gameEdition}
-                  {" edition"}
-                </p>
-              </Row>
-              <Row className="my-3" align="center">
-                <Col>
-                  <div
-                    className="sandbeige"
-                    role="button"
-                    style={{ fontSize: "90px" }}
-                    onClick={
-                      levelIcon && playerLevel
-                        ? openCloseLevelModalHandle
-                        : null
-                    }
-                  >
-                    {levelIcon && playerLevel ? (
-                      [
-                        <Image
-                          key="level_icon"
-                          src={levelIcon}
-                          className="d-inline me-3"
-                          style={{ height: "100px" }}
-                        />,
-                        playerLevel,
-                      ]
+            {/* level panel part */}
+            {!hideLevelPanel && (
+              <Col lg={3} className="p-0 gray-rounded-40">
+                <Row
+                  className="p-0 m-0"
+                  style={{
+                    borderRadius: "40px 40px 0 0",
+                    backgroundColor: "#292929",
+                  }}
+                >
+                  <p className="my-3 text-center sandbeige">
+                    {gameEdition && gameEdition}
+                    {" edition"}
+                  </p>
+                </Row>
+                <Row className="my-3" align="center">
+                  <Col>
+                    <div
+                      className="sandbeige"
+                      role="button"
+                      style={{ fontSize: "90px" }}
+                      onClick={
+                        levelIcon && playerLevel
+                          ? openCloseLevelModalHandle
+                          : null
+                      }
+                    >
+                      {levelIcon && playerLevel ? (
+                        [
+                          <Image
+                            key="level_icon"
+                            src={levelIcon}
+                            className="d-inline me-3"
+                            style={{ height: "100px" }}
+                          />,
+                          playerLevel,
+                        ]
+                      ) : (
+                        <DivLoading />
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+                <Row className="my-3" align="center">
+                  <Col>
+                    {playerFaction ? (
+                      <Image src={`/asset/icon_${playerFaction}.png`} />
                     ) : (
                       <DivLoading />
                     )}
-                  </div>
-                </Col>
-              </Row>
-              <Row className="my-3" align="center">
-                <Col>
-                  {playerFaction ? (
-                    <Image src={`/asset/icon_${playerFaction}.png`} />
-                  ) : (
-                    <DivLoading />
-                  )}
-                </Col>
-              </Row>
-            </Col>
-            <Col lg={9}>
+                  </Col>
+                </Row>
+              </Col>
+            )}
+            {/* tab part */}
+            <Col
+              lg={hideLevelPanel ? 12 : 9}
+              className={hideLevelPanel ? "px-5" : null}
+            >
               <Tabs
                 defaultActiveKey="task"
                 className="mb-4 flex-column flex-lg-row"
@@ -735,7 +756,7 @@ const CharacterScreen = () => {
                   <Accordion
                     alwaysOpen
                     style={{
-                      "--bs-accordion-bg": "black",
+                      "--bs-accordion-bg": "#1c1c1c",
                       "--bs-accordion-color": "white",
                       "--bs-accordion-btn-color": "white",
                       "--bs-accordion-active-bg": "#1c1c1c",
