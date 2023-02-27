@@ -68,6 +68,7 @@ import { safeGet } from "../helpers/ObjectExt"
 import { HideoutReqItems } from "../components/HideoutReqItems"
 import leftArrow from "../../server/public/static/images/left_arrow.png"
 import rightArrow from "../../server/public/static/images/icon_right_bracket.png"
+import uniqueIdCrown from "../../server/public/static/images/icon_unique_id.png"
 
 const CharacterScreen = () => {
   // router
@@ -655,10 +656,23 @@ const CharacterScreen = () => {
                     backgroundColor: "#292929",
                   }}
                 >
-                  <p className="my-3 text-center sandbeige">
-                    {gameEdition && gameEdition}
-                    {" edition"}
-                  </p>
+                  <div className="d-flex justify-content-center align-items-center">
+                    <Image
+                      src={uniqueIdCrown}
+                      className="me-2"
+                      style={{ width: "19px", height: "17px" }}
+                    />
+                    <p
+                      className={`my-3 text-center ${
+                        gameEdition === "edge of darkness"
+                          ? "eod-edition"
+                          : "sandbeige"
+                      }`}
+                    >
+                      {gameEdition && gameEdition}
+                      {" edition"}
+                    </p>
+                  </div>
                 </Row>
                 <Row className="my-3" align="center">
                   <Col>

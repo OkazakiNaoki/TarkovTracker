@@ -6,7 +6,8 @@ module.exports = {
   entry: "index.js",
   output: {
     path: path.resolve(__dirname, "server/public"),
-    filename: "main.js",
+    publicPath: "/",
+    filename: "bundle.js",
   },
   target: "web",
   devServer: {

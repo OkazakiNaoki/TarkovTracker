@@ -135,6 +135,10 @@ table.round-table tfoot td {
     color: #b7ad9c;
 }
 
+.eod-edition {
+    color: #ca8a00;
+}
+
 /* custom bg color */
 .task-reward-bg {
     background-color: #121314;

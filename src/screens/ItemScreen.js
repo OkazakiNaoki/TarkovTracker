@@ -32,6 +32,7 @@ import { TraderIconLevel } from "../components/TraderIconLevel"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { safeGet } from "../helpers/ObjectExt"
+import { nonExistItemIconList } from "../data/NonExistItemIconList"
 import defaultAvatar from "../../server/public/images/trader-icons/default_avatar.png"
 import refreshIcon from "../../server/public/static/images/icon_refresh.png"
 
@@ -64,16 +65,16 @@ const ItemScreen = ({}) => {
 
   useEffect(() => {
     if (item) {
-      setMainItemIconSrc(`/asset/${item.id}-icon-128.png`)
+      if (!nonExistItemIconList.includes(item.id)) {
+        setMainItemIconSrc(`/asset/${item.id}-icon-128.png`)
+      } else {
+        setMainItemIconSrc(placeholderImg)
+      }
       calcPropertyPerRow()
     }
   }, [item])
 
   //// handle
-  const imgLoadErrHandle = () => {
-    setMainItemIconSrc(placeholderImg)
-  }
-
   const calcPropertyPerRow = () => {
     const properties = []
     const propertyKeys = Object.keys(item.properties)
@@ -148,7 +149,6 @@ const ItemScreen = ({}) => {
               <Image
                 src={mainItemIconSrc}
                 alt={params.itemId}
-                onError={imgLoadErrHandle}
                 style={{ maxWidth: "100%", maxHeight: "100%" }}
               ></Image>
             )}

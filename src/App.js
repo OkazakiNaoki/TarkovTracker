@@ -28,7 +28,7 @@ function App() {
         }}
       >
         <Routes>
-          <Route path="/item/:itemId" element={<ItemScreen />} exact />
+          <Route path="/item/:itemId" element={<ItemScreen />} />
           <Route path="/fleamarket/*" element={<FleamarketScreen />} />
           <Route path="/task" element={<TaskScreen />} />
           <Route path="/hideout" element={<HideoutScreen />} />

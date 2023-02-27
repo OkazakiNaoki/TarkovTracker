@@ -1,29 +1,15 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import { useSelector } from "react-redux"
-import { Card, Placeholder } from "react-bootstrap"
+import { Card, Image, Placeholder } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import { ItemMultiGrid } from "./ItemMultiGrid"
 import { TarkovSpinner } from "./TarkovSpinner"
+import { nonExistItemIconList } from "../data/NonExistItemIconList"
 import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
 
 const ItemRow = ({ item, loading = false }) => {
-  //// state
-  const [imgSrc, setImgSrc] = useState("")
-
   //// redux state
   const { preference } = useSelector((state) => state.user)
-
-  //// effect
-  useEffect(() => {
-    if (!loading) {
-      setImgSrc(`/asset/${item.id}-icon.png`)
-    }
-  }, [])
-
-  //// handle
-  const imgLoadErrHandle = () => {
-    setImgSrc(placeholderImg)
-  }
 
   return (
     <>

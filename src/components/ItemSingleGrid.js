@@ -2,9 +2,11 @@ import React, { useState } from "react"
 import { Image } from "react-bootstrap"
 import { bgColors } from "../data/ItemBgColorMap"
 import { FloatingMessageBox } from "./FloatingMessageBox"
+import { nonExistItemIconList } from "../data/NonExistItemIconList"
 import itemBack from "../../server/public/static/images/cell_full_border.png"
 import firIcon from "../../server/public/static/images/icon_foundinraid_small.png"
 import lockIcon from "../../server/public/static/images/marker_locked.png"
+import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
 
 const ItemSingleGrid = ({
   itemId,
@@ -69,7 +71,11 @@ const ItemSingleGrid = ({
         >
           {itemId && (
             <Image
-              src={`/asset/${itemId}-icon.png`}
+              src={
+                nonExistItemIconList.includes(itemId)
+                  ? placeholderImg
+                  : `/asset/${itemId}-icon.png`
+              }
               style={{
                 objectFit: "contain",
                 maxHeight: "100%",

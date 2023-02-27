@@ -1,12 +1,9 @@
 node_modules
 node_modules/
 
-public/static/images
-public/static/fonts
-
-public/main.js
-
 .env
+
+Procfile
 
 bootstrap.min.css
 
