@@ -1,28 +1,13 @@
 import React, { useEffect, useState } from "react"
-import {
-  Button,
-  Col,
-  Container,
-  Image,
-  Row,
-  Tabs,
-  Tab,
-  Accordion,
-  Table,
-  ToggleButton,
-  Collapse,
-} from "react-bootstrap"
+import { Button, Col, Container, Image, Row, Tabs, Tab } from "react-bootstrap"
 import { Pencil } from "react-bootstrap-icons"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { LoginFirst } from "../components/LoginFirst"
 import {
   getTasksOfTraderWithLevel,
-  updateCompletedTasks,
   getCompletedObjectives,
   getObjectiveProgress,
-  updateCompletedObjectives,
-  updateObjectiveProgress,
   getCharacterData,
   updateCharacterData,
   getHideoutLevel,
@@ -32,24 +17,15 @@ import {
   getSkillProgress,
   updateSkillProgress,
   getUnlockedTrader,
-  updateUnlockedTrader,
-  updateTraderProgress,
 } from "../reducers/CharacterSlice"
-import {
-  getLevelReqOfTrader,
-  getTaskDetail,
-  getTasksOfTrader,
-  initializeTasks,
-} from "../reducers/TraderSlice"
+import { getLevelReqOfTrader, getTasksOfTrader } from "../reducers/TraderSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { clearItems, searchItemByName } from "../reducers/FleamarketSlice"
-import { TaskDetail } from "../components/TaskDetail"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
 import { EditValueModal } from "../components/EditValueModal"
 import {
   getArrObjFieldBWhereFieldAEqualTo,
   getIndexOfObjArrWhereFieldEqualTo,
-  haveZeroPropertyEqualTo,
 } from "../helpers/LoopThrough"
 import { HideoutIcon } from "../components/HideoutIcon"
 import { HideoutStationDetail } from "../components/HideoutStationDetail"
@@ -64,8 +40,8 @@ import Paginate from "../components/Paginate"
 import { ItemSingleGrid } from "../components/ItemSingleGrid"
 import { SkillIcon } from "../components/SkillIcon"
 import { convertKiloMega } from "../helpers/NumberFormat"
-import { safeGet } from "../helpers/ObjectExt"
 import { HideoutReqItems } from "../components/HideoutReqItems"
+import { PlayerTaskProgress } from "../components/PlayerTaskProgress"
 import leftArrow from "../../server/public/static/images/left_arrow.png"
 import rightArrow from "../../server/public/static/images/icon_right_bracket.png"
 import uniqueIdCrown from "../../server/public/static/images/icon_unique_id.png"
@@ -79,15 +55,6 @@ const CharacterScreen = () => {
   const [hideLevelPanel, setHideLevelPanel] = useState(false)
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
   const [openPlayerLevelModal, setOpenPlayerLevelModal] = useState(false)
-  // player task
-  const [taskInitialized, setTaskInitialized] = useState(false)
-  const [showCompleteTask, setShowCompleteTask] = useState(false)
-  const [showOngoingTask, setShowOngoingTask] = useState(true)
-  const [showNotQualifyTask, setShowNotQualifyTask] = useState(false)
-  const [collapseDetail, setCollapseDetail] = useState({})
-  const [curShowingTaskLen, setCurShowingTaskLen] = useState(null)
-  const [taskTotalLen, setTaskTotalLen] = useState(null)
-  const [taskNeedToUpdateStatus, setTaskNeedToUpdateStatus] = useState(null)
   // player trader
   const [openTraderSettingModal, setOpenTraderSettingModal] = useState(false)
   const [traderSettingTarget, setTraderSettingTarget] = useState("")
@@ -112,14 +79,7 @@ const CharacterScreen = () => {
 
   //// redux state
   const { user } = useSelector((state) => state.user)
-  const {
-    initTasks,
-    traders,
-    tasks,
-    tasksDetail,
-    tasksDetailFetched,
-    traderLevels,
-  } = useSelector((state) => state.trader)
+  const { traders, tasks, traderLevels } = useSelector((state) => state.trader)
   const { hideout } = useSelector((state) => state.hideout)
   const {
     initSetup,
@@ -143,23 +103,16 @@ const CharacterScreen = () => {
   } = useSelector((state) => state.fleamarket)
   const dispatch = useDispatch()
 
-  //// hooks effects
-  /// initialization type effects
-  // get character data for the first time
+  //// effect
+  /// in-game data
+  // get player's character data
   useEffect(() => {
     if (Object.keys(user).length > 0 && !initSetup) {
       dispatch(getCharacterData())
     }
   }, [user])
 
-  // initialize player task data
-  useEffect(() => {
-    if (!initTasks) {
-      dispatch(initializeTasks())
-    }
-  }, [initTasks])
-
-  // initialize task list, get all traders' tasks
+  // get tasks of all traders
   useEffect(() => {
     if (traders.length !== 0 && Object.keys(tasks).length !== traders.length) {
       for (let i = 0; i < traders.length; i++) {
@@ -176,27 +129,6 @@ const CharacterScreen = () => {
     }
   }, [traders, tasks])
 
-  // get player hideout station level
-  useEffect(() => {
-    if (initSetup && !playerHideoutLevel) {
-      dispatch(getHideoutLevel())
-    }
-  }, [initSetup, playerHideoutLevel])
-
-  // get player task completed objectives
-  useEffect(() => {
-    if (initSetup && !playerCompletedObjectives) {
-      dispatch(getCompletedObjectives())
-    }
-  }, [initSetup, playerCompletedObjectives])
-
-  // get player task objectives progress
-  useEffect(() => {
-    if (initSetup && !playerObjectiveProgress) {
-      dispatch(getObjectiveProgress())
-    }
-  }, [initSetup, playerObjectiveProgress])
-
   // get all hideout station
   useEffect(() => {
     if (!hideout) {
@@ -204,7 +136,7 @@ const CharacterScreen = () => {
     }
   }, [hideout])
 
-  // get trader level stage data before getting player's trader progress data
+  // get trader loyalty level stage data
   useEffect(() => {
     if (!traderLevels) {
       traders.forEach((trader) => {
@@ -213,7 +145,29 @@ const CharacterScreen = () => {
     }
   }, [traderLevels])
 
-  // get player trader progress
+  /// player data
+  // get player's hideout station level
+  useEffect(() => {
+    if (initSetup && !playerHideoutLevel) {
+      dispatch(getHideoutLevel())
+    }
+  }, [initSetup, playerHideoutLevel])
+
+  // get player's completed objectives of task
+  useEffect(() => {
+    if (initSetup && !playerCompletedObjectives) {
+      dispatch(getCompletedObjectives())
+    }
+  }, [initSetup, playerCompletedObjectives])
+
+  // get player's objective progress of task
+  useEffect(() => {
+    if (initSetup && !playerObjectiveProgress) {
+      dispatch(getObjectiveProgress())
+    }
+  }, [initSetup, playerObjectiveProgress])
+
+  // get player's trader progress
   useEffect(() => {
     if (
       initSetup &&
@@ -225,42 +179,22 @@ const CharacterScreen = () => {
     }
   }, [initSetup, traderLevels, traderProgress])
 
-  // get player unlocked traders
+  // get player's unlocked traders
   useEffect(() => {
     if (initSetup && !unlockedTraders) {
       dispatch(getUnlockedTrader())
     }
   }, [initSetup, unlockedTraders])
 
-  // get player skill progress
+  // get player's skill progress
   useEffect(() => {
     if (initSetup && !playerSkill) {
       dispatch(getSkillProgress())
     }
   }, [initSetup, playerSkill])
 
-  // initialize length of task showing inside each trader's table
-  useEffect(() => {
-    if (Object.keys(playerTasksInfo).length === traders.length) {
-      const newShowingTaskLen = {}
-      const newTaskTotalLen = {}
-      traders.forEach((trader) => {
-        newShowingTaskLen[trader.name] =
-          (showCompleteTask && playerTasksInfo[trader.name].complete.length) +
-          (showOngoingTask && playerTasksInfo[trader.name].ongoing.length) +
-          (showNotQualifyTask && playerTasksInfo[trader.name].notQualify.length)
-        newTaskTotalLen[trader.name] =
-          playerTasksInfo[trader.name].complete.length +
-          playerTasksInfo[trader.name].ongoing.length +
-          playerTasksInfo[trader.name].notQualify.length
-      })
-      setCurShowingTaskLen(newShowingTaskLen)
-      setTaskTotalLen(newTaskTotalLen)
-    }
-  }, [playerTasksInfo, showCompleteTask, showOngoingTask, showNotQualifyTask])
-
   /// on data change need some update
-  // pick level icon for player's level on level change
+  // update level icon on player's level changed
   useEffect(() => {
     if (initSetup) {
       for (let i = 1; i <= 16; i++) {
@@ -273,29 +207,6 @@ const CharacterScreen = () => {
       }
     }
   }, [initSetup, playerLevel])
-
-  // sort traders' tasks into completed/ongoing/not yet available
-  useEffect(() => {
-    if (
-      initSetup &&
-      traderProgress &&
-      unlockedTraders &&
-      Object.keys(traderProgress.traderLL).length === traders.length &&
-      Object.keys(tasks).length === traders.length &&
-      haveZeroPropertyEqualTo(tasks, null) &&
-      !taskInitialized
-    ) {
-      traders.forEach((trader) => {
-        dispatch(
-          getTasksOfTraderWithLevel({
-            trader: trader.name,
-            level: playerLevel,
-          })
-        )
-      })
-      setTaskInitialized(true)
-    }
-  }, [initSetup, traders, tasks, unlockedTraders, traderProgress])
 
   // get hideout data of current selected station ID
   useEffect(() => {
@@ -350,148 +261,7 @@ const CharacterScreen = () => {
     }
   }, [searchParams])
 
-  // on task complete flag is set
-  useEffect(() => {
-    if (taskNeedToUpdateStatus) {
-      const updateTaskStatus = async () => {
-        const { traderName, task, rewards } = taskNeedToUpdateStatus
-        const newCompleteTasks = []
-        playerTasksInfo[traderName]["complete"].forEach((task) => {
-          newCompleteTasks.push(task.id)
-        })
-        newCompleteTasks.push(task.id)
-        if (rewards) {
-          //TODO
-          // items
-          const itemRewards = []
-          rewards.items.forEach((item) => {
-            itemRewards.push(item)
-          })
-          await dispatch(
-            updateInventoryItem({
-              items: itemRewards,
-            })
-          )
-          // traderStanding
-          for (const trader of rewards.traderStanding) {
-            await dispatch(
-              updateTraderProgress({
-                traderName: trader.trader.name,
-                traderRep:
-                  traderProgress.traderRep[trader.trader.name] +
-                  trader.standing,
-                traderSpent: traderProgress.traderSpent[trader.trader.name],
-              })
-            )
-          }
-          // traderUnlock
-          for (const trader of rewards.traderUnlock) {
-            await dispatch(
-              updateUnlockedTrader({
-                name: trader.name,
-                unlocked: true,
-              })
-            )
-          }
-          // offerUnlock
-          /// trader.name, level, item.id, item.name
-          // skillLevelReward
-          /// name, level
-        }
-        await dispatch(
-          updateCompletedTasks({ completeTasks: newCompleteTasks })
-        )
-        // re-sort tasks of this trader
-        dispatch(
-          getTasksOfTraderWithLevel({
-            trader: traderName,
-            level: playerLevel,
-          })
-        )
-        // re-sort tasks of other traders which require this task to be completed
-        const needThisTaskTraders = []
-        task.needForTasks.forEach((need) => {
-          needThisTaskTraders.push(need.trader.name)
-        })
-        const uniqueNeedThisTaskTraders = [...new Set(needThisTaskTraders)]
-        uniqueNeedThisTaskTraders.forEach((trader) => {
-          if (trader !== traderName) {
-            dispatch(
-              getTasksOfTraderWithLevel({
-                trader: trader,
-                level: playerLevel,
-              })
-            )
-          }
-        })
-        expandTaskDetailHandle(traderName, task.id)
-      }
-
-      updateTaskStatus()
-      setTaskNeedToUpdateStatus(null)
-    }
-  }, [taskNeedToUpdateStatus])
-
   //// handles
-  const expandTaskDetailHandle = (trader, taskId) => {
-    if (!tasksDetailFetched[trader].includes(taskId)) {
-      dispatch(getTaskDetail({ id: taskId, traderName: trader }))
-    }
-    const newCollapse = { ...collapseDetail }
-    newCollapse[taskId] = !newCollapse[taskId]
-    setCollapseDetail(newCollapse)
-  }
-
-  const updateObjectiveStatusHandle = (
-    taskId,
-    objectiveId,
-    progress,
-    completed = false
-  ) => {
-    if (completed) {
-      const newCompleteObjectives = JSON.parse(
-        JSON.stringify(playerCompletedObjectives)
-      )
-      const index = getIndexOfObjArrWhereFieldEqualTo(
-        newCompleteObjectives,
-        "taskId",
-        taskId
-      )
-      if (index !== -1) {
-        newCompleteObjectives[index]["objectives"].push(objectiveId)
-      } else {
-        newCompleteObjectives.push({ taskId, objectives: [objectiveId] })
-      }
-      dispatch(
-        updateCompletedObjectives({
-          completeObjectives: newCompleteObjectives,
-        })
-      )
-    }
-    if (progress) {
-      const newProgress = JSON.parse(JSON.stringify(playerObjectiveProgress))
-      const index = getIndexOfObjArrWhereFieldEqualTo(
-        newProgress,
-        "objectiveId",
-        objectiveId
-      )
-      if (index !== -1) {
-        newProgress[index]["progress"] = Number(progress)
-      } else {
-        newProgress.push({ objectiveId, progress })
-      }
-      dispatch(
-        updateObjectiveProgress({
-          objectiveProgress: newProgress,
-        })
-      )
-    }
-  }
-
-  const completeTaskHandle = (traderName, task, rewards = null) => {
-    setTaskNeedToUpdateStatus({ traderName, task, rewards })
-  }
-
   const adjustPlayerLevelHandle = (level) => {
     dispatch(updateCharacterData({ characterLevel: level }))
     traders.forEach((trader) => {
@@ -657,11 +427,13 @@ const CharacterScreen = () => {
                   }}
                 >
                   <div className="d-flex justify-content-center align-items-center">
-                    <Image
-                      src={uniqueIdCrown}
-                      className="me-2"
-                      style={{ width: "19px", height: "17px" }}
-                    />
+                    {gameEdition === "edge of darkness" && (
+                      <Image
+                        src={uniqueIdCrown}
+                        className="me-2"
+                        style={{ width: "19px", height: "17px" }}
+                      />
+                    )}
                     <p
                       className={`my-3 text-center ${
                         gameEdition === "edge of darkness"
@@ -726,244 +498,15 @@ const CharacterScreen = () => {
               >
                 {/* TASK */}
                 <Tab eventKey="task" title="Task">
-                  <div>
-                    <ToggleButton
-                      type="checkbox"
-                      variant="outline-primary"
-                      checked={showCompleteTask}
-                      value="1"
-                      onClick={(e) => {
-                        setShowCompleteTask(!showCompleteTask)
-                      }}
-                      style={{ "--bs-btn-hover-bg": "none" }}
-                      className="btn-sm mx-2 mb-3"
-                    >
-                      Completed
-                    </ToggleButton>
-                    <ToggleButton
-                      type="checkbox"
-                      variant="outline-success"
-                      checked={showOngoingTask}
-                      value="1"
-                      onClick={(e) => {
-                        setShowOngoingTask(!showOngoingTask)
-                      }}
-                      style={{ "--bs-btn-hover-bg": "none" }}
-                      className="btn-sm mx-2 mb-3"
-                    >
-                      Available
-                    </ToggleButton>
-                    <ToggleButton
-                      type="checkbox"
-                      variant="outline-dark"
-                      checked={showNotQualifyTask}
-                      value="1"
-                      onClick={(e) => {
-                        setShowNotQualifyTask(!showNotQualifyTask)
-                      }}
-                      style={{ "--bs-btn-hover-bg": "none" }}
-                      className="btn-sm mx-2 mb-3"
-                    >
-                      Not unlock
-                    </ToggleButton>
-                  </div>
-                  <Accordion
-                    alwaysOpen
-                    style={{
-                      "--bs-accordion-bg": "#1c1c1c",
-                      "--bs-accordion-color": "white",
-                      "--bs-accordion-btn-color": "white",
-                      "--bs-accordion-active-bg": "#1c1c1c",
-                      "--bs-accordion-active-color": "#b7ad9c",
-                    }}
-                  >
-                    {traders.map((trader, i) => {
-                      return (
-                        <Accordion.Item
-                          eventKey={`${i}`}
-                          key={`${trader.name}_task`}
-                        >
-                          <Accordion.Header>
-                            <div className="d-flex align-items-center fs-4">
-                              <Image
-                                src={`/asset/${trader.id}.png`}
-                                className="me-3"
-                                style={{ height: "64px", width: "64px" }}
-                              />
-                              <div className="mx-3">{trader.name}</div>
-
-                              <div
-                                className="d-inline mx-3"
-                                style={{ fontSize: "16px" }}
-                              >
-                                <span style={{ color: "white" }}>
-                                  {"available: "}
-                                </span>
-                                <span
-                                  style={{
-                                    color:
-                                      safeGet(playerTasksInfo, trader.name) &&
-                                      playerTasksInfo[trader.name].ongoing
-                                        .length > 0
-                                        ? "#198754"
-                                        : "#212529",
-                                  }}
-                                >
-                                  {safeGet(playerTasksInfo, trader.name) &&
-                                    playerTasksInfo[trader.name].ongoing.length}
-                                </span>
-                              </div>
-
-                              <div
-                                className="d-inline mx-3"
-                                style={{ fontSize: "16px" }}
-                              >
-                                <span style={{ color: "white" }}>
-                                  {"completed: "}
-                                </span>
-                                <span style={{ color: "#0d6efd" }}>
-                                  {safeGet(playerTasksInfo, trader.name) &&
-                                    playerTasksInfo[trader.name].complete
-                                      .length}
-                                  {"/"}
-                                  {taskTotalLen && taskTotalLen[trader.name]}
-                                </span>
-                              </div>
-                            </div>
-                          </Accordion.Header>
-                          <Accordion.Body className="p-0">
-                            <Table
-                              variant="dark"
-                              className="m-0"
-                              style={{ "--bs-table-bg": "black" }}
-                            >
-                              <tbody>
-                                {curShowingTaskLen &&
-                                  curShowingTaskLen[trader.name] === 0 && (
-                                    <tr>
-                                      <td>
-                                        <div className="p-3 fs-4 text-center">
-                                          Empty
-                                        </div>
-                                      </td>
-                                    </tr>
-                                  )}
-                                {Object.keys(playerTasksInfo).length > 0 &&
-                                  playerTasksInfo[trader.name] &&
-                                  Object.keys(playerTasksInfo[trader.name])
-                                    .map((status) => {
-                                      if (
-                                        (status === "complete" &&
-                                          showCompleteTask) ||
-                                        (status === "ongoing" &&
-                                          showOngoingTask) ||
-                                        (status === "notQualify" &&
-                                          showNotQualifyTask)
-                                      ) {
-                                        return playerTasksInfo[trader.name][
-                                          status
-                                        ].map((task) => {
-                                          return [
-                                            <tr
-                                              key={task.id}
-                                              onClick={() => {
-                                                expandTaskDetailHandle(
-                                                  trader.name,
-                                                  task.id
-                                                )
-                                              }}
-                                            >
-                                              <td
-                                                className="px-5"
-                                                style={{
-                                                  "--bs-table-bg":
-                                                    status === "complete"
-                                                      ? "#0d6efd"
-                                                      : status === "ongoing"
-                                                      ? "#198754"
-                                                      : "#1c1c1c",
-                                                }}
-                                              >
-                                                {task.name}
-                                              </td>
-                                            </tr>,
-                                            <tr key={task.id + "_collapse"}>
-                                              <td className="p-0">
-                                                <Collapse
-                                                  in={
-                                                    (trader.name,
-                                                    collapseDetail[task.id])
-                                                  }
-                                                >
-                                                  <div>
-                                                    <div>
-                                                      {Object.keys(
-                                                        tasksDetailFetched
-                                                      ).length > 0 &&
-                                                        !tasksDetailFetched[
-                                                          trader.name
-                                                        ].includes(task.id) && (
-                                                          <DivLoading
-                                                            height={100}
-                                                          />
-                                                        )}
-                                                      {Object.keys(
-                                                        tasksDetailFetched
-                                                      ).length > 0 &&
-                                                        tasksDetailFetched[
-                                                          trader.name
-                                                        ].includes(task.id) && (
-                                                          <TaskDetail
-                                                            task={
-                                                              tasksDetail[
-                                                                trader.name
-                                                              ][task.id]
-                                                            }
-                                                            completeable={
-                                                              status ===
-                                                              "complete"
-                                                                ? false
-                                                                : true
-                                                            }
-                                                            finishClickHandles={
-                                                              updateObjectiveStatusHandle
-                                                            }
-                                                            taskCompleteHandle={(
-                                                              taskId,
-                                                              rewards
-                                                            ) => {
-                                                              completeTaskHandle(
-                                                                trader.name,
-                                                                task,
-                                                                rewards
-                                                              )
-                                                            }}
-                                                            disableTurnIn={
-                                                              status ===
-                                                              "notQualify"
-                                                            }
-                                                            playerInventory={
-                                                              playerInventory
-                                                            }
-                                                          />
-                                                        )}
-                                                    </div>
-                                                  </div>
-                                                </Collapse>
-                                              </td>
-                                            </tr>,
-                                          ]
-                                        })
-                                      }
-                                    })
-                                    .flat(1)}
-                              </tbody>
-                            </Table>
-                          </Accordion.Body>
-                        </Accordion.Item>
-                      )
-                    })}
-                  </Accordion>
+                  <PlayerTaskProgress
+                    traders={traders}
+                    tasks={tasks}
+                    unlockedTraders={unlockedTraders}
+                    playerLevel={playerLevel}
+                    playerTasksInfo={playerTasksInfo}
+                    playerInventory={playerInventory}
+                    traderProgress={traderProgress}
+                  />
                 </Tab>
 
                 {/* Hideout */}
@@ -1284,7 +827,8 @@ const CharacterScreen = () => {
                 <Tab eventKey="questItem" title="Quest item">
                   {Object.keys(playerTasksInfo).length > 0 && (
                     <div>
-                      {Object.keys(playerTasksInfo).length === 8 && (
+                      {Object.keys(playerTasksInfo).length ===
+                        traders.length && (
                         <QuestItems playerTasksInfo={playerTasksInfo} />
                       )}
                     </div>
@@ -1295,9 +839,8 @@ const CharacterScreen = () => {
                 <Tab eventKey="hideoutItem" title="Hideout item">
                   {Object.keys(playerTasksInfo).length > 0 && (
                     <div>
-                      {Object.keys(playerTasksInfo).length === 8 && (
-                        <HideoutReqItems />
-                      )}
+                      {Object.keys(playerTasksInfo).length ===
+                        traders.length && <HideoutReqItems />}
                     </div>
                   )}
                 </Tab>

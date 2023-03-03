@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler"
+import { find } from "lodash-es"
 import PlayerCompleteTask from "../models/PlayerCompleteTaskModel.js"
 import PlayerCompleteObjective from "../models/PlayerCompleteTaskObjectivesModel.js"
 import PlayerObjectiveProgress from "../models/PlayerTaskObjectiveProgressModel.js"
@@ -26,9 +27,9 @@ export const addCompleteTask = asyncHandler(async (req, res) => {
 // @route PUT /api/player/task/complete
 // @access private
 export const updateCompleteTask = asyncHandler(async (req, res) => {
-  const completeTasks = req.body.completeTasks
+  const taskId = req.body.taskId
 
-  if (completeTasks && completeTasks.length === 0) {
+  if (!taskId) {
     res.status(400).send("Completed task is empty")
     return
   } else {
@@ -36,9 +37,13 @@ export const updateCompleteTask = asyncHandler(async (req, res) => {
     if (!existPct) {
       res.status(404).send("Previous completed task data not found")
     } else {
-      existPct.completeTasks = completeTasks
-      const updatedPct = await existPct.save()
-      res.json(updatedPct)
+      if (!existPct.completeTasks.includes(taskId)) {
+        existPct.completeTasks.push(taskId)
+        const updatedPct = await existPct.save()
+        res.json(updatedPct)
+      } else {
+        res.status(400).send("Task id already exists")
+      }
     }
   }
 })
@@ -58,7 +63,7 @@ export const getCompleteTask = asyncHandler(async (req, res) => {
 })
 
 // @desc add completed objective of a task for a player
-// @route POST /api/player/task/objective
+// @route POST /api/player/task/objective/complete
 // @access private
 export const addCompleteTaskObjective = asyncHandler(async (req, res) => {
   const completeObjectives = req.body.completeObjectives
@@ -84,12 +89,13 @@ export const addCompleteTaskObjective = asyncHandler(async (req, res) => {
 })
 
 // @desc update completed objective of a task for a player
-// @route PUT /api/player/task/objective
+// @route PUT /api/player/task/objective/complete
 // @access private
 export const updateCompleteTaskObjective = asyncHandler(async (req, res) => {
-  const completeObjectives = req.body.completeObjectives
+  const taskId = req.body.taskId
+  const objectiveId = req.body.objectiveId
 
-  if (completeObjectives && completeObjectives.length === 0) {
+  if (!taskId || !objectiveId) {
     res.status(400).send("Completed task objective task is empty")
     return
   } else {
@@ -99,7 +105,12 @@ export const updateCompleteTaskObjective = asyncHandler(async (req, res) => {
     if (!existPco) {
       res.status(404).send("Previous completed task objective data not found")
     } else {
-      existPco.completeObjectives = completeObjectives
+      const targetTask = find(existPco.completeObjectives, { taskId: taskId })
+      if (targetTask) {
+        targetTask.objectives.push(objectiveId)
+      } else {
+        existPco.completeObjectives.push({ taskId, objectives: [objectiveId] })
+      }
       const updatedPco = await existPco.save()
       res.json(updatedPco)
     }
@@ -107,7 +118,7 @@ export const updateCompleteTaskObjective = asyncHandler(async (req, res) => {
 })
 
 // @desc get completed objective of a tasks of a player
-// @route GET /api/player/task/objective
+// @route GET /api/player/task/objective/complete
 // @access private
 export const getCompleteTaskObjective = asyncHandler(async (req, res) => {
   const pco = await PlayerCompleteObjective.findOne({ user: req.user._id })
@@ -162,7 +173,14 @@ export const updateTaskObjectiveProgress = asyncHandler(async (req, res) => {
     if (!existOp) {
       res.status(404).send("Previous progress of task objective data not found")
     } else {
-      existOp.objectiveProgress = objectiveProgress
+      const targetObjective = find(existOp.objectiveProgress, {
+        objectiveId: objectiveProgress.objectiveId,
+      })
+      if (targetObjective) {
+        targetObjective.progress = objectiveProgress.progress
+      } else {
+        existOp.objectiveProgress.push(objectiveProgress)
+      }
       const updatedOp = await existOp.save()
       res.json(updatedOp)
     }

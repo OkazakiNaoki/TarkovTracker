@@ -1,44 +1,57 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Col, Container, Image, Row } from "react-bootstrap"
+import { cloneDeep } from "lodash"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
 import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { ItemSingleGrid } from "./ItemSingleGrid"
 import { ConfirmModal } from "./ConfirmModal"
-import { updateInventoryItem } from "../reducers/CharacterSlice"
+import {
+  getTasksOfTraderWithLevel,
+  updateCompletedObjectives,
+  updateCompletedTasks,
+  updateInventoryItem,
+  updateObjectiveProgress,
+  updateTraderProgress,
+  updateUnlockedTrader,
+} from "../reducers/CharacterSlice"
 import blueCheck from "../../server/public/static/images/blue_check.png"
 import expIcon from "../../server/public/static/images/icon_experience_big.png"
 import standingIcon from "../../server/public/static/images/standing_icon.png"
 import skillIcon from "../../server/public/static/images/tab_icon_skills.png"
 
 const TaskDetail = ({
+  traderName,
   task,
+  needForTasks = null,
   completeable = false,
-  finishClickHandles,
-  taskCompleteHandle,
   disableTurnIn = false,
   playerInventory = null,
+  playerLevel = 1,
+  traderProgress = null,
+  expandTaskDetailHandle = null,
 }) => {
-  // hooks
+  //// state
   const [completeObjective, setCompleteObjective] = useState(null)
   const [objectiveProgress, setObjectiveProgress] = useState(null)
   const [closeAddValueModal, setCloseAddValueModal] = useState(null) // for each item requirement objective
   const [closeConfirmModal, setCloseConfirmModal] = useState(null) // for each simple target objective
   const [turnInAble, setTurnInAble] = useState(null) // every objective that is give item type
   const [ownCount, setOwnCount] = useState(null) // every objective that is give item type
+  const [taskCompleteReward, setTaskCompleteReward] = useState(null)
 
-  // redux
+  //// redux
   const { playerCompletedObjectives, playerObjectiveProgress } = useSelector(
     (state) => state.character
   )
 
   const dispatch = useDispatch()
 
-  // local variables
+  //// local variables
   const objectiveTypes = ["visit", "extract"]
 
-  /// effects
+  //// effect
   // get completed objectives of this task, if there's no record then init with empty array
   useEffect(() => {
     if (completeable && playerCompletedObjectives) {
@@ -67,7 +80,7 @@ const TaskDetail = ({
       }
       if (allComplete) {
         completeable = false
-        taskCompleteHandle(task.id, task.finishRewards)
+        completeTaskHandle(task.finishRewards)
       }
     }
   }, [completeObjective])
@@ -175,7 +188,90 @@ const TaskDetail = ({
     }
   }, [playerObjectiveProgress])
 
-  // handles
+  // on task complete flag is set
+  useEffect(() => {
+    if (taskCompleteReward) {
+      const updateTaskStatus = async () => {
+        const rewards = taskCompleteReward
+
+        if (rewards) {
+          //TODO
+          // items
+          const itemRewards = []
+          rewards.items.forEach((item) => {
+            itemRewards.push(item)
+          })
+          await dispatch(
+            updateInventoryItem({
+              items: itemRewards,
+            })
+          )
+          // traderStanding
+          for (const trader of rewards.traderStanding) {
+            await dispatch(
+              updateTraderProgress({
+                traderName: trader.trader.name,
+                traderRep:
+                  traderProgress.traderRep[trader.trader.name] +
+                  trader.standing,
+                traderSpent: traderProgress.traderSpent[trader.trader.name],
+              })
+            )
+          }
+          // traderUnlock
+          for (const trader of rewards.traderUnlock) {
+            await dispatch(
+              updateUnlockedTrader({
+                name: trader.name,
+                unlocked: true,
+              })
+            )
+          }
+          // offerUnlock
+          /// trader.name, level, item.id, item.name
+          // skillLevelReward
+          /// name, level
+        }
+        await dispatch(updateCompletedTasks({ taskId: task.id }))
+        // re-sort tasks of this trader
+        dispatch(
+          getTasksOfTraderWithLevel({
+            trader: traderName,
+            level: playerLevel,
+          })
+        )
+        // re-sort tasks of other traders which require this task to be completed
+        const needThisTaskTraders = []
+        if (needForTasks) {
+          needForTasks.forEach((need) => {
+            if (!needThisTaskTraders.includes(need.trader.name)) {
+              needThisTaskTraders.push(need.trader.name)
+            }
+          })
+        } else {
+          throw new Error("needForTasks is not given")
+        }
+        needThisTaskTraders.forEach((trader) => {
+          if (trader !== traderName) {
+            dispatch(
+              getTasksOfTraderWithLevel({
+                trader: trader,
+                level: playerLevel,
+              })
+            )
+          }
+        })
+        if (expandTaskDetailHandle) {
+          expandTaskDetailHandle(traderName, task.id)
+        }
+      }
+
+      updateTaskStatus()
+      setTaskCompleteReward(null)
+    }
+  }, [taskCompleteReward])
+
+  //// handle
   const openCloseAddValueModal = (objectiveId) => {
     if (closeAddValueModal.hasOwnProperty(objectiveId)) {
       const copy = { ...closeAddValueModal }
@@ -194,9 +290,9 @@ const TaskDetail = ({
 
   const confirmTurnInHandle = (newValue, taskId, objectiveId, cap) => {
     if (newValue === cap) {
-      finishClickHandles(taskId, objectiveId, newValue, true)
+      updateObjectiveStatusHandle(taskId, objectiveId, newValue, true)
     } else {
-      finishClickHandles(taskId, objectiveId, newValue)
+      updateObjectiveStatusHandle(taskId, objectiveId, newValue)
     }
   }
 
@@ -218,7 +314,31 @@ const TaskDetail = ({
         })
       )
     }
-    finishClickHandles(taskId, objectiveId, null, true)
+    updateObjectiveStatusHandle(taskId, objectiveId, null, true)
+  }
+
+  const updateObjectiveStatusHandle = (
+    taskId,
+    objectiveId,
+    progress,
+    completed = false
+  ) => {
+    if (completed) {
+      dispatch(
+        updateCompletedObjectives({
+          taskId: taskId,
+          objectiveId: objectiveId,
+        })
+      )
+    }
+    if (progress) {
+      dispatch(
+        updateObjectiveProgress({
+          objectiveId: objectiveId,
+          progress: Number(progress),
+        })
+      )
+    }
   }
 
   const turnInHandle = (objectiveId) => {
@@ -227,6 +347,10 @@ const TaskDetail = ({
     } else if (closeConfirmModal.hasOwnProperty(objectiveId)) {
       openCloseConfirmModal(objectiveId)
     }
+  }
+
+  const completeTaskHandle = (rewards = null) => {
+    setTaskCompleteReward(rewards)
   }
 
   let colIndex = 0
@@ -285,11 +409,10 @@ const TaskDetail = ({
           )
         })}
       <Container className="d-flex align-items-start p-3">
-        <Image
-          src={`/asset/${task.image}.png`}
-          style={{ objectFit: "contain" }}
-        />
-        <p className="ps-3">{task.description}</p>
+        <Image src={`/asset/${task.image}`} style={{ objectFit: "contain" }} />
+        <p className="ps-3">
+          {task.description ? task.description : "MISSING DESCRIPTION"}
+        </p>
       </Container>
       <div className="px-4">Objective(s)</div>
       {task.objectives.map((objective, i) => {

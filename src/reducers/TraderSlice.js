@@ -94,12 +94,17 @@ export const getTaskDetail = createAsyncThunk(
   async (params) => {
     const { id = "", traderName = "" } = params
     try {
+      const taskImgAndDesc = await axios.get(
+        `/api/task/descimage?task_id=${id}`
+      )
+
       const config = {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
       }
+
       const body = {
         query: `{
             task(id: "${id}"){
@@ -269,14 +274,10 @@ export const getTaskDetail = createAsyncThunk(
       )
       const gqlData = gql.data.data.task
 
-      const taskImg = await axios.get(`/api/task/image?id=${id}`)
-      const taskImgData = taskImg.data[0]
-
-      const taskDesc = await axios.get(`/api/task/desc?desc_id=${id}`)
-      const taskDescData = taskDesc.data[0]
-
-      gqlData.image = taskImgData.image
-      gqlData.description = taskDescData.description
+      if (gqlData && taskImgAndDesc.data.length > 0) {
+        gqlData.image = taskImgAndDesc.data[0].image
+        gqlData.description = taskImgAndDesc.data[0].description
+      }
 
       return { data: gqlData, taskId: id, traderName }
     } catch (error) {
@@ -322,7 +323,7 @@ const traderSlice = createSlice({
   name: "trader",
   initialState: {
     requests: {},
-    initTasks: false,
+    initTasksDetail: false,
     isLoading: false,
     isLoadingTasks: false,
     tradeResetTime: {},
@@ -359,6 +360,7 @@ const traderSlice = createSlice({
         id: "5c0647fdd443bc2504c2d371",
         name: "Jaeger",
       },
+      { id: "638f541a29ffd1183d187f57", name: "Lightkeeper" },
     ],
     traderLevels: null,
     tasks: {},
@@ -376,11 +378,11 @@ const traderSlice = createSlice({
         state.tasksDetail[`${trader.name}`] = {}
         state.tasksDetailFetched[`${trader.name}`] = []
       })
-      state.initTasks = true
+      state.initTasksDetail = true
     },
     resetTrader: (state, action) => {
       state.requests = {}
-      state.initTasks = false
+      state.initTasksDetail = false
       state.isLoading = false
       state.isLoadingTasks = false
       state.tradeResetTime = {}
@@ -424,14 +426,21 @@ const traderSlice = createSlice({
         state.requests[`getTaskDetail.${action.meta.arg.id}`] = "pending"
       })
       .addCase(getTaskDetail.fulfilled, (state, action) => {
-        state.tasksDetail[action.payload.traderName] = {
-          ...state.tasksDetail[action.payload.traderName],
-          [action.payload.taskId]: action.payload.data,
+        console.dir(action.payload)
+        if (action.payload.data) {
+          // put in the new fetched task detail data
+          state.tasksDetail[action.payload.traderName] = {
+            ...state.tasksDetail[action.payload.traderName],
+            [action.payload.taskId]: action.payload.data,
+          }
+          // update local fetched task detail list
+          state.tasksDetailFetched[action.payload.traderName].push(
+            action.payload.taskId
+          )
+          state.requests[`getTaskDetail.${action.meta.arg.id}`] = "fulfilled"
+        } else {
+          state.requests[`getTaskDetail.${action.meta.arg.id}`] = "rejected"
         }
-        state.tasksDetailFetched[action.payload.traderName].push(
-          action.payload.taskId
-        )
-        state.requests[`getTaskDetail.${action.meta.arg.id}`] = "fulfilled"
       })
       .addCase(getTaskDetail.rejected, (state, action) => {
         throw Error(action.payload)

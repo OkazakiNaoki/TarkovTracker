@@ -134,7 +134,6 @@ export const getTasksOfTraderWithLevel = createAsyncThunk(
 export const addCompletedTasks = createAsyncThunk(
   "character/addCompletedTasks",
   async (params, { getState }) => {
-    const completeTasks = params.completeTasks
     try {
       const { user } = getState().user
 
@@ -145,15 +144,12 @@ export const addCompletedTasks = createAsyncThunk(
         },
       }
       const newCompleteTasks = await axios.post(
-        `/api/player/task/complete`,
-        { completeTasks: completeTasks },
+        "/api/player/task/complete",
+        { completeTasks: params.completeTasks },
         config
       )
-      const newCompleteTasksData = newCompleteTasks.data.completeTasks
 
-      return {
-        completeTasks: newCompleteTasksData,
-      }
+      return newCompleteTasks.data.completeTasks
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -165,7 +161,6 @@ export const addCompletedTasks = createAsyncThunk(
 export const updateCompletedTasks = createAsyncThunk(
   "character/updateCompletedTasks",
   async (params, { getState }) => {
-    const completeTasks = params.completeTasks
     try {
       const { user } = getState().user
 
@@ -176,15 +171,12 @@ export const updateCompletedTasks = createAsyncThunk(
         },
       }
       const newCompleteTasks = await axios.put(
-        `/api/player/task/complete`,
-        { completeTasks: completeTasks },
+        "/api/player/task/complete",
+        { taskId: params.taskId },
         config
       )
-      const newCompleteTasksData = newCompleteTasks.data.completeTasks
 
-      return {
-        completeTasks: newCompleteTasksData,
-      }
+      return newCompleteTasks.data.completeTasks
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -206,14 +198,11 @@ export const getCompletedObjectives = createAsyncThunk(
         },
       }
       const completeObjectives = await axios.get(
-        `/api/player/task/objective`,
+        "/api/player/task/objective/complete",
         config
       )
-      const completeObjectivesData = completeObjectives.data.completeObjectives
 
-      return {
-        completeObjectives: completeObjectivesData,
-      }
+      return completeObjectives.data.completeObjectives
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -234,7 +223,6 @@ export const getCompletedObjectives = createAsyncThunk(
 export const updateCompletedObjectives = createAsyncThunk(
   "character/updateCompletedObjectives",
   async (params, { getState }) => {
-    const completeObjectives = params.completeObjectives
     try {
       const { user } = getState().user
 
@@ -245,16 +233,12 @@ export const updateCompletedObjectives = createAsyncThunk(
         },
       }
       const newCompleteObjectives = await axios.put(
-        `/api/player/task/objective`,
-        { completeObjectives: completeObjectives },
+        "/api/player/task/objective/complete",
+        { taskId: params.taskId, objectiveId: params.objectiveId },
         config
       )
-      const newCompleteObjectivesData =
-        newCompleteObjectives.data.completeObjectives
 
-      return {
-        completeObjectives: newCompleteObjectivesData,
-      }
+      return newCompleteObjectives.data.completeObjectives
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -277,16 +261,12 @@ export const addCompletedObjectives = createAsyncThunk(
         },
       }
       const newCompleteObjectives = await axios.post(
-        `/api/player/task/objective`,
+        "/api/player/task/objective/complete",
         { completeObjectives: completeObjectives },
         config
       )
-      const newCompleteObjectivesData =
-        newCompleteObjectives.data.completeObjectives
 
-      return {
-        completeObjectives: newCompleteObjectivesData,
-      }
+      return newCompleteObjectives.data.completeObjectives
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -311,11 +291,8 @@ export const getObjectiveProgress = createAsyncThunk(
         `/api/player/task/objective/progress`,
         config
       )
-      const objectiveProgressData = objectiveProgress.data.objectiveProgress
 
-      return {
-        objectiveProgress: objectiveProgressData,
-      }
+      return objectiveProgress.data.objectiveProgress
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -335,7 +312,6 @@ export const getObjectiveProgress = createAsyncThunk(
 export const updateObjectiveProgress = createAsyncThunk(
   "character/updateObjectiveProgress",
   async (params, { getState }) => {
-    const objectiveProgress = params.objectiveProgress
     try {
       const { user } = getState().user
 
@@ -347,15 +323,16 @@ export const updateObjectiveProgress = createAsyncThunk(
       }
       const newObjectiveProgress = await axios.put(
         `/api/player/task/objective/progress`,
-        { objectiveProgress: objectiveProgress },
+        {
+          objectiveProgress: {
+            objectiveId: params.objectiveId,
+            progress: params.progress,
+          },
+        },
         config
       )
-      const newObjectiveProgressData =
-        newObjectiveProgress.data.objectiveProgress
 
-      return {
-        objectiveProgress: newObjectiveProgressData,
-      }
+      return newObjectiveProgress.data.objectiveProgress
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -382,12 +359,8 @@ export const addObjectiveProgress = createAsyncThunk(
         { objectiveProgress: objectiveProgress },
         config
       )
-      const newObjectiveProgressData =
-        newObjectiveProgress.data.objectiveProgress
 
-      return {
-        objectiveProgress: newObjectiveProgressData,
-      }
+      return newObjectiveProgress.data.objectiveProgress
     } catch (error) {
       return error.response && error.response.data.message
         ? error.response.data.message
@@ -693,23 +666,27 @@ export const updateInventoryItem = createAsyncThunk(
 const calcTraderLL = (traders, traderLevels, traderRep, traderSpent) => {
   const LL = {}
   traders.forEach((trader) => {
-    for (let i = 1; i < traderLevels[trader.name].length; i++) {
-      if (
-        traderLevels[trader.name][i].requiredReputation <=
-          traderRep[trader.name] &&
-        traderLevels[trader.name][i].requiredCommerce <=
-          traderSpent[trader.name] * 1000000
-      ) {
-        LL[trader.name] = i + 1
-      } else if (
-        traderLevels[trader.name][i].requiredReputation >
-          traderRep[trader.name] ||
-        traderLevels[trader.name][i].requiredCommerce >
-          traderSpent[trader.name] * 1000000
-      ) {
-        LL[trader.name] = i
-        break
+    if (traderLevels[trader.name].length > 1) {
+      for (let i = 1; i < traderLevels[trader.name].length; i++) {
+        if (
+          traderLevels[trader.name][i].requiredReputation <=
+            traderRep[trader.name] &&
+          traderLevels[trader.name][i].requiredCommerce <=
+            traderSpent[trader.name] * 1000000
+        ) {
+          LL[trader.name] = i + 1
+        } else if (
+          traderLevels[trader.name][i].requiredReputation >
+            traderRep[trader.name] ||
+          traderLevels[trader.name][i].requiredCommerce >
+            traderSpent[trader.name] * 1000000
+        ) {
+          LL[trader.name] = i
+          break
+        }
       }
+    } else {
+      LL[trader.name] = 1
     }
   })
   return LL
@@ -1088,43 +1065,50 @@ const characterSlice = createSlice({
         }
       })
       .addCase(getTasksOfTraderWithLevel.rejected, (state, action) => {})
+      .addCase(addCompletedTasks.pending, (state, action) => {})
+      .addCase(addCompletedTasks.fulfilled, (state, action) => {
+        state.playerCompletedObjectives = action.payload
+      })
+      .addCase(addCompletedTasks.rejected, (state, action) => {})
       .addCase(updateCompletedTasks.pending, (state, action) => {})
-      .addCase(updateCompletedTasks.fulfilled, (state, action) => {})
+      .addCase(updateCompletedTasks.fulfilled, (state, action) => {
+        state.playerCompletedObjectives = action.payload
+      })
       .addCase(updateCompletedTasks.rejected, (state, action) => {})
       .addCase(getCompletedObjectives.pending, (state, action) => {
         state.requests["getCompletedObjectives"] = "pending"
       })
       .addCase(getCompletedObjectives.fulfilled, (state, action) => {
-        state.playerCompletedObjectives = action.payload.completeObjectives
+        state.playerCompletedObjectives = action.payload
         state.requests["getCompletedObjectives"] = "fulfilled"
       })
       .addCase(getCompletedObjectives.rejected, (state, action) => {})
       .addCase(updateCompletedObjectives.pending, (state, action) => {})
       .addCase(updateCompletedObjectives.fulfilled, (state, action) => {
-        state.playerCompletedObjectives = action.payload.completeObjectives
+        state.playerCompletedObjectives = action.payload
       })
       .addCase(updateCompletedObjectives.rejected, (state, action) => {})
       .addCase(addCompletedObjectives.pending, (state, action) => {})
       .addCase(addCompletedObjectives.fulfilled, (state, action) => {
-        state.playerCompletedObjectives = action.payload.completeObjectives
+        state.playerCompletedObjectives = action.payload
       })
       .addCase(addCompletedObjectives.rejected, (state, action) => {})
       .addCase(getObjectiveProgress.pending, (state, action) => {
         state.requests["getObjectiveProgress"] = "pending"
       })
       .addCase(getObjectiveProgress.fulfilled, (state, action) => {
-        state.playerObjectiveProgress = action.payload.objectiveProgress
+        state.playerObjectiveProgress = action.payload
         state.requests["getObjectiveProgress"] = "fulfilled"
       })
       .addCase(getObjectiveProgress.rejected, (state, action) => {})
       .addCase(updateObjectiveProgress.pending, (state, action) => {})
       .addCase(updateObjectiveProgress.fulfilled, (state, action) => {
-        state.playerObjectiveProgress = action.payload.objectiveProgress
+        state.playerObjectiveProgress = action.payload
       })
       .addCase(updateObjectiveProgress.rejected, (state, action) => {})
       .addCase(addObjectiveProgress.pending, (state, action) => {})
       .addCase(addObjectiveProgress.fulfilled, (state, action) => {
-        state.playerObjectiveProgress = action.payload.objectiveProgress
+        state.playerObjectiveProgress = action.payload
       })
       .addCase(addObjectiveProgress.rejected, (state, action) => {})
       .addCase(addCharacterData.pending, (state, action) => {})

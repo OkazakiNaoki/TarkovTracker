@@ -1,6 +1,5 @@
 import asyncHandler from "express-async-handler"
-import InGameTaskDesc from "../models/InGameTaskDescModel.js"
-import InGameTaskImage from "../models/InGameTaskImageModel.js"
+import InGameTaskDescImage from "../models/InGameTaskDescImageModel.js"
 import InGameTasks from "../models/InGameTasksModel.js"
 import InGameTaskItemRequirement from "../models/InGameTaskItemRequirementModel.js"
 
@@ -66,16 +65,16 @@ export const getTaskById = asyncHandler(async (req, res) => {
   res.json(task)
 })
 
-// @desc Get task image by task id
-// @route GET /api/task/image
+// @desc Get task description by task description id
+// @route GET /api/task/descimage
 // @access public
-export const getTaskImage = asyncHandler(async (req, res) => {
-  const id = req.query.id
+export const getTaskDescImage = asyncHandler(async (req, res) => {
+  const task_id = req.query.task_id
 
   const aggregateArr = [
     {
       $match: {
-        id: id,
+        id: task_id,
       },
     },
     {
@@ -83,39 +82,14 @@ export const getTaskImage = asyncHandler(async (req, res) => {
         _id: 0,
         id: 1,
         image: 1,
-      },
-    },
-  ]
-
-  const taskImg = await InGameTaskImage.aggregate(aggregateArr)
-
-  res.json(taskImg)
-})
-
-// @desc Get task description by task description id
-// @route GET /api/task/desc
-// @access public
-export const getTaskDesc = asyncHandler(async (req, res) => {
-  const desc_id = req.query.desc_id
-
-  const aggregateArr = [
-    {
-      $match: {
-        taskId: desc_id,
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        taskId: 1,
         description: 1,
       },
     },
   ]
 
-  const taskDesc = await InGameTaskDesc.aggregate(aggregateArr)
+  const taskDescImage = await InGameTaskDescImage.aggregate(aggregateArr)
 
-  res.json(taskDesc)
+  res.json(taskDescImage)
 })
 
 // @desc Get item requirements of all task

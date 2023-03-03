@@ -61,7 +61,7 @@ router
   .put(protect, updateTaskObjectiveProgress)
 
 router
-  .route("/task/objective")
+  .route("/task/objective/complete")
   .post(protect, addCompleteTaskObjective)
   .put(protect, updateCompleteTaskObjective)
   .get(protect, getCompleteTaskObjective)

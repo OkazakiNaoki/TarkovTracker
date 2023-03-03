@@ -8,17 +8,18 @@ import maxLoyaltyWhite from "../../server/public/static/images/loyalty_king_new.
 import { convertRomanNumeral } from "../helpers/NumberFormat"
 
 const TraderRelationModal = ({ show, traderName, closeHandle }) => {
+  //// state
   const [rep, setRep] = useState(null)
   const [spent, setSpent] = useState(null)
   const [localLL, setLocalLL] = useState(null)
   const [LLprogressbar, setLLprogressbar] = useState(0)
 
-  // redux
+  //// redux
   const dispatch = useDispatch()
   const { initSetup, traderProgress } = useSelector((state) => state.character)
   const { traderLevels } = useSelector((state) => state.trader)
 
-  //// hooks effect
+  //// effect
   // initialize current trader's reputation and money spent record once trader progress fetched
   useEffect(() => {
     if (traderProgress && traderName) {
@@ -50,14 +51,19 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
 
   // update loyalty level progress bar
   useEffect(() => {
-    if (traderName && traderLevels && localLL) {
+    if (
+      traderName &&
+      traderLevels &&
+      localLL &&
+      traderLevels[traderName].length > 1
+    ) {
       setLLprogressbar(
         ((localLL - 1) / (traderLevels[traderName].length - 1)) * 100
       )
     }
   }, [localLL])
 
-  //// handles
+  //// handle
   // on confirm sent behavior
   const updateTraderProgressHandle = () => {
     if (
@@ -99,25 +105,30 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
       <Modal.Body style={{ backgroundColor: "#191919" }}>
         <div className="p-3 m-3">
           <div className="position-relative">
-            <div
-              className="progress"
-              style={{
-                height: "6px",
-                transform: "translateY(-3px)",
-                "--bs-progress-bg": "black",
-              }}
-            >
-              <div
-                className="progress-bar"
-                role="progressbar"
-                style={{
-                  width: `${LLprogressbar}%`,
-                  "--bs-progress-bar-bg": "#b7ad9c",
-                }}
-              ></div>
-            </div>
             {traderName &&
               traderLevels &&
+              traderLevels[traderName].length > 1 && (
+                <div
+                  className="progress"
+                  style={{
+                    height: "6px",
+                    transform: "translateY(-3px)",
+                    "--bs-progress-bg": "black",
+                  }}
+                >
+                  <div
+                    className="progress-bar"
+                    role="progressbar"
+                    style={{
+                      width: `${LLprogressbar}%`,
+                      "--bs-progress-bar-bg": "#b7ad9c",
+                    }}
+                  ></div>
+                </div>
+              )}
+            {traderName &&
+              traderLevels &&
+              traderLevels[traderName].length > 1 &&
               traderLevels[traderName].map((level, levelIdx) => {
                 if (levelIdx !== traderLevels[traderName].length - 1)
                   return (
@@ -154,43 +165,45 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
                   )
               })}
             {/* Max level */}
-            {traderName && traderLevels && (
-              <Button
-                type="button"
-                className="position-absolute btn btn-sm rounded-pill"
-                style={{
-                  width: "2rem",
-                  height: "2rem",
-                  transform: "translateX(-50%) translateY(-50%)",
-                  top: "0%",
-                  left: "100%",
-                  "--bs-btn-border-width": "0px",
-                  "--bs-btn-bg":
-                    localLL >= traderLevels[traderName].length
-                      ? "#b7ad9c"
-                      : "black",
-                  "--bs-btn-color":
-                    localLL >= traderLevels[traderName].length
-                      ? "#191919"
-                      : "#d7cdbc",
-                  "--bs-btn-hover-bg": "#d7cdbc",
-                  "--bs-btn-hover-color": "#191919",
-                  "--bs-btn-active-bg": "#d7cdbc",
-                  "--bs-btn-active-color": "#191919",
-                  "--bs-btn-focus-shadow-rgb": "183,173,156",
-                  backgroundImage: `url(${
-                    localLL >= traderLevels[traderName].length
-                      ? maxLoyalty
-                      : maxLoyaltyWhite
-                  })`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
-                }}
-                onClick={() => {
-                  clickLLbtn(traderLevels[traderName].length)
-                }}
-              ></Button>
-            )}
+            {traderName &&
+              traderLevels &&
+              traderLevels[traderName].length > 1 && (
+                <Button
+                  type="button"
+                  className="position-absolute btn btn-sm rounded-pill"
+                  style={{
+                    width: "2rem",
+                    height: "2rem",
+                    transform: "translateX(-50%) translateY(-50%)",
+                    top: "0%",
+                    left: "100%",
+                    "--bs-btn-border-width": "0px",
+                    "--bs-btn-bg":
+                      localLL >= traderLevels[traderName].length
+                        ? "#b7ad9c"
+                        : "black",
+                    "--bs-btn-color":
+                      localLL >= traderLevels[traderName].length
+                        ? "#191919"
+                        : "#d7cdbc",
+                    "--bs-btn-hover-bg": "#d7cdbc",
+                    "--bs-btn-hover-color": "#191919",
+                    "--bs-btn-active-bg": "#d7cdbc",
+                    "--bs-btn-active-color": "#191919",
+                    "--bs-btn-focus-shadow-rgb": "183,173,156",
+                    backgroundImage: `url(${
+                      localLL >= traderLevels[traderName].length
+                        ? maxLoyalty
+                        : maxLoyaltyWhite
+                    })`,
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                  }}
+                  onClick={() => {
+                    clickLLbtn(traderLevels[traderName].length)
+                  }}
+                ></Button>
+              )}
           </div>
         </div>
         <Form>

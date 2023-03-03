@@ -30,7 +30,7 @@ const TaskScreen = () => {
 
   //// redux state
   const {
-    initTasks,
+    initTasksDetail,
     tradeResetTime,
     isLoadingTasks,
     traders,
@@ -42,10 +42,10 @@ const TaskScreen = () => {
 
   //// effect
   useEffect(() => {
-    if (!initTasks) {
+    if (!initTasksDetail) {
       dispatch(initializeTasks())
     }
-  }, [initTasks])
+  }, [initTasksDetail])
 
   useEffect(() => {
     if (curTrader) {
