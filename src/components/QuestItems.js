@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Row, Col, InputGroup, Form, Button } from "react-bootstrap"
+import classNames from "classnames"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import {
   getInventoryItem,
@@ -85,7 +86,6 @@ const QuestItems = ({ playerTasksInfo }) => {
         if (!showCompleteTaskReq) {
           req.requiredByTask.forEach((task) => {
             if (
-              task.trader !== "Lightkeeper" &&
               getIndexOfObjArrWhereFieldEqualTo(
                 playerTasksInfo[task.trader].complete,
                 "id",
@@ -157,15 +157,7 @@ const QuestItems = ({ playerTasksInfo }) => {
         if (
           questItemList &&
           questItemList.includes(req.item.name) &&
-          (req.factionName === playerFaction || req.factionName === "Any") &&
-          ((itemFilterType === "full" &&
-            req.item.name
-              .toLowerCase()
-              .includes(itemFilterKeyword.toLowerCase())) ||
-            (itemFilterType === "short" &&
-              req.item.shortName
-                .toLowerCase()
-                .includes(itemFilterKeyword.toLowerCase())))
+          (req.factionName === playerFaction || req.factionName === "Any")
         )
           return (
             <Col
@@ -179,7 +171,22 @@ const QuestItems = ({ playerTasksInfo }) => {
               md={6}
               lg={4}
               xl={3}
-              className="d-flex justify-content-center align-items-stretch"
+              className={classNames(
+                "d-flex",
+                "justify-content-center",
+                "align-items-stretch",
+                {
+                  "d-none":
+                    (itemFilterType === "full" &&
+                      !req.item.name
+                        .toLowerCase()
+                        .includes(itemFilterKeyword.toLowerCase())) ||
+                    (itemFilterType === "short" &&
+                      !req.item.shortName
+                        .toLowerCase()
+                        .includes(itemFilterKeyword.toLowerCase())),
+                }
+              )}
             >
               <QuestItem playerInventory={playerInventory} itemReq={req} />
             </Col>

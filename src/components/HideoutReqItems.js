@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Row, Col, InputGroup, Form, Button } from "react-bootstrap"
+import classNames from "classnames"
 import { getAllHideoutReqItem } from "../reducers/HideoutSlice"
 import {
   getHideoutLevel,
@@ -154,18 +155,7 @@ const HideoutReqItems = () => {
       {!hideoutItemRequirement && <DivLoading height={300} />}
       {hideoutItemRequirement &&
         hideoutItemRequirement.map((req) => {
-          if (
-            (hideoutItemList &&
-              hideoutItemList.includes(req.item.name) &&
-              itemFilterType === "full" &&
-              req.item.name
-                .toLowerCase()
-                .includes(itemFilterKeyword.toLowerCase())) ||
-            (itemFilterType === "short" &&
-              req.item.shortName
-                .toLowerCase()
-                .includes(itemFilterKeyword.toLowerCase()))
-          )
+          if (hideoutItemList && hideoutItemList.includes(req.item.name))
             return (
               <Col
                 key={req.item.name}
@@ -173,7 +163,22 @@ const HideoutReqItems = () => {
                 md={6}
                 lg={4}
                 xl={3}
-                className="d-flex justify-content-center align-items-stretch"
+                className={classNames(
+                  "d-flex",
+                  "justify-content-center",
+                  "align-items-stretch",
+                  {
+                    "d-none":
+                      (itemFilterType === "full" &&
+                        !req.item.name
+                          .toLowerCase()
+                          .includes(itemFilterKeyword.toLowerCase())) ||
+                      (itemFilterType === "short" &&
+                        !req.item.shortName
+                          .toLowerCase()
+                          .includes(itemFilterKeyword.toLowerCase())),
+                  }
+                )}
               >
                 <HideoutReqItem
                   playerInventory={playerInventory}
