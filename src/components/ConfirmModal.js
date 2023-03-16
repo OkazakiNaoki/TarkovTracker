@@ -15,7 +15,7 @@ const ConfirmModal = ({
       aria-labelledby={`${title}`}
       centered
       backdrop="static"
-      style={{ "--bs-modal-bg": "#080605" }}
+      className="bs-modal-bg-black1"
     >
       <Modal.Header closeButton>
         {title && (
@@ -24,8 +24,8 @@ const ConfirmModal = ({
           </Modal.Title>
         )}
       </Modal.Header>
-      <Modal.Body>
-        <div style={{ whiteSpace: "break-spaces" }}>{content}</div>
+      <Modal.Body className="bg-black2">
+        <div className="ws-break-spaces">{content}</div>
       </Modal.Body>
       <Modal.Footer>
         <Button

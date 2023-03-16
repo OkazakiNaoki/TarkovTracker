@@ -1,12 +1,8 @@
-import React from "react"
-import { useEffect } from "react"
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button, Card } from "react-bootstrap"
 import { useDispatch } from "react-redux"
-import {
-  getArrObjFieldBWhereFieldAEqualTo,
-  getIndexOfObjArrWhereFieldEqualTo,
-} from "../helpers/LoopThrough"
+import { find, get } from "lodash"
+import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
 import { EditValueModal } from "./EditValueModal"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
@@ -37,26 +33,16 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
   //// effect
   useEffect(() => {
     if (playerInventory) {
-      const count = getArrObjFieldBWhereFieldAEqualTo(
-        playerInventory,
-        "item.id",
-        itemReq.item.id,
-        "count"
-      )
+      const count = findItemAmount(playerInventory, itemReq.item.id)
       if (count !== itemCount) setItemCount(count)
     }
   }, [playerInventory])
 
   useEffect(() => {
     // update player's inventory once own amount of quest item changed
-    if (playerInventory && itemCount !== null) {
-      const newInventory = JSON.parse(JSON.stringify(playerInventory))
-      const index = getIndexOfObjArrWhereFieldEqualTo(
-        newInventory,
-        "id",
-        itemReq.item.id
-      )
-      if (index === -1 || newInventory[index].count !== itemCount) {
+    if (playerInventory) {
+      const count = findItemAmount(playerInventory, itemReq.item.id)
+      if (itemCount !== null && itemCount !== count) {
         dispatch(
           updateInventoryItem({
             items: [
@@ -76,6 +62,17 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
   }, [itemCount])
 
   //// handle
+  // get item amount in inventory
+  const findItemAmount = (inventory, itemId) => {
+    return get(
+      find(inventory, (item) => {
+        return get(item, "item.id") === itemId
+      }),
+      "count",
+      0
+    )
+  }
+
   // mouse position update
   const mouseMoveHandle = (e) => {
     const { clientX, clientY } = e

@@ -357,6 +357,9 @@ const TaskDetail = ({
 
   return (
     <div>
+      {/*
+        objective progress modal
+      */}
       {completeable &&
         closeAddValueModal &&
         task.objectives.map((objective, i) => {
@@ -378,6 +381,10 @@ const TaskDetail = ({
             )
           )
         })}
+
+      {/*
+        confirm complete objective modal
+      */}
       {completeable &&
         closeConfirmModal &&
         task.objectives.map((objective, i) => {
@@ -408,12 +415,20 @@ const TaskDetail = ({
             )
           )
         })}
+
+      {/*
+        task image and task description
+      */}
       <Container className="d-flex align-items-start p-3">
         <Image src={`/asset/${task.image}`} style={{ objectFit: "contain" }} />
         <p className="ps-3">
           {task.description ? task.description : "MISSING DESCRIPTION"}
         </p>
       </Container>
+
+      {/*
+        task objectives
+      */}
       <div className="px-4">Objective(s)</div>
       {task.objectives.map((objective, i) => {
         return (
@@ -444,6 +459,7 @@ const TaskDetail = ({
             {!completeable && objective.count && (
               <div className="mx-3 fw-bold">{`0/${objective.count}`}</div>
             )}
+            {/* turn in button */}
             {completeable &&
               completeObjective &&
               (completeObjective.includes(objective.id) ? (
@@ -464,6 +480,10 @@ const TaskDetail = ({
           </div>
         )
       })}
+
+      {/*
+        task rewards
+      */}
       <div className="px-4">Rewards</div>
       <div className="p-2">
         <Row xs={4} className="g-2 px-5" style={{ backgroundColor: "#090a0b" }}>

@@ -135,4 +135,4 @@ const Paginate = ({
   )
 }
 
-export default Paginate
+export { Paginate }

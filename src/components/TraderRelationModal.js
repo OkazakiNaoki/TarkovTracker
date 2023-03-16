@@ -95,33 +95,25 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
       aria-labelledby={`${traderName}`}
       centered
       backdrop="static"
-      style={{ "--bs-modal-bg": "#080605" }}
+      className="bs-modal-bg-black1"
     >
       <Modal.Header closeButton className="sandbeige">
         {traderName && (
           <Modal.Title id={`${traderName}`}>{traderName}</Modal.Title>
         )}
       </Modal.Header>
-      <Modal.Body style={{ backgroundColor: "#191919" }}>
+      <Modal.Body className="bg-black2">
         <div className="p-3 m-3">
           <div className="position-relative">
             {traderName &&
               traderLevels &&
               traderLevels[traderName].length > 1 && (
-                <div
-                  className="progress"
-                  style={{
-                    height: "6px",
-                    transform: "translateY(-3px)",
-                    "--bs-progress-bg": "black",
-                  }}
-                >
+                <div className="progress trader-progress">
                   <div
-                    className="progress-bar"
+                    className="progress-bar trader-progress-bar"
                     role="progressbar"
                     style={{
                       width: `${LLprogressbar}%`,
-                      "--bs-progress-bar-bg": "#b7ad9c",
                     }}
                   ></div>
                 </div>

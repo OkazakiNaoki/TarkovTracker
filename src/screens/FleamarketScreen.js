@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import { HeadMeta } from "../components/HeadMeta"
 import { searchItemByName } from "../reducers/FleamarketSlice"
 import ItemRow from "../components/ItemRow"
-import Paginate from "../components/Paginate"
+import { Paginate } from "../components/Paginate"
 import { ItemSearchBar } from "../components/ItemSearchBar"
 
 const FleamarketScreen = () => {

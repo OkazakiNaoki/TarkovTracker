@@ -62,6 +62,8 @@ nav {
     border-top-right-radius: 0%;
 }
 
+
+
 /* bootstrap accordion for task detail */
 .task-accordion {
     /* border radius */
@@ -101,6 +103,11 @@ nav {
     --bs-table-bg: #1c1c1c;
 }
 
+.bs-table-bg-red {
+    --bs-table-bg: #dc3545;
+}
+
+/* bootstrap replace svg btn-close with white X */
 .btn-close {
     background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27 fill=%27%23fff%27%3e%3cpath d=%27M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z%27/%3e%3c/svg%3e");
 }
@@ -112,9 +119,7 @@ nav {
     overflow: hidden;
 }
 
-.ls-1 {
-    letter-spacing: 1px;
-}
+
 
 /* Bootstrap: 7 cols per row */
 @media (min-width: 576px){
@@ -154,12 +159,6 @@ table.round-table tfoot td {
     border-radius: 40px;
 }
 
-/* width height */
-.wh-square-64 {
-    width: 64px;
-    height: 64px;
-}
-
 /* bootstrap color */
 .bs-green {
     color: var(--bs-green);
@@ -183,7 +182,58 @@ table.round-table tfoot td {
     --bs-btn-hover-bg: none;
 }
 
-/* custom color */
+/* custom bootstrap progress */
+.trader-progress {
+    height: 6px;
+    transform: translateY(-3px);
+    --bs-progress-bg: black;
+}
+
+.trader-progress-bar {
+    --bs-progress-bar-bg: #b7ad9c;
+}
+
+/* custom width height class */
+.wh-square-64 {
+    width: 64px;
+    height: 64px;
+}
+
+.wh-square-60 {
+    width: 60px;
+    height: 60px;
+}
+
+.wh-square-32 {
+    width: 32px;
+    height: 32px;
+}
+
+/* custom letter spacing class */
+.ls-1 {
+    letter-spacing: 1px;
+}
+
+/* custom white spaces class */
+.ws-break-spaces {
+    white-space: break-spaces;
+}
+
+/* custom margin class */
+.ma-left-auto {
+    margin-left: auto;
+}
+
+/* custom font size class */
+.fs-32px {
+    font-size: 32px;
+}
+
+.fs-40px {
+    font-size: 40px;
+}
+
+/* custom color class */
 .white {
     color: white;
 }
@@ -196,9 +246,41 @@ table.round-table tfoot td {
     color: #ca8a00;
 }
 
-/* custom bg color */
+/* replace bootstrap modal background color */
+.bs-modal-bg-black1 {
+    --bs-modal-bg: #080605;
+}
+
+/* custom background color class */
+.bg-black2 {
+    background-color: #191919;
+}
+
+.bg-black1 {
+    background-color: #080605;
+}
+
 .task-reward-bg {
     background-color: #121314;
+}
+
+/* custom border radius class */
+.border-radius-20px {
+    border-radius: 20px;
+}
+
+/* custom max width class */
+.max-width-0 {
+    max-width: 0;
+}
+
+.max-width-100 {
+    max-width: 100%;
+}
+
+/* custom width class */
+.width-0 {
+    width: 0;
 }
 
 /* character level hide/show sticky button */
@@ -217,9 +299,19 @@ table.round-table tfoot td {
 }
 
 .hide-level-sticky-btn:hover {
-    animation: levelBtnSlideOut 0.2s ease-out forwards;
+    animation: levelBtnSlideOut 0.5s ease-in-out forwards;
 }
 
+/* transition animation class */
+.transition-width {
+    transition: width 8s;
+}
+
+.transition-w-mw {
+    transition: width 3s ease-out, max-width 3s ease-out;
+}
+
+/* animation keyframe */
 @keyframes spinnerSpin {
     from {
         transform: rotate(0deg) translateX(-1px) translateY(-1px);

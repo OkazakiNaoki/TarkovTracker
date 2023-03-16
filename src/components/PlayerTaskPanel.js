@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useCallback } from "react"
 import {
   Accordion,
   Collapse,
@@ -7,14 +8,15 @@ import {
   ToggleButton,
 } from "react-bootstrap"
 import { useSelector, useDispatch } from "react-redux"
+import { get } from "lodash"
+import classNames from "classnames"
 import { haveZeroPropertyEqualTo } from "../helpers/LoopThrough"
-import { safeGet } from "../helpers/ObjectExt"
 import { getTasksOfTraderWithLevel } from "../reducers/CharacterSlice"
 import { getTaskDetail, initializeTasks } from "../reducers/TraderSlice"
 import { DivLoading } from "./DivLoading"
 import { TaskDetail } from "./TaskDetail"
 
-const PlayerTaskProgress = ({
+const PlayerTaskPanel = ({
   traders,
   tasks,
   unlockedTraders,
@@ -39,17 +41,17 @@ const PlayerTaskProgress = ({
 
   //// redux state
   const { initSetup } = useSelector((state) => state.character)
-  const { initTasks, tasksDetail, tasksDetailFetched } = useSelector(
+  const { initTasksDetail, tasksDetail, tasksDetailFetched } = useSelector(
     (state) => state.trader
   )
 
   //// effect
   // initialize task detail empty container
   useEffect(() => {
-    if (!initTasks) {
+    if (!initTasksDetail) {
       dispatch(initializeTasks())
     }
-  }, [initTasks])
+  }, [initTasksDetail])
 
   // set total task amount of each trader
   useEffect(() => {
@@ -128,6 +130,18 @@ const PlayerTaskProgress = ({
     setCollapseDetail(newCollapse)
   }
 
+  const toggleCompleteTasks = useCallback(() => {
+    setShowCompleteTask(!showCompleteTask)
+  }, [showCompleteTask])
+
+  const toggleOngoingTasks = useCallback(() => {
+    setShowOngoingTask(!showOngoingTask)
+  }, [showOngoingTask])
+
+  const toggleNotQualifyTasks = useCallback(() => {
+    setShowNotQualifyTask(!showNotQualifyTask)
+  }, [showNotQualifyTask])
+
   return (
     <div>
       <div>
@@ -136,9 +150,7 @@ const PlayerTaskProgress = ({
           variant="outline-primary"
           checked={showCompleteTask}
           className="btn-sm mx-2 mb-3 bs-btn-hover-bg-none"
-          onClick={(e) => {
-            setShowCompleteTask(!showCompleteTask)
-          }}
+          onClick={toggleCompleteTasks}
         >
           Completed
         </ToggleButton>
@@ -147,22 +159,18 @@ const PlayerTaskProgress = ({
           variant="outline-success"
           checked={showOngoingTask}
           className="btn-sm mx-2 mb-3 bs-btn-hover-bg-none"
-          onClick={(e) => {
-            setShowOngoingTask(!showOngoingTask)
-          }}
+          onClick={toggleOngoingTasks}
         >
           Available
         </ToggleButton>
         <ToggleButton
           type="checkbox"
-          variant="outline-dark"
+          variant="outline-danger"
           checked={showNotQualifyTask}
           className="btn-sm mx-2 mb-3 bs-btn-hover-bg-none"
-          onClick={(e) => {
-            setShowNotQualifyTask(!showNotQualifyTask)
-          }}
+          onClick={toggleNotQualifyTasks}
         >
-          Not unlock
+          Not available
         </ToggleButton>
       </div>
       <Accordion alwaysOpen className="task-accordion">
@@ -180,14 +188,20 @@ const PlayerTaskProgress = ({
                   <div className="d-inline mx-3 white fs-6">
                     <span>{"available: "}</span>
                     <span
-                      className={
-                        safeGet(playerTasksInfo, trader.name) &&
-                        playerTasksInfo[trader.name].ongoing.length > 0
-                          ? "bs-green"
-                          : "bs-dark"
-                      }
+                      className={classNames(
+                        {
+                          "bs-green":
+                            get(playerTasksInfo, trader.name, null) &&
+                            playerTasksInfo[trader.name].ongoing.length > 0,
+                        },
+                        {
+                          "bs-dark":
+                            get(playerTasksInfo, trader.name, null) &&
+                            playerTasksInfo[trader.name].ongoing.length === 0,
+                        }
+                      )}
                     >
-                      {safeGet(playerTasksInfo, trader.name) &&
+                      {get(playerTasksInfo, trader.name, null) &&
                         playerTasksInfo[trader.name].ongoing.length}
                     </span>
                   </div>
@@ -195,7 +209,7 @@ const PlayerTaskProgress = ({
                   <div className="d-inline mx-3 fs-6">
                     <span>{"completed: "}</span>
                     <span className="bs-blue">
-                      {safeGet(playerTasksInfo, trader.name) &&
+                      {get(playerTasksInfo, trader.name, null) &&
                         playerTasksInfo[trader.name].complete.length}
                       {"/"}
                       {taskTotalLen && taskTotalLen[trader.name]}
@@ -228,21 +242,28 @@ const PlayerTaskProgress = ({
                                 return [
                                   <tr
                                     key={task.id}
-                                    onClick={() => {
-                                      expandTaskDetailHandle(
-                                        trader.name,
-                                        task.id
-                                      )
-                                    }}
+                                    onClick={expandTaskDetailHandle.bind(
+                                      null,
+                                      trader.name,
+                                      task.id
+                                    )}
                                   >
                                     <td
-                                      className={`px-5 ${
-                                        status === "complete"
-                                          ? "bs-table-bg-blue"
-                                          : status === "ongoing"
-                                          ? "bs-table-bg-green"
-                                          : "bs-table-bg-dark"
-                                      }`}
+                                      className={classNames(
+                                        "px-5",
+                                        {
+                                          "bs-table-bg-blue":
+                                            status === "complete",
+                                        },
+                                        {
+                                          "bs-table-bg-green":
+                                            status === "ongoing",
+                                        },
+                                        {
+                                          "bs-table-bg-red":
+                                            status === "notQualify",
+                                        }
+                                      )}
                                     >
                                       {task.name}
                                     </td>
@@ -279,7 +300,7 @@ const PlayerTaskProgress = ({
                                                     task.needForTasks
                                                   }
                                                   completeable={
-                                                    status === "complete"
+                                                    status === "ongoing"
                                                   }
                                                   disableTurnIn={
                                                     status === "notQualify"
@@ -318,4 +339,4 @@ const PlayerTaskProgress = ({
   )
 }
 
-export { PlayerTaskProgress }
+export { PlayerTaskPanel }

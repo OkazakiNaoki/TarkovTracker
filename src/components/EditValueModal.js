@@ -60,27 +60,20 @@ const EditValueModal = ({
       aria-labelledby={`${title}`}
       centered
       backdrop="static"
-      style={{ "--bs-modal-bg": "#080605" }}
+      className="bs-modal-bg-black1"
     >
       <Modal.Header closeButton className="sandbeige">
         {title && <Modal.Title id={`${title}`}>{title}</Modal.Title>}
       </Modal.Header>
-      <Modal.Body style={{ backgroundColor: "#191919" }}>
+      <Modal.Body className="bg-black2">
         <Row>
           <Col xs={2}>
             <div className="d-flex justify-content-center align-items-center h-100">
               <Button
-                className="d-flex justify-content-center align-items-center"
+                className="d-flex justify-content-center align-items-center wh-square-60 fs-40px border-radius-20px"
                 variant="danger"
                 onClick={() => {
                   fiddleValue(-1)
-                }}
-                style={{
-                  width: "60px",
-                  height: "60px",
-                  borderRadius: "20px",
-                  fontSize: "40px",
-                  verticalAlign: "middle",
                 }}
               >
                 <Dash />
@@ -95,16 +88,10 @@ const EditValueModal = ({
           <Col xs={2}>
             <div className="d-flex justify-content-center align-items-center h-100">
               <Button
-                className="d-flex justify-content-center align-items-center"
+                className="d-flex justify-content-center align-items-center wh-square-60 fs-40px border-radius-20px"
                 variant="success"
                 onClick={() => {
                   fiddleValue(1)
-                }}
-                style={{
-                  width: "60px",
-                  height: "60px",
-                  borderRadius: "20px",
-                  fontSize: "40px",
                 }}
               >
                 <Plus />
@@ -162,9 +149,7 @@ const EditValueModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          onClick={() => {
-            setValueHandle(localValue)
-          }}
+          onClick={setValueHandle.bind(null, localValue)}
           variant="primary"
         >
           Confirm
