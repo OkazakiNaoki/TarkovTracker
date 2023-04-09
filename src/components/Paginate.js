@@ -56,18 +56,7 @@ const Paginate = ({
 
   return (
     pages > 1 && (
-      <Pagination
-        style={{
-          "--bs-pagination-padding-x": "1rem",
-          "--bs-pagination-color": "#b7ad9c",
-          "--bs-pagination-bg": "#212529",
-          "--bs-pagination-border-color": "#495154",
-          "--bs-pagination-active-color": "black",
-          "--bs-pagination-active-bg": "#b7ad9c",
-          "--bs-pagination-active-border-color": "#b7ad9c",
-          "--bs-pagination-hover-color": "black",
-        }}
-      >
+      <Pagination>
         {useFirstLast && (
           <Pagination.First
             onClick={() => {

@@ -13,6 +13,7 @@ import { FloatingMessageBox } from "./FloatingMessageBox"
 import { FloatingTaskSimpleInfo } from "./FloatingTaskSimpleInfo"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
 import { ItemSingleGrid } from "./ItemSingleGrid"
+import { Plus } from "react-bootstrap-icons"
 
 const QuestItem = ({ playerInventory, itemReq }) => {
   const [mainX, setMainX] = useState(0)
@@ -181,21 +182,14 @@ const QuestItem = ({ playerInventory, itemReq }) => {
         }}
         closeHandle={openItemCountModal}
       />,
-      <Card
-        key="quest_item_card"
-        className="bg-dark text-white my-3 rounded w-100 ls-1"
-      >
-        <Card.Title
-          className="p-3 two-line-text-trunc sandbeige"
-          style={{ height: "68px" }}
-          title={itemReq.item.name}
-        >
+      <Card key="quest_item_card" className="quest-item-card">
+        <Card.Title className="quest-item-card-title" title={itemReq.item.name}>
           <strong>{itemReq.item.name}</strong>
         </Card.Title>
-        <div className="px-3" style={{ fontSize: "8px" }}>
+        <div className="quest-item-card-shortname">
           {itemReq.item.shortName}
         </div>
-        <div className="d-flex position-relative my-3 justify-content-center">
+        <div className="quest-item-card-icon">
           <div
             onMouseEnter={() => {
               setTextBoxTextHandle("needed")
@@ -203,7 +197,6 @@ const QuestItem = ({ playerInventory, itemReq }) => {
             }}
             onMouseLeave={itemIconLeaveHandle}
             onMouseMove={mouseMoveHandle}
-            style={{ width: "64px", height: "64px" }}
           >
             <ItemSingleGrid
               itemId={itemReq.item.id}
@@ -215,7 +208,10 @@ const QuestItem = ({ playerInventory, itemReq }) => {
             />
           </div>
         </div>
-        <div onMouseMove={itemReq ? mouseMoveHandle : null} className="px-3">
+        <div
+          onMouseMove={itemReq ? mouseMoveHandle : null}
+          className="quest-item-acquire-badge"
+        >
           <GainItemMethodBadge
             craftableStations={itemReq.craftableStations}
             questRewards={itemReq.rewardTasks}
@@ -229,18 +225,13 @@ const QuestItem = ({ playerInventory, itemReq }) => {
             rewardBadgeLeaveHandle={rewardBadgeLeaveHandle}
           />
         </div>
-        <Card.Text className="text-center my-3">
+        <Card.Text className="quest-item-card-count">
           {(itemCount ?? 0) + " / " + itemNeedTotalCount}
         </Card.Text>
-        <div className="d-flex flex-grow-1 justify-content-center">
+        <div className="quest-item-card-btn">
           {playerInventory && (
-            <Button
-              variant="secondary"
-              onClick={openItemCountModal}
-              className="align-self-end w-100"
-              style={{ borderRadius: "0 0 0.374rem 0.374rem" }}
-            >
-              +
+            <Button variant="secondary" onClick={openItemCountModal}>
+              <Plus size={24} />
             </Button>
           )}
         </div>

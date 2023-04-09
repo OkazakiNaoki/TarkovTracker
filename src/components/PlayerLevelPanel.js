@@ -114,18 +114,14 @@ const PlayerLevelPanel = ({
         ref={colRef}
         lg={3}
         className={classNames(
-          "p-0",
-          "gray-rounded-40",
-          "overflow-hidden",
-          { "transition-width": !hide },
-          { "transition-w-mw": hide },
-          { "max-width-0": hide },
-          { "width-0": hide }
+          "player-level-panel",
+          { "player-level-panel-res-adj": !hide },
+          { "player-level-panel-hide": hide }
         )}
       >
         <div
           ref={contentRef}
-          className="transition-width"
+          className="player-level-panel-res-adj"
           style={
             fixedContentWidth
               ? { width: `${latestContentWidth.current}px` }
@@ -134,39 +130,25 @@ const PlayerLevelPanel = ({
                 }
           }
         >
-          <Row
-            className="p-0 m-0"
-            style={{
-              borderRadius: "40px 40px 0 0",
-              backgroundColor: "#292929",
-            }}
-          >
-            <div className="d-flex justify-content-center align-items-center">
+          <Row>
+            <div>
               {gameEdition === "edge of darkness" && (
-                <Image
-                  src={uniqueIdCrown}
-                  className="me-2"
-                  style={{ width: "19px", height: "17px" }}
-                />
+                <Image src={uniqueIdCrown} />
               )}
               <p
                 className={classNames(
-                  "my-3",
-                  "text-center",
-                  { "eod-edition": gameEdition === "edge of darkness" },
-                  { sandbeige: gameEdition !== "edge of darkness" }
+                  { orange1: gameEdition === "edge of darkness" },
+                  { sand1: gameEdition !== "edge of darkness" }
                 )}
               >
                 {gameEdition && `${gameEdition} edition`}
               </p>
             </div>
           </Row>
-          <Row className="my-3" align="center">
+          <Row>
             <Col>
               <div
-                className="sandbeige"
                 role="button"
-                style={{ fontSize: "90px" }}
                 onClick={
                   levelIcon && playerLevel ? openCloseLevelModalHandle : null
                 }
@@ -176,8 +158,7 @@ const PlayerLevelPanel = ({
                     <Image
                       key="level_icon"
                       src={levelIcon}
-                      className="d-inline me-3"
-                      style={{ height: "100px" }}
+                      className="player-level-icon"
                     />,
                     playerLevel,
                   ]
@@ -187,7 +168,7 @@ const PlayerLevelPanel = ({
               </div>
             </Col>
           </Row>
-          <Row className="my-3" align="center">
+          <Row>
             <Col>
               {playerFaction ? (
                 <Image src={`/asset/icon_${playerFaction}.png`} />

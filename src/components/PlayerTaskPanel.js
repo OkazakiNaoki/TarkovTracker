@@ -173,7 +173,7 @@ const PlayerTaskPanel = ({
           Not available
         </ToggleButton>
       </div>
-      <Accordion alwaysOpen className="task-accordion">
+      <Accordion alwaysOpen>
         {traders.map((trader, i) => {
           return (
             <Accordion.Item eventKey={`${i}`} key={`${trader.name}_task`}>
@@ -181,7 +181,7 @@ const PlayerTaskPanel = ({
                 <div className="d-flex align-items-center fs-4">
                   <Image
                     src={`/asset/${trader.id}.png`}
-                    className="me-3 wh-square-64"
+                    className="me-3 square-64px"
                   />
                   <div className="mx-3">{trader.name}</div>
 
@@ -195,7 +195,7 @@ const PlayerTaskPanel = ({
                             playerTasksInfo[trader.name].ongoing.length > 0,
                         },
                         {
-                          "bs-dark":
+                          "bs-gray-700":
                             get(playerTasksInfo, trader.name, null) &&
                             playerTasksInfo[trader.name].ongoing.length === 0,
                         }
@@ -218,7 +218,7 @@ const PlayerTaskPanel = ({
                 </div>
               </Accordion.Header>
               <Accordion.Body className="p-0">
-                <Table variant="dark" className="m-0 bs-table-bg-black">
+                <Table variant="dark" className="m-0 bs-table-bg-black23232">
                   <tbody>
                     {curShowingTaskLen &&
                       curShowingTaskLen[trader.name] === 0 && (
@@ -276,7 +276,7 @@ const PlayerTaskPanel = ({
                                         }
                                       >
                                         <div>
-                                          <div>
+                                          <div className="bg-black">
                                             {Object.keys(tasksDetailFetched)
                                               .length > 0 &&
                                               !tasksDetailFetched[

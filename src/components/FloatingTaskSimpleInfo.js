@@ -16,26 +16,14 @@ const FloatingTaskSimpleInfo = ({
 
   return (
     <div
+      className="floating-box"
       style={{
-        position: "fixed",
         left: posX,
         top: posY,
         display: display,
-        userSelect: "none",
-        backgroundColor: "#fff",
-        zIndex: "100001",
-        transform: `translateX(10px) translateY(-100%)`,
-        transformOrigin: "top left",
       }}
     >
-      <div
-        className="py-1 px-2"
-        style={{
-          backgroundColor: "#000",
-          border: "2px solid #585d60",
-          whiteSpace: "break-spaces",
-        }}
-      >
+      <div className="py-1 px-2">
         {taskInfo.map((task, i) => {
           if (i < lineLimit) {
             return (

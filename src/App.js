@@ -12,7 +12,6 @@ import { HideoutScreen } from "./screens/HideoutScreen"
 import { LoginScreen } from "./screens/LoginScreen"
 import { RegisterScreen } from "./screens/RegisterScreen"
 import { UserSettingScreen } from "./screens/UserSettingScreen"
-import stripedBg from "../server/public/static/images/striped_background.png"
 
 const history = createBrowserHistory({ window })
 
@@ -20,13 +19,7 @@ function App() {
   return (
     <CustomRouter history={history}>
       <Header />
-      <main
-        style={{
-          backgroundImage: `url(${stripedBg})`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "130px 130px",
-        }}
-      >
+      <main>
         <Routes>
           <Route path="/item/:itemId" element={<ItemScreen />} />
           <Route path="/fleamarket/*" element={<FleamarketScreen />} />

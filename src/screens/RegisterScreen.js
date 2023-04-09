@@ -57,12 +57,9 @@ const RegisterScreen = () => {
 
   return (
     <Container className="h-100">
-      <Row
-        className="d-flex align-items-center justify-content-center"
-        style={{ height: "90%" }}
-      >
+      <Row className="d-flex align-items-center justify-content-center height-90">
         <Col md={6} align="center">
-          <h1 className="mb-5 sandbeige">Create new account</h1>
+          <h1 className="mb-5 sand1">Create new account</h1>
           {errorMsg.length > 0 && <Alert variant="secondary">{errorMsg}</Alert>}
           <Form>
             <InputGroup className="mb-5" hasValidation>

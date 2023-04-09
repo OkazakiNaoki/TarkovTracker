@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Container, Image, Row, Col } from "react-bootstrap"
 import { useDispatch, useSelector } from "react-redux"
+import classNames from "classnames"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { EditValueModal } from "./EditValueModal"
 import {
@@ -24,14 +25,7 @@ import usecIcon from "../../server/public/static/images/icon_usec.png"
 const PlayerDataSetup = () => {
   // hooks state
   const [localPlayerLevel, setLocalPlayerLevel] = useState(1)
-  const [hoverPlayerLvl, setHoverPlayerLvl] = useState(false)
   const [openCloseLevelModal, setOpenCloseLevelModal] = useState(false)
-  const [hoverBearIcon, setHoverBearIcon] = useState(false)
-  const [hoverUsecIcon, setHoverUsecIcon] = useState(false)
-  const [hoverStdEditionIcon, setHoverStdEditionIcon] = useState(false)
-  const [hoverLbEditionIcon, setHoverLbEditionIcon] = useState(false)
-  const [hoverPfeEditionIcon, setHoverPfeEditionIcon] = useState(false)
-  const [hoverEodEditionIcon, setHoverEodEditionIcon] = useState(false)
   const [factionPick, setFactionPick] = useState(null)
   const [gameEditionPick, setGameEditionPick] = useState(null)
   const [levelIcon, setLevelIcon] = useState("/asset/rank5.png")
@@ -55,12 +49,10 @@ const PlayerDataSetup = () => {
   }, [taskItemRequirement])
 
   // handles
-  const hoverOnLevelSetupBtn = () => {
-    setHoverPlayerLvl(!hoverPlayerLvl)
-  }
   const openLevelModalHandle = () => {
     setOpenCloseLevelModal(!openCloseLevelModal)
   }
+
   const setLevelIconHandle = (lvl) => {
     for (let i = 1; i <= 16; i++) {
       if (lvl >= 5 * i) {
@@ -71,24 +63,7 @@ const PlayerDataSetup = () => {
       }
     }
   }
-  const hoverOnBearBtn = () => {
-    setHoverBearIcon(!hoverBearIcon)
-  }
-  const hoverOnUsecBtn = () => {
-    setHoverUsecIcon(!hoverUsecIcon)
-  }
-  const hoverOnStdEdition = () => {
-    setHoverStdEditionIcon(!hoverStdEditionIcon)
-  }
-  const hoverOnLbEdition = () => {
-    setHoverLbEditionIcon(!hoverLbEditionIcon)
-  }
-  const hoverOnPfeEdition = () => {
-    setHoverPfeEditionIcon(!hoverPfeEditionIcon)
-  }
-  const hoverOnEodEdition = () => {
-    setHoverEodEditionIcon(!hoverEodEditionIcon)
-  }
+
   const finishSetupHandle = () => {
     if (hideout && factionPick && gameEditionPick) {
       // user's helper preference
@@ -172,69 +147,28 @@ const PlayerDataSetup = () => {
       }}
       closeHandle={openLevelModalHandle}
     />,
-    <Container key="setup_panel" className="my-5">
-      <div className="d-flex align-content-center justify-content-center align-items-center flex-wrap">
-        <div className="w-100 d-flex justify-content-center mb-5 fs-1 sandbeige">
-          Initial setup
-        </div>
-        <div
-          className="px-2 py-1 fs-3"
-          style={{
-            width: "60%",
-            borderBottom: "1px solid #b7ad9c",
-            borderTop: "1px solid #b7ad9c",
-          }}
-        >
-          Character level
-        </div>
-        <div className="w-100 d-flex justify-content-center mt-3 mb-5">
+    <Container key="setup_panel" className="initial-player-data">
+      <div>
+        <div>Initial setup</div>
+        <div>Character level</div>
+        <div>
           <div
-            className="sandbeige px-5 pb-3"
             role="button"
-            style={{
-              fontSize: "90px",
-              border: hoverPlayerLvl
-                ? "1px solid #9a8866"
-                : "1px solid #b7ad9c",
-              boxShadow: hoverPlayerLvl ? "0 0 20px 5px #9a8866" : null,
-              borderRadius: "15px",
-            }}
-            onMouseEnter={hoverOnLevelSetupBtn}
-            onMouseLeave={hoverOnLevelSetupBtn}
             onClick={() => {
               setOpenCloseLevelModal(!openCloseLevelModal)
             }}
           >
-            <Image
-              src={levelIcon}
-              className="d-inline me-3"
-              style={{ height: "100px" }}
-            />
+            <Image src={levelIcon} />
             {localPlayerLevel}
           </div>
         </div>
-        <div
-          className="px-2 py-1 fs-3"
-          style={{
-            width: "60%",
-            borderBottom: "1px solid #b7ad9c",
-            borderTop: "1px solid #b7ad9c",
-          }}
-        >
-          Faction
-        </div>
-        <div className="w-100 d-flex justify-content-center my-3">
+        <div>Faction</div>
+        <div>
           <div
             role="button"
-            style={{
-              boxShadow:
-                hoverBearIcon || factionPick === "bear"
-                  ? "0 0 20px 5px #9a8866"
-                  : null,
-              borderRadius: "15px",
-            }}
-            onMouseEnter={hoverOnBearBtn}
-            onMouseLeave={hoverOnBearBtn}
+            className={classNames({
+              "init-setup-selected": factionPick === "BEAR",
+            })}
             onClick={() => {
               setFactionPick("BEAR")
             }}
@@ -243,15 +177,9 @@ const PlayerDataSetup = () => {
           </div>
           <div
             role="button"
-            style={{
-              boxShadow:
-                hoverUsecIcon || factionPick === "usec"
-                  ? "0 0 20px 5px #9a8866"
-                  : null,
-              borderRadius: "15px",
-            }}
-            onMouseEnter={hoverOnUsecBtn}
-            onMouseLeave={hoverOnUsecBtn}
+            className={classNames({
+              "init-setup-selected": factionPick === "USEC",
+            })}
             onClick={() => {
               setFactionPick("USEC")
             }}
@@ -259,116 +187,70 @@ const PlayerDataSetup = () => {
             <Image src={usecIcon} />
           </div>
         </div>
-        <div
-          className="px-2 py-1 fs-3"
-          style={{
-            width: "60%",
-            borderBottom: "1px solid #b7ad9c",
-            borderTop: "1px solid #b7ad9c",
-          }}
-        >
-          Game edition
-        </div>
-        <div className="w-100 d-flex justify-content-center my-3">
+        <div>Game edition</div>
+        <div>
           <Row>
             <Col>
               <div
                 role="button"
-                style={{
-                  boxShadow:
-                    hoverStdEditionIcon || gameEditionPick === "standard"
-                      ? "0 0 20px 5px #9a8866"
-                      : null,
-                  borderRadius: "15px",
-                }}
-                onMouseEnter={hoverOnStdEdition}
-                onMouseLeave={hoverOnStdEdition}
+                className={classNames({
+                  "init-setup-selected": gameEditionPick === "standard",
+                })}
                 onClick={() => {
                   setGameEditionPick("standard")
                 }}
                 title="standard"
               >
-                <Image
-                  src="/asset/preorder_standard.png"
-                  style={{ maxWidth: "200px" }}
-                />
+                <Image src="/asset/preorder_standard.png" />
               </div>
             </Col>
             <Col>
               <div
                 role="button"
-                style={{
-                  boxShadow:
-                    hoverLbEditionIcon || gameEditionPick === "left behind"
-                      ? "0 0 20px 5px #9a8866"
-                      : null,
-                  borderRadius: "15px",
-                }}
-                onMouseEnter={hoverOnLbEdition}
-                onMouseLeave={hoverOnLbEdition}
+                className={classNames({
+                  "init-setup-selected": gameEditionPick === "left behind",
+                })}
                 onClick={() => {
                   setGameEditionPick("left behind")
                 }}
                 title="left behind"
               >
-                <Image
-                  src="/asset/preorder_left_behind.png"
-                  style={{ maxWidth: "200px" }}
-                />
+                <Image src="/asset/preorder_left_behind.png" />
               </div>
             </Col>
             <Col>
               <div
                 role="button"
-                style={{
-                  boxShadow:
-                    hoverPfeEditionIcon ||
-                    gameEditionPick === "prepare for escape"
-                      ? "0 0 20px 5px #9a8866"
-                      : null,
-                  borderRadius: "15px",
-                }}
-                onMouseEnter={hoverOnPfeEdition}
-                onMouseLeave={hoverOnPfeEdition}
+                className={classNames({
+                  "init-setup-selected":
+                    gameEditionPick === "prepare for escape",
+                })}
                 onClick={() => {
                   setGameEditionPick("prepare for escape")
                 }}
                 title="prepare for escape"
               >
-                <Image
-                  src="/asset/preorder_prepare_for_escape.png"
-                  style={{ maxWidth: "200px" }}
-                />
+                <Image src="/asset/preorder_prepare_for_escape.png" />
               </div>
             </Col>
             <Col>
               <div
                 role="button"
-                style={{
-                  boxShadow:
-                    hoverEodEditionIcon ||
-                    gameEditionPick === "edge of darkness"
-                      ? "0 0 20px 5px #9a8866"
-                      : null,
-                  borderRadius: "15px",
-                }}
-                onMouseEnter={hoverOnEodEdition}
-                onMouseLeave={hoverOnEodEdition}
+                className={classNames({
+                  "init-setup-selected": gameEditionPick === "edge of darkness",
+                })}
                 onClick={() => {
                   setGameEditionPick("edge of darkness")
                 }}
                 title="edge of darkness"
               >
-                <Image
-                  src="/asset/preorder_edge_of_darkness.png"
-                  style={{ maxWidth: "200px" }}
-                />
+                <Image src="/asset/preorder_edge_of_darkness.png" />
               </div>
             </Col>
           </Row>
         </div>
 
-        <div className="w-100 d-flex justify-content-center my-3">
+        <div>
           <TarkovStyleButton
             text="Finish"
             clickHandle={finishSetupHandle}

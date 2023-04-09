@@ -9,24 +9,13 @@ const TraderIconLevel = ({ level }) => {
     <div className="position-relative">
       <Image src={levelBadgeIcon} />
       {level < 4 ? (
-        <div
-          className="position-absolute top-50 start-50"
-          style={{
-            fontSize: "14px",
-            letterSpacing: "-1px",
-            color: "black",
-            transform: "translateX(calc(-50% - 1px)) translateY(-50%)",
-          }}
-        >
+        <div className="position-absolute top-50 start-50 trader-level">
           {convertRomanNumeral(level)}
         </div>
       ) : (
         <Image
           src={maxStandIcon}
-          className="position-absolute top-50 start-50"
-          style={{
-            transform: "translateX(calc(-50% - 1px)) translateY(-50%)",
-          }}
+          className="position-absolute top-50 start-50 trader-max-level"
         />
       )}
     </div>

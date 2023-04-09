@@ -1,0 +1,78 @@
+@mixin font-sizes($size) {
+    font-size: $size * 1px;
+}
+
+@mixin text-deco-line($line) {
+    text-decoration-line: $line;
+}
+
+@mixin letter-space($size) {
+    letter-spacing: $size * 1px;
+}
+
+@mixin white-spaces($white-space) {
+    white-space: $white-space;
+}
+
+@mixin text-color($color) {
+    color: $color;
+}
+
+@mixin trunc-lines($line) {
+    -webkit-line-clamp: $line;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// generate class
+@mixin generate-font-size-class($sizes...) {
+    @for $i from 0 to length($sizes){
+        $size: nth($sizes, $i+1);
+        .fs-#{nth($sizes, $i+1)}px {
+            @include font-sizes($size);
+        }
+    }
+}
+
+@mixin generate-text-deco-line-class($line) {
+    @each $name, $value in $line {
+        .text-deco-line-#{$name} {
+            @include text-deco-line($value);
+        }
+    }
+}
+
+@mixin generate-letter-space-class($sizes...) {
+    @for $i from 0 to length($sizes){
+        $size: nth($sizes, $i+1);
+        .ls-#{$size}px {
+            @include letter-space($size);
+        }
+    }
+}
+
+@mixin generate-white-space-class($white-spaces) {
+    @each $name, $value in $white-spaces {
+        .ws-#{$name} {
+            @include white-spaces($value);
+        }
+    }
+}
+
+@mixin generate-text-color-class($colors) {
+    @each $name, $value in $colors {
+        .#{$name} {
+            @include text-color($value);
+        }
+    }
+}
+
+@mixin generate-trunc-lines-class($lines...) {
+    @for $i from 0 to length($lines) {
+        $line: nth($lines, $i+1);
+        .trunc-#{$line}-line {
+            @include trunc-lines($line);
+        }
+    }
+}

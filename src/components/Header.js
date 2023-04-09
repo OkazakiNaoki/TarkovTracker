@@ -45,7 +45,7 @@ const Header = () => {
 
   return (
     <header>
-      <Navbar bg="dark" variant="dark" expand="lg">
+      <Navbar variant="dark" expand="lg" className="tarkov-header">
         <Container>
           <LinkContainer to="/">
             <NavbarBrand>
@@ -71,15 +71,18 @@ const Header = () => {
             {Object.keys(user).length > 0 ? (
               <Nav className="ms-auto">
                 <NavDropdown
+                  align="end"
                   menuVariant="dark"
                   title={userName !== "" && userName}
                   id="username"
                 >
                   <LinkContainer to="/setting">
-                    <NavDropdown.Item>setting</NavDropdown.Item>
+                    <NavDropdown.Item className="fs-20px">
+                      setting
+                    </NavDropdown.Item>
                   </LinkContainer>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={logoutHandle}>
+                  <NavDropdown.Item onClick={logoutHandle} className="fs-20px">
                     Log out
                   </NavDropdown.Item>
                 </NavDropdown>

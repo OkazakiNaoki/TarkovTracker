@@ -1,0 +1,48 @@
+@use 'sass:map';
+@use '/src/scss/mixins/transform';
+@use '/src/scss/mixins/position';
+
+@mixin transform-srt-keyframe($module-name, $action-name, $from-srt-map, $to-srt-map, $duration, $timing-func: ease, $iteration: 1, $fiil-mode: none) {
+    @keyframes  #{$module-name}-#{$action-name} {
+        from {
+            $scaleX: map.get($from-srt-map, 'scaleX');
+            $scaleY: map.get($from-srt-map, 'scaleY');
+            $rotate: map.get($from-srt-map, 'rotate');
+            $offsetX: map.get($from-srt-map, 'offsetX');
+            $offsetY: map.get($from-srt-map, 'offsetY');
+            @include transform.scale-rotate-translate($scaleX, $scaleY, $rotate, $offsetX, $offsetY);
+        }
+        to {
+            $scaleX: map.get($to-srt-map, 'scaleX');
+            $scaleY: map.get($to-srt-map, 'scaleY');
+            $rotate: map.get($to-srt-map, 'rotate');
+            $offsetX: map.get($to-srt-map, 'offsetX');
+            $offsetY: map.get($to-srt-map, 'offsetY');
+            @include transform.scale-rotate-translate($scaleX, $scaleY, $rotate, $offsetX, $offsetY);
+        }
+    }
+
+    animation: #{$module-name}-#{$action-name} $duration;
+    animation-duration: $timing-func;
+    animation-iteration-count: $iteration;
+    animation-fill-mode: $fiil-mode;
+}
+
+@mixin to-position-keyframe($module-name, $action-name, $position-map, $duration, $timing-func, $iteration: 1, $fiil-mode: none) {
+    
+    $t: if(map.has-key($position-map, 'top'), map.get($position-map, 'top'), null);
+    $r: if(map.has-key($position-map, 'right'), map.get($position-map, 'right'), null);
+    $b: if(map.has-key($position-map, 'bottom'), map.get($position-map, 'bottom'), null);
+    $l: if(map.has-key($position-map, 'left'), map.get($position-map, 'left'), null);
+
+    @keyframes  #{$module-name}-#{$action-name} {
+        to {
+            @include position.positions($top: $t, $right: $r, $bottom: $b, $left: $l)
+        }
+    }
+
+    animation: #{$module-name}-#{$action-name} $duration;
+    animation-duration: $timing-func;
+    animation-iteration-count: $iteration;
+    animation-fill-mode: $fiil-mode;
+}

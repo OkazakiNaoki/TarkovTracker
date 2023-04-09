@@ -6,6 +6,7 @@ import { updateTraderProgress } from "../reducers/CharacterSlice"
 import maxLoyalty from "../../server/public/static/images/loyalty_king.png"
 import maxLoyaltyWhite from "../../server/public/static/images/loyalty_king_new.png"
 import { convertRomanNumeral } from "../helpers/NumberFormat"
+import classNames from "classnames"
 
 const TraderRelationModal = ({ show, traderName, closeHandle }) => {
   //// state
@@ -57,9 +58,7 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
       localLL &&
       traderLevels[traderName].length > 1
     ) {
-      setLLprogressbar(
-        ((localLL - 1) / (traderLevels[traderName].length - 1)) * 100
-      )
+      setLLprogressbar(`${localLL - 1}-${traderLevels[traderName].length - 1}`)
     }
   }, [localLL])
 
@@ -97,7 +96,7 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
       backdrop="static"
       className="bs-modal-bg-black1"
     >
-      <Modal.Header closeButton className="sandbeige">
+      <Modal.Header closeButton className="sand1">
         {traderName && (
           <Modal.Title id={`${traderName}`}>{traderName}</Modal.Title>
         )}
@@ -110,11 +109,8 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
               traderLevels[traderName].length > 1 && (
                 <div className="progress trader-progress">
                   <div
-                    className="progress-bar trader-progress-bar"
+                    className={`progress-bar width-${LLprogressbar}`}
                     role="progressbar"
-                    style={{
-                      width: `${LLprogressbar}%`,
-                    }}
                   ></div>
                 </div>
               )}
@@ -127,27 +123,23 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
                     <Button
                       key={levelIdx}
                       type="button"
-                      className="position-absolute btn btn-sm rounded-pill"
-                      style={{
-                        width: "2rem",
-                        height: "2rem",
-                        transform: "translateX(-50%) translateY(-50%)",
-                        top: "0%",
-                        left: `${
-                          (levelIdx / (traderLevels[traderName].length - 1)) *
-                          100
-                        }%`,
-                        "--bs-btn-border-width": "0px",
-                        "--bs-btn-bg":
-                          localLL >= levelIdx + 1 ? "#b7ad9c" : "black",
-                        "--bs-btn-color":
-                          localLL >= levelIdx + 1 ? "#191919" : "#d7cdbc",
-                        "--bs-btn-hover-bg": "#d7cdbc",
-                        "--bs-btn-hover-color": "#191919",
-                        "--bs-btn-active-bg": "#d7cdbc",
-                        "--bs-btn-active-color": "#191919",
-                        "--bs-btn-focus-shadow-rgb": "183,173,156",
-                      }}
+                      className={classNames(
+                        "position-absolute",
+                        "btn",
+                        "btn-sm",
+                        "rounded-pill",
+                        "top-0",
+                        `left-${levelIdx}-${
+                          traderLevels[traderName].length - 1
+                        }`,
+                        "translate-middle",
+                        {
+                          "loyalty-level-btn": localLL < levelIdx + 1,
+                        },
+                        {
+                          "loyalty-level-reached-btn": localLL >= levelIdx + 1,
+                        }
+                      )}
                       onClick={() => {
                         clickLLbtn(levelIdx + 1)
                       }}
@@ -162,35 +154,23 @@ const TraderRelationModal = ({ show, traderName, closeHandle }) => {
               traderLevels[traderName].length > 1 && (
                 <Button
                   type="button"
-                  className="position-absolute btn btn-sm rounded-pill"
-                  style={{
-                    width: "2rem",
-                    height: "2rem",
-                    transform: "translateX(-50%) translateY(-50%)",
-                    top: "0%",
-                    left: "100%",
-                    "--bs-btn-border-width": "0px",
-                    "--bs-btn-bg":
-                      localLL >= traderLevels[traderName].length
-                        ? "#b7ad9c"
-                        : "black",
-                    "--bs-btn-color":
-                      localLL >= traderLevels[traderName].length
-                        ? "#191919"
-                        : "#d7cdbc",
-                    "--bs-btn-hover-bg": "#d7cdbc",
-                    "--bs-btn-hover-color": "#191919",
-                    "--bs-btn-active-bg": "#d7cdbc",
-                    "--bs-btn-active-color": "#191919",
-                    "--bs-btn-focus-shadow-rgb": "183,173,156",
-                    backgroundImage: `url(${
-                      localLL >= traderLevels[traderName].length
-                        ? maxLoyalty
-                        : maxLoyaltyWhite
-                    })`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                  }}
+                  className={classNames(
+                    "position-absolute",
+                    "btn",
+                    "btn-sm",
+                    "rounded-pill",
+                    "top-0",
+                    "start-100",
+                    "translate-middle",
+                    {
+                      "max-loyalty-level-btn":
+                        localLL < traderLevels[traderName].length,
+                    },
+                    {
+                      "max-loyalty-level-reached-btn":
+                        localLL >= traderLevels[traderName].length,
+                    }
+                  )}
                   onClick={() => {
                     clickLLbtn(traderLevels[traderName].length)
                   }}

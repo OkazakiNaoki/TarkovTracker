@@ -1,0 +1,32 @@
+@use 'sass:string';
+@use 'sass:math';
+@use '../functions/type-convert';
+
+@mixin positions($top, $right, $bottom, $left){
+    @if $top != null {
+        top: if(type-of($top) == 'string', string.unquote($top), $top);
+    }
+    @if $right != null {
+        right: if(type-of($right) == 'string', string.unquote($right), $right);
+    }
+    @if $bottom != null {
+        bottom: if(type-of($bottom) == 'string', string.unquote($bottom), $bottom);
+    }
+    @if $left != null {
+        left: if(type-of($left) == 'string', string.unquote($left), $left);
+    }
+}
+
+@mixin generate-position-left-fraction($denomirator...) {
+    @for $i from 1 through length($denomirator){
+        $d: nth($denomirator, $i);
+        $num-d: type-convert.to-number($d);
+
+        @for $n from 0 through $num-d {
+            $rate: math.div($n, $num-d);
+            .left-#{$n}-#{$num-d} {
+                left: $rate * 100%;
+            }
+        }
+    }
+}

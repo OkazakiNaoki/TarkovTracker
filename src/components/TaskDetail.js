@@ -20,6 +20,7 @@ import blueCheck from "../../server/public/static/images/blue_check.png"
 import expIcon from "../../server/public/static/images/icon_experience_big.png"
 import standingIcon from "../../server/public/static/images/standing_icon.png"
 import skillIcon from "../../server/public/static/images/tab_icon_skills.png"
+import classNames from "classnames"
 
 const TaskDetail = ({
   traderName,
@@ -353,10 +354,8 @@ const TaskDetail = ({
     setTaskCompleteReward(rewards)
   }
 
-  let colIndex = 0
-
   return (
-    <div>
+    <div className="task-detail">
       {/*
         objective progress modal
       */}
@@ -419,55 +418,61 @@ const TaskDetail = ({
       {/*
         task image and task description
       */}
-      <Container className="d-flex align-items-start p-3">
-        <Image src={`/asset/${task.image}`} style={{ objectFit: "contain" }} />
-        <p className="ps-3">
-          {task.description ? task.description : "MISSING DESCRIPTION"}
-        </p>
+      <Container className="task-detail-image-description">
+        <Image src={`/asset/${task.image}`} />
+        <p>{task.description ? task.description : "MISSING DESCRIPTION"}</p>
       </Container>
 
       {/*
         task objectives
       */}
-      <div className="px-4">Objective(s)</div>
+      <div className="task-detail-subheading">Objective(s)</div>
       {task.objectives.map((objective, i) => {
         return (
           <div
             key={"objective-" + i}
-            className="d-flex align-items-center justify-content-center mb-2 p-2"
-            style={{
-              backgroundColor: completeable
-                ? completeObjective &&
-                  (completeObjective.includes(objective.id)
-                    ? "#101d24"
-                    : "#2a2c2e")
-                : "#2a2c2e",
-            }}
+            className={classNames(
+              {
+                "task-detail-objective":
+                  !completeable ||
+                  (completeObjective &&
+                    !completeObjective.includes(objective.id)),
+              },
+              {
+                "task-detail-objective-complete":
+                  completeable &&
+                  completeObjective &&
+                  completeObjective.includes(objective.id),
+              }
+            )}
           >
-            <p className="mb-0">{objective.description}</p>
+            {/* objective description */}
+            <p>{objective.description}</p>
+            {/* objective non-zero accomplish count */}
             {completeable &&
             objectiveProgress &&
             objectiveProgress.hasOwnProperty(objective.id) &&
             objective.hasOwnProperty("count") ? (
-              <div className="mx-3 fw-bold">
+              <div className="task-detail-objective-count">
                 {closeAddValueModal.hasOwnProperty(objective.id)
                   ? objectiveProgress[objective.id]
                   : ownCount[objective.id] ?? 0}
                 {`/${objective.count}`}
               </div>
             ) : null}
+            {/* objective zero accomplish count */}
             {!completeable && objective.count && (
-              <div className="mx-3 fw-bold">{`0/${objective.count}`}</div>
+              <div className="task-detail-objective-count">{`0/${objective.count}`}</div>
             )}
-            {/* turn in button */}
+            {/* turn in button or completed blue check icon */}
             {completeable &&
               completeObjective &&
               (completeObjective.includes(objective.id) ? (
-                <Image src={blueCheck} className="ms-1" />
+                <Image src={blueCheck} />
               ) : disableTurnIn ||
                 (turnInAble.hasOwnProperty(objective.id) &&
                   !turnInAble[objective.id]) ? null : (
-                <div className="ms-1">
+                <div className="task-detail-objective-turnin">
                   <TarkovStyleButton
                     text={objective.type === "giveItem" ? "TURN IN" : "DONE"}
                     height={30}
@@ -484,25 +489,24 @@ const TaskDetail = ({
       {/*
         task rewards
       */}
-      <div className="px-4">Rewards</div>
-      <div className="p-2">
-        <Row xs={4} className="g-2 px-5" style={{ backgroundColor: "#090a0b" }}>
-          <Col style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}>
-            <div className="d-flex align-items-center justify-content-center task-reward-bg h-100">
-              <div className="text-center">
+      <div className="task-detail-subheading">Rewards</div>
+      <div className="task-detail-rewards">
+        <Row xs={4}>
+          {/* exp */}
+          <Col className="task-detail-reward">
+            <div className="task-detail-exp-reward">
+              <div>
                 <Image src={expIcon} />
                 <div>{"+" + task.experience}</div>
               </div>
             </div>
           </Col>
+          {/* rep standing */}
           {task.finishRewards.traderStanding.map((finishStanding, i) => {
             return (
-              <Col
-                key={"standing_" + i}
-                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
-              >
-                <div className="d-flex align-items-center justify-content-center task-reward-bg h-100">
-                  <div className="text-center">
+              <Col className="task-detail-reward" key={"standing_" + i}>
+                <div className="task-detail-rep-reward">
+                  <div>
                     <Image src={standingIcon} />
                     <div>{finishStanding.trader.name}</div>
                     <div>
@@ -514,25 +518,20 @@ const TaskDetail = ({
               </Col>
             )
           })}
+          {/* item */}
           {task.finishRewards.items.map((finishItem, i) => {
             return (
-              <Col
-                key={"item_" + i}
-                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
-              >
-                <div className="task-reward-bg p-1 h-100">
-                  <div className="d-flex align-items-center justify-content-left h-100">
-                    <div className="d-inline-block">
+              <Col className="task-detail-reward" key={"item_" + i}>
+                <div className="task-detail-item-reward">
+                  <div>
+                    <div>
                       <ItemSingleGrid
                         itemId={finishItem.item.id}
                         amount={finishItem.count > 1 ? finishItem.count : null}
                         foundInRaid={true}
                       />
                     </div>
-                    <p
-                      className="d-inline-block mb-0 ps-2"
-                      style={{ fontSize: "14px" }}
-                    >
+                    <p>
                       {finishItem.count > 1
                         ? finishItem.item.name + " (" + finishItem.count + ")"
                         : finishItem.item.name}
@@ -542,23 +541,19 @@ const TaskDetail = ({
               </Col>
             )
           })}
+          {/* offer unlock */}
           {task.finishRewards.offerUnlock.map((finishOffer, i) => {
             return (
-              <Col
-                key={"offer_" + i}
-                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
-              >
-                <div className="task-reward-bg p-1 h-100">
-                  <div className="d-flex align-items-center justify-content-left h-100">
-                    <div className="d-inline-block">
+              <Col className="task-detail-reward" key={"offer_" + i}>
+                <div className="task-detail-offer-reward">
+                  <div>
+                    <div>
                       <ItemSingleGrid
                         itemId={finishOffer.item.id}
                         locked={true}
                       />
                     </div>
                     <p
-                      className="d-inline-block mb-0 ps-2"
-                      style={{ fontSize: "14px" }}
                       title={
                         finishOffer.trader.name + " LL" + finishOffer.level
                       }
@@ -570,14 +565,12 @@ const TaskDetail = ({
               </Col>
             )
           })}
+          {/* skill level */}
           {task.finishRewards.skillLevelReward.map((finishSkill, i) => {
             return (
-              <Col
-                key={"skill_" + i}
-                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
-              >
-                <div className="d-flex align-items-center justify-content-center task-reward-bg p-1 h-100">
-                  <div className="text-center">
+              <Col className="task-detail-reward" key={"skill_" + i}>
+                <div className="task-detail-skill-reward">
+                  <div>
                     <Image src={skillIcon} />
                     <div>{finishSkill.name}</div>
                     <div>{"+" + finishSkill.level + " level(s)"}</div>
@@ -586,24 +579,14 @@ const TaskDetail = ({
               </Col>
             )
           })}
+          {/* trader unlock */}
           {task.finishRewards.traderUnlock.map((finishTrader, i) => {
             return (
-              <Col
-                key={"trader_" + i}
-                style={{ marginTop: colIndex++ < 4 ? "0px" : "none" }}
-              >
-                <div className="task-reward-bg p-1 h-100">
-                  <div className="d-flex align-items-center justify-content-left h-100">
-                    <Image
-                      src={`/asset/${finishTrader.id}.png`}
-                      style={{ width: "64px", height: "64px" }}
-                    />
-                    <p
-                      className="d-inline-block mb-0 ps-2"
-                      style={{ fontSize: "14px" }}
-                    >
-                      {finishTrader.name}
-                    </p>
+              <Col className="task-detail-reward" key={"trader_" + i}>
+                <div className="task-detail-trader-reward">
+                  <div>
+                    <Image src={`/asset/${finishTrader.id}.png`} />
+                    <p>{finishTrader.name}</p>
                   </div>
                 </div>
               </Col>

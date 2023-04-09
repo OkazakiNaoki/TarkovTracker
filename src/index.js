@@ -4,10 +4,10 @@ import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
 import { store, persistor } from "./store"
 import App from "./App"
-import "./bootstrap.min.css"
 import "react-checkbox-tree/lib/react-checkbox-tree.css"
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css"
-import "./index.css"
+import "./scss/fonts.scss"
+import "./scss/index.scss"
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 root.render(

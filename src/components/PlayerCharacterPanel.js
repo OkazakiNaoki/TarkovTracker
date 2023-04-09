@@ -27,7 +27,7 @@ const PlayerCharacterPanel = ({
     <Col>
       <Tabs
         defaultActiveKey="task"
-        className="mb-4 flex-column flex-lg-row"
+        className="mb-4 flex-column flex-lg-row tarkov-tabs"
         transition={false}
         fill
       >

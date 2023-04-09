@@ -7,29 +7,31 @@ const FloatingHideoutIcons = ({
   display,
   colSize,
   stations,
-  scale = 0.6,
+  scale = null,
 }) => {
   return (
     <div
-      style={{
-        position: "fixed",
-        left: posX,
-        top: posY,
-        display: display,
-        userSelect: "none",
-        backgroundColor: "#fff",
-        zIndex: "100001",
-        transform: `scale(${scale},${scale}) translateX(10px) translateY(-100%)`,
-        transformOrigin: "top left",
-      }}
+      className="floating-hideout-icon"
+      style={
+        scale
+          ? {
+              left: posX,
+              top: posY,
+              display: display,
+              transform: `scale(${scale}, ${scale}) translateX(10px) translateY(-100%)`,
+            }
+          : { left: posX, top: posY, display: display }
+      }
     >
       <div
         className="py-1 px-2"
-        style={{
-          backgroundColor: "#000",
-          border: `${2 / scale}px solid #585d60`,
-          whiteSpace: "break-spaces",
-        }}
+        style={
+          scale
+            ? {
+                border: `${2 / scale}px solid #585d60`,
+              }
+            : null
+        }
       >
         {stations
           .reduce((stationGroup, c, i) => {

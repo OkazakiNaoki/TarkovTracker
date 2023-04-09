@@ -9,25 +9,14 @@ const FloatingMessageBox = ({
 }) => {
   return (
     <div
+      className="floating-box"
       style={{
-        position: "fixed",
         left: posX,
         top: posY,
         display: display,
-        userSelect: "none",
-        transform: "translateX(10px) translateY(-100%)",
-        backgroundColor: "#fff",
-        zIndex: "100001",
       }}
     >
-      <div
-        className="py-1 px-2"
-        style={{
-          backgroundColor: "#000",
-          border: "2px solid #585d60",
-          whiteSpace: "break-spaces",
-        }}
-      >
+      <div className="py-1 px-2">
         {Array.isArray(content) &&
           content.map((line, i) => {
             if (i <= lineLimit) {

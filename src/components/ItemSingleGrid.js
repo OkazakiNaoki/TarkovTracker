@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import { Image } from "react-bootstrap"
+import classNames from "classnames"
 import { bgColors } from "../data/ItemBgColorMap"
 import { FloatingMessageBox } from "./FloatingMessageBox"
 import { nonExistItemIconList } from "../data/NonExistItemIconList"
-import itemBack from "../../server/public/static/images/cell_full_border.png"
 import firIcon from "../../server/public/static/images/icon_foundinraid_small.png"
 import lockIcon from "../../server/public/static/images/marker_locked.png"
 import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
@@ -42,15 +42,18 @@ const ItemSingleGrid = ({
 
   return (
     <div
-      className={useInline ? "d-inline" : ""}
+      className={classNames(
+        { "d-inline": useInline },
+        "margin-rb-n1px",
+        "item-grid-outline",
+        {
+          "item-grid-bg": useBgImg,
+        }
+      )}
       style={{
         width: `${64 * scale}px`,
         height: `${64 * scale}px`,
-        backgroundImage: useBgImg ? `url(${itemBack})` : "none",
         backgroundColor: `${bgColors[bgColor]}${transparent.toString(16)}`,
-        boxShadow: "inset 0px 0px 0px 1px #495154",
-        marginRight: "-1px",
-        marginBottom: "-1px",
       }}
       onMouseEnter={useNameBox ? mouseEnterHandle : null}
       onMouseLeave={useNameBox ? mouseLeaveHandle : null}
@@ -65,36 +68,34 @@ const ItemSingleGrid = ({
         />
       )}
       <div className="position-relative">
+        {/* item image or placeholder */}
         <div
           className="d-flex justify-content-center"
           style={{ width: `${64 * scale}px`, height: `${64 * scale}px` }}
         >
           {itemId && (
             <Image
+              className="mw-100 mh-100 object-fit-contain"
               src={
                 nonExistItemIconList.includes(itemId)
                   ? placeholderImg
                   : `/asset/${itemId}-icon.png`
               }
-              style={{
-                objectFit: "contain",
-                maxHeight: "100%",
-                maxWidth: "100%",
-              }}
             />
           )}
         </div>
+        {/* item short name */}
         {scale === 1 && (
           <div
-            className="position-absolute top-0 end-0"
+            className="position-absolute top-0 end-0 fs-8px"
             style={{
-              fontSize: "8px",
               transform: "translateX(-1px) translateY(-2px)",
             }}
           >
             {shortName && shortName}
           </div>
         )}
+        {/* found in raid icon */}
         {scale === 1 && foundInRaid && (
           <Image
             src={firIcon}
@@ -106,6 +107,7 @@ const ItemSingleGrid = ({
             }}
           />
         )}
+        {/* amount text */}
         {scale === 1 && amount && (
           <p
             src={firIcon}
@@ -119,6 +121,7 @@ const ItemSingleGrid = ({
             {amount}
           </p>
         )}
+        {/* locked icon */}
         {scale === 1 && locked && (
           <Image
             src={lockIcon}

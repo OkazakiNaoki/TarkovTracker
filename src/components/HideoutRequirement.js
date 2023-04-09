@@ -1,5 +1,6 @@
 import React from "react"
 import { Image } from "react-bootstrap"
+import classNames from "classnames"
 import { HideoutIcon } from "./HideoutIcon"
 import itemFulfillIcon from "../../server/public/static/images/icon_requirement_fulfilled.png"
 import itemLockedIcon from "../../server/public/static/images/icon_requirement_locked.png"
@@ -12,8 +13,8 @@ const HideoutRequirement = ({
   fulfill = false,
 }) => {
   return (
-    <div className="d-flex align-items-center mx-3">
-      <div className="d-inline-block" style={{ marginRight: "-10px" }}>
+    <div className="hideout-hideout-req">
+      <div>
         <HideoutIcon
           iconName={hideoutId}
           level={level}
@@ -22,16 +23,18 @@ const HideoutRequirement = ({
         />
       </div>
       <div
-        className="d-inline-block me-2"
-        style={{ color: fulfill ? "white" : "#c40000" }}
+        className={classNames(
+          { "hideout-req-unqualified": !fulfill },
+          { "hideout-req-qualified": fulfill }
+        )}
       >
         {hideoutName}
       </div>
       {showFulfill &&
         (fulfill ? (
-          <Image src={itemFulfillIcon} style={{ margin: "0 -8px 0 -6px" }} />
+          <Image src={itemFulfillIcon} />
         ) : (
-          <Image src={itemLockedIcon} style={{ margin: "0 -8px 0 -6px" }} />
+          <Image src={itemLockedIcon} />
         ))}
     </div>
   )

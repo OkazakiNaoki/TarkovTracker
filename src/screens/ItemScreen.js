@@ -106,7 +106,7 @@ const ItemScreen = ({}) => {
   return (
     <>
       <Container className="py-5">
-        <h1 className="pb-3 sandbeige">
+        <h1 className="pb-3 sand1">
           {isLoading ? (
             <Placeholder animation="wave">
               <Placeholder xs={8} size="lg" />
@@ -138,10 +138,7 @@ const ItemScreen = ({}) => {
         <Row className="gx-5 mb-5">
           <Col
             sm={6}
-            className="d-flex align-items-center justify-content-center p-3 gray-rounded-20"
-            style={{
-              height: "300px",
-            }}
+            className="d-flex align-items-center justify-content-center p-3 border-radius-20px bg-black2 height-300px"
           >
             {isLoading ? (
               <TarkovSpinner />
@@ -149,7 +146,7 @@ const ItemScreen = ({}) => {
               <Image
                 src={mainItemIconSrc}
                 alt={params.itemId}
-                style={{ maxWidth: "100%", maxHeight: "100%" }}
+                className="mw-100 mh-100"
               ></Image>
             )}
           </Col>
@@ -159,16 +156,13 @@ const ItemScreen = ({}) => {
               <Row className="g-2 mb-2">
                 {new Array(6).fill().map((el, i) => (
                   <Col key={`dummp_col_${i}`} sm={12} md={6}>
-                    <div className="py-2 h-100 gray-rounded-20">
+                    <div className="py-2 h-100 border-radius-20px bg-black2">
                       <div className="text-center">
                         <Placeholder animation="wave">
                           <Placeholder xs={2} size="lg" />
                         </Placeholder>
                       </div>
-                      <div
-                        className="px-3"
-                        style={{ whiteSpace: "break-spaces" }}
-                      >
+                      <div className="px-3 ws-break-spaces">
                         <Placeholder animation="wave">
                           <Placeholder xs={4} size="lg" />
                         </Placeholder>
@@ -184,12 +178,9 @@ const ItemScreen = ({}) => {
                   return (
                     <Row key={i} className="g-2 mb-2">
                       <Col sm={12} md={6}>
-                        <div className="py-2 h-100 gray-rounded-20">
+                        <div className="py-2 h-100 border-radius-20px bg-black2">
                           <div className="text-center">{el[0].key}</div>
-                          <div
-                            className="px-3"
-                            style={{ whiteSpace: "break-spaces" }}
-                          >
+                          <div className="px-3 ws-break-spaces">
                             {typeof el[0].value === "boolean" ? (
                               el[0].value ? (
                                 <CheckLg />
@@ -203,12 +194,9 @@ const ItemScreen = ({}) => {
                         </div>
                       </Col>
                       <Col sm={12} md={6}>
-                        <div className="py-2 h-100 gray-rounded-20">
+                        <div className="py-2 h-100 border-radius-20px bg-black2">
                           <div className="text-center">{el[1].key}</div>
-                          <div
-                            className="px-3"
-                            style={{ whiteSpace: "break-spaces" }}
-                          >
+                          <div className="px-3 ws-break-spaces">
                             {typeof el[1].value === "boolean" ? (
                               el[1].value ? (
                                 <CheckLg />
@@ -227,12 +215,9 @@ const ItemScreen = ({}) => {
                   return (
                     <Row key={i} className="g-2 mb-2">
                       <Col sm={12} md={6}>
-                        <div className="py-2 h-100 gray-rounded-20">
+                        <div className="py-2 h-100 border-radius-20px bg-black2">
                           <div className="text-center">{el[0].key}</div>
-                          <div
-                            className="px-3"
-                            style={{ whiteSpace: "break-spaces" }}
-                          >
+                          <div className="px-3 ws-break-spaces">
                             {typeof el[0].value === "boolean" ? (
                               el[0].value ? (
                                 <CheckLg />
@@ -253,7 +238,7 @@ const ItemScreen = ({}) => {
 
         <Tabs
           defaultActiveKey="buyFrom"
-          className="mb-4 flex-column flex-md-row"
+          className="mb-4 flex-column flex-md-row tarkov-tabs"
           transition={false}
           justify
         >
@@ -261,9 +246,9 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
-                  <th style={{ backgroundColor: "#121212" }}>Price</th>
-                  <th style={{ backgroundColor: "#121212" }}>Currency</th>
+                  <th className="bs-table-bg-black3">Vendor</th>
+                  <th className="bs-table-bg-black3">Price</th>
+                  <th className="bs-table-bg-black3">Currency</th>
                 </tr>
               </thead>
               <tbody>
@@ -287,8 +272,7 @@ const ItemScreen = ({}) => {
                                         "id"
                                       )}.png`
                                 }
-                                className="me-2"
-                                style={{ width: "32px" }}
+                                className="me-2 width-32px"
                               />
                               {buy.vendor.name}
                               {buy.vendor.name !== "Flea Market" && (
@@ -320,7 +304,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>
@@ -329,9 +313,9 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
-                  <th style={{ backgroundColor: "#121212" }}>Price</th>
-                  <th style={{ backgroundColor: "#121212" }}>Currency</th>
+                  <th className="bs-table-bg-black3">Vendor</th>
+                  <th className="bs-table-bg-black3">Price</th>
+                  <th className="bs-table-bg-black3">Currency</th>
                 </tr>
               </thead>
               <tbody>
@@ -354,8 +338,7 @@ const ItemScreen = ({}) => {
                                       "id"
                                     )}.png`
                               }
-                              className="me-2"
-                              style={{ width: `${64 * 0.5}px` }}
+                              className="me-2 width-32px"
                             />
                             {sell.vendor.name}
                             {sell.vendor.name === "Flea Market" && (
@@ -381,7 +364,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>
@@ -390,9 +373,9 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
-                  <th style={{ backgroundColor: "#121212" }}>Give</th>
-                  <th style={{ backgroundColor: "#121212" }}>Get</th>
+                  <th className="bs-table-bg-black3">Vendor</th>
+                  <th className="bs-table-bg-black3">Give</th>
+                  <th className="bs-table-bg-black3">Get</th>
                 </tr>
               </thead>
               <tbody>
@@ -411,12 +394,11 @@ const ItemScreen = ({}) => {
                                 barter.trader.name,
                                 "id"
                               )}.png`}
-                              className="me-2"
-                              style={{ width: `${64 * 0.5}px` }}
+                              className="me-2 width-32px"
                             />
                             {barter.trader.name}
                           </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
+                          <td className="ws-break-spaces">
                             {barter.requiredItems.reduce((prev, req, i) => {
                               prev.push(
                                 <div
@@ -436,7 +418,7 @@ const ItemScreen = ({}) => {
                               return prev
                             }, [])}
                           </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
+                          <td className="ws-break-spaces">
                             {barter.rewardItems.reduce((prev, rew, i) => {
                               prev.push(
                                 <div
@@ -469,7 +451,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>
@@ -478,10 +460,10 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Module</th>
-                  <th style={{ backgroundColor: "#121212" }}>Give</th>
-                  <th style={{ backgroundColor: "#121212" }}>Duration</th>
-                  <th style={{ backgroundColor: "#121212" }}>Get</th>
+                  <th className="bs-table-bg-black3">Module</th>
+                  <th className="bs-table-bg-black3">Give</th>
+                  <th className="bs-table-bg-black3">Duration</th>
+                  <th className="bs-table-bg-black3">Get</th>
                 </tr>
               </thead>
               <tbody>
@@ -505,7 +487,7 @@ const ItemScreen = ({}) => {
                               {el.station.name + " Level " + el.level}
                             </div>
                           </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
+                          <td className="ws-break-spaces">
                             {el.requiredItems.reduce((prev, req, i) => {
                               prev.push(
                                 <div
@@ -528,7 +510,7 @@ const ItemScreen = ({}) => {
                           <td>
                             {formatInHoursMINsec(getHMSfromS(el.duration))}
                           </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
+                          <td className="ws-break-spaces">
                             <div className="h-100">
                               {el.rewardItems.reduce((prev, rew, i) => {
                                 prev.push(
@@ -563,7 +545,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>
@@ -572,8 +554,8 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Module</th>
-                  <th style={{ backgroundColor: "#121212" }}>Requirement</th>
+                  <th className="bs-table-bg-black3">Module</th>
+                  <th className="bs-table-bg-black3">Requirement</th>
                 </tr>
               </thead>
               <tbody>
@@ -598,7 +580,7 @@ const ItemScreen = ({}) => {
                             {station.name + " Level " + station.levels.level}
                           </div>
                         </td>
-                        <td style={{ whiteSpace: "break-spaces" }}>
+                        <td className="ws-break-spaces">
                           {station.levels.itemRequirements.reduce(
                             (prev, req, i) => {
                               prev.push(
@@ -634,7 +616,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>
@@ -643,9 +625,9 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Task</th>
-                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
-                  <th style={{ backgroundColor: "#121212" }}>Requirement</th>
+                  <th className="bs-table-bg-black3">Vendor</th>
+                  <th className="bs-table-bg-black3">Requirement</th>
+                  <th className="bs-table-bg-black3">Task</th>
                 </tr>
               </thead>
               <tbody>
@@ -666,13 +648,12 @@ const ItemScreen = ({}) => {
                                   task.trader.name,
                                   "id"
                                 )}.png`}
-                                className="me-2"
-                                style={{ width: `${64 * 0.5}px` }}
+                                className="me-2 width-32px"
                               />
                               {task.trader.name}
                             </div>
                           </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
+                          <td className="ws-break-spaces">
                             {task.objectives.reduce((prev, objectives, i) => {
                               if (Object.keys(objectives).length !== 0) {
                                 if (objectives.item.name === item.name) {
@@ -720,7 +701,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>
@@ -729,9 +710,9 @@ const ItemScreen = ({}) => {
             <Table hover variant="dark" className="round-table">
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: "#121212" }}>Task</th>
-                  <th style={{ backgroundColor: "#121212" }}>Vendor</th>
-                  <th style={{ backgroundColor: "#121212" }}>Reward</th>
+                  <th className="bs-table-bg-black3">Task</th>
+                  <th className="bs-table-bg-black3">Vendor</th>
+                  <th className="bs-table-bg-black3">Reward</th>
                 </tr>
               </thead>
               <tbody>
@@ -752,13 +733,12 @@ const ItemScreen = ({}) => {
                                   task.trader.name,
                                   "id"
                                 )}.png`}
-                                className="me-2"
-                                style={{ width: `${64 * 0.5}px` }}
+                                className="me-2 width-32px"
                               />
                               {task.trader.name}
                             </div>
                           </td>
-                          <td style={{ whiteSpace: "break-spaces" }}>
+                          <td className="ws-break-spaces">
                             {task.finishRewards.items.reduce((prev, rew, i) => {
                               prev.push(
                                 <div
@@ -791,7 +771,7 @@ const ItemScreen = ({}) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ backgroundColor: "#121212" }}></td>
+                  <td colSpan={4} className="bs-table-bg-black3"></td>
                 </tr>
               </tfoot>
             </Table>

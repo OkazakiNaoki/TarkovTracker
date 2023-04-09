@@ -10,16 +10,9 @@ const LoginFirst = () => {
   }
 
   return (
-    <div
-      className="h-100"
-      style={{
-        backgroundImage: `url(/asset/glow_top.png)`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "contain",
-      }}
-    >
+    <div className="h-100 need-login-bg">
       <div className="position-absolute top-50 start-50 translate-middle w-75 text-center">
-        <p className="py-3 fs-1 sandbeige">
+        <p className="py-3 fs-1 sand1">
           You have not log in yet. Please log in or register first.
         </p>
         <div className="mb-3 d-flex justify-content-center">

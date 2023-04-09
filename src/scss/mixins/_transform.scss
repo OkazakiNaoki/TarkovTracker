@@ -1,0 +1,56 @@
+@use 'sass:math';
+@use 'sass:string';
+
+@mixin translate-x-only($offsetX) {
+    transform: translateX($offsetX * 1%);
+}
+
+@mixin translate-y-only($offsetY) {
+    transform: translateY($offsetY * 1%);
+}
+
+@mixin scale-rotate-translate($scaleX: null, $scaleY: null, $rotate: null, $translateX: null, $translateY: null) {
+    $transforms: ();
+    
+    @if $scaleX != null or $scaleY != null {
+        $x: if($scaleX == null, 1, if(type-of($scaleX) == 'string', string.unquote($scaleX), $scaleX));
+        $y: if($scaleY == null, 1, if(type-of($scaleY) == 'string', string.unquote($scaleY), $scaleY));
+        $transforms: append($transforms, scale($x, $y));
+    }
+    
+    @if $rotate != null {
+        $d: if(type-of($rotate) == 'string', string.unquote($rotate), $rotate);
+        $transforms: append($transforms, rotate($d));
+    }
+    
+    @if $translateX != null or $translateY != null {
+        $x: if($translateX == null, 0, if(type-of($translateX) == 'string', string.unquote($translateX), $translateX));
+        $y: if($translateY == null, 0, if(type-of($translateY) == 'string', string.unquote($translateY), $translateY));
+        $transforms: append($transforms, translate($x, $y));
+    }
+    
+    transform: $transforms;
+}
+
+// generate class
+@mixin generate-translate-x-class($offsetX...) {
+    @for $i from 0 to length($offsetX) {
+        $offset: nth($offsetX, $i+1);
+        $negative: if($offset < 0, 'n', '');
+
+        .translate-x#{$negative}#{math.abs($offset)} {
+            @include translate-x-only($offset);
+        }
+    }
+}
+
+@mixin generate-translate-y-class($offsetY...) {
+    @for $i from 0 to length($offsetY) {
+        $offset: nth($offsetY, $i+1);
+        $negative: if($offset < 0, 'n', '');
+        
+        .translate-y#{$negative}#{math.abs($offset)} {
+            @include translate-y-only($offset);
+        }
+    }
+}

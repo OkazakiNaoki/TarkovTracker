@@ -62,7 +62,7 @@ const UserSettingScreen = () => {
   return (
     <>
       <Container className="py-5">
-        <h1 className="sandbeige mb-5">Setting</h1>
+        <h1 className="sand1 mb-5">Setting</h1>
         <Tab.Container
           id="user-settings"
           defaultActiveKey="user-data"
@@ -72,28 +72,10 @@ const UserSettingScreen = () => {
             <Col sm={4}>
               <Nav variant="pills" className="flex-column">
                 <Nav.Item className="mb-1">
-                  <Nav.Link
-                    eventKey="user-data"
-                    style={{
-                      "--bs-nav-pills-link-active-bg": "#191919",
-                      "--bs-nav-pills-link-active-color": "#b7ad9c",
-                      "--bs-nav-link-hover-color": "#555",
-                      "--bs-nav-link-color": "white",
-                    }}
-                  >
-                    Change password
-                  </Nav.Link>
+                  <Nav.Link eventKey="user-data">Change password</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link
-                    eventKey="preference"
-                    style={{
-                      "--bs-nav-pills-link-active-bg": "#191919",
-                      "--bs-nav-pills-link-active-color": "#b7ad9c",
-                      "--bs-nav-link-hover-color": "#555",
-                      "--bs-nav-link-color": "white",
-                    }}
-                  >
+                  <Nav.Link eventKey="preference">
                     Tarkov guide preference
                   </Nav.Link>
                 </Nav.Item>

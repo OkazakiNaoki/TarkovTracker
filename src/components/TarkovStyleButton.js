@@ -6,7 +6,7 @@ const TarkovStyleButton = ({
   text,
   color,
   clickHandle,
-  height = "auto",
+  height = 20,
   fs = 16,
   useAnim = false,
   lockButton = false,
@@ -23,41 +23,32 @@ const TarkovStyleButton = ({
   return (
     <div
       role={lockButton ? null : "button"}
-      className="d-flex justify-content-center align-items-center"
+      className="tarkov-style-button"
       style={{
         height: `${height}px`,
-        aspectRatio: `${232 / 51}`,
         fontSize: `${fs}px`,
-        color: "black",
       }}
       onClick={lockButton ? null : clickHandle}
       onMouseEnter={useAnim && !lockButton ? mouseEnterHandle : null}
       onMouseLeave={useAnim && !lockButton ? mouseLeaveHandle : null}
     >
-      <div className="position-relative">
+      <div>
         <Image
-          className="position-absolute top-50 start-50"
           src={buttonImg}
           style={{
             height: `${height}px`,
-            aspectRatio: `${232 / 51}`,
-            animation:
-              useAnim && isHover && !lockButton
-                ? "tarkovBtnFadeIn 0.2s ease-out forwards"
-                : "none",
-            transform: `translateX(-50%) translateY(-50%)`,
             opacity: useAnim || lockButton ? "0" : "1",
+            animationName:
+              useAnim && isHover && !lockButton ? "tarkov-btn-fade-in" : "none",
           }}
         />
         <div
           className="position-absolute top-50 start-50"
           style={{
             color: useAnim ? color : "black",
-            transform: `translateX(-50%) translateY(-50%)`,
-            whiteSpace: "nowrap",
-            animation:
+            animationName:
               useAnim && isHover && !lockButton
-                ? "tarkovBtnColorAlter 0.2s ease-out forwards"
+                ? "tarkov-btn-alter-color"
                 : "none",
           }}
         >

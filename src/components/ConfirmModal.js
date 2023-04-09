@@ -19,7 +19,7 @@ const ConfirmModal = ({
     >
       <Modal.Header closeButton>
         {title && (
-          <Modal.Title className="sandbeige" id={`${title}`}>
+          <Modal.Title className="sand1" id={`${title}`}>
             {title}
           </Modal.Title>
         )}

@@ -3,7 +3,7 @@ import { Row, Col, Image } from "react-bootstrap"
 import { bgColors } from "../data/ItemBgColorMap"
 import { TextStroke } from "./TextStroke"
 import { nonExistItemIconList } from "../data/NonExistItemIconList"
-import itemBack from "../../server/public/static/images/cell_full_border.png"
+import itemGrid from "../../server/public/static/images/cell_full_border.png"
 import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
 
 const iconRes = {
@@ -18,46 +18,30 @@ const ItemMultiGrid = ({
   bgColor,
   width = 1,
   height = 1,
-  resize = 1,
+  scale = 1,
   resolution,
 }) => {
   return (
     <div
       className="h-100"
       style={{
-        maxWidth: `${width * 64 * resize}px`,
-        maxHeight: `${height * 64 * resize}px`,
+        maxWidth: `${width * 64 * scale}px`,
+        maxHeight: `${height * 64 * scale}px`,
       }}
     >
-      {/* Background grids */}
       <div className="d-flex">
-        <div className="position-relative">
-          <Row
-            sm={width}
-            className="g-0"
-            style={{ outline: "1px solid #495154", outlineOffset: "-1px" }}
-          >
+        <div className="position-relative multi-grid-item">
+          {/* item grids */}
+          <Row sm={width} className="g-0 multi-grid-item-grid">
             {new Array(width * height).fill().map((grid, i) => {
               return (
-                <Col
-                  key={`cell_${i}`}
-                  style={{
-                    aspectRatio: "1",
-                  }}
-                >
-                  <div
-                    className="w-100 h-100"
-                    style={{
-                      marginRight: "-1px",
-                      marginBottom: "-1px",
-                    }}
-                  >
+                <Col key={`cell_${i}`} className="aspect-ratio-1-1">
+                  <div className="w-100 h-100 margin-rb-n1px">
                     <Image
-                      src={itemBack}
+                      src={itemGrid}
+                      className="mw-100 mh-100"
                       style={{
                         backgroundColor: `${bgColors[bgColor]}`,
-                        maxHeight: "100%",
-                        maxWidth: "100%",
                       }}
                     ></Image>
                   </div>
@@ -65,20 +49,12 @@ const ItemMultiGrid = ({
               )
             })}
           </Row>
-          <div
-            className="position-absolute w-100 h-100"
-            style={{
-              transform: "translateY(-100%)",
-            }}
-          >
+          {/* item image or placeholder */}
+          <div className="position-absolute w-100 h-100 translate-yn100">
             {itemId && !nonExistItemIconList.includes(itemId) && (
               <Image
                 src={`/asset/${itemId}-icon${iconRes[resolution]}.png`}
-                style={{
-                  objectFit: "contain",
-                  maxHeight: "100%",
-                  maxWidth: "100%",
-                }}
+                className="object-fit-contain mh-100 mw-100"
               />
             )}
             {nonExistItemIconList.includes(itemId) && (
@@ -89,24 +65,11 @@ const ItemMultiGrid = ({
               </div>
             )}
           </div>
-          <div
-            className="position-absolute h-100"
-            style={{
-              whiteSpace: "nowrap",
-              letterSpacing: "0px",
-              width: "calc(100% - 6px)",
-              transform: "translateX(4px) translateY(calc(-100% + (-1 * 2px)))",
-            }}
-          >
+          {/* item name text */}
+          <div className="position-absolute h-100 multi-grid-item-text">
             {shortName && (
-              <div
-                className=""
-                style={{
-                  height: "64px",
-                  overflow: "hidden",
-                }}
-              >
-                <div style={{ width: "fit-content", marginLeft: "auto" }}>
+              <div className="overflow-hidden height-64px">
+                <div className="margin-l-auto width-fit-content">
                   <TextStroke
                     fontSize={12}
                     content={shortName}

@@ -29,10 +29,7 @@ const HideoutScreen = () => {
       <Container className="py-5">
         <div className="d-flex flex-wrap mb-5">
           {isLoading ? (
-            <div
-              className="d-flex justify-content-center align-items-center"
-              style={{ width: "100%", height: "200px" }}
-            >
+            <div className="d-flex justify-content-center align-items-center hideout-loading-block">
               <TarkovSpinner />
             </div>
           ) : (
@@ -57,15 +54,15 @@ const HideoutScreen = () => {
             })
           )}
         </div>
-        <Tabs activeKey={curStation}>
+        <Tabs activeKey={curStation} className="border-0px">
           {isLoading && (
             <TabPane eventKey={curStation}>
-              <h1 className="sandbeige">
+              <h1 className="sand1">
                 <Placeholder animation="wave">
                   <Placeholder xs={4} size="lg" />
                 </Placeholder>
               </h1>
-              <div className="my-3 p-2" style={{ border: "1px solid white" }}>
+              <div className="my-3 p-2 border-1px border-solid border-white">
                 <h2 className="text-center">
                   Level{" "}
                   <Placeholder animation="wave">
@@ -96,18 +93,14 @@ const HideoutScreen = () => {
             hideout.map((el, i) => {
               return (
                 <TabPane eventKey={el.id} key={el.name}>
-                  <h1 className="sandbeige">{el.name}</h1>
+                  <h1 className="sand1">{el.name}</h1>
                   {el.levels.map((level, i) => {
                     return (
                       <div
                         key={el.name + level.level}
-                        className="my-3"
-                        style={{ border: "1px solid white" }}
+                        className="my-3 border-1px border-solid border-white"
                       >
-                        <div
-                          className="d-flex align-items-center justify-content-center py-1"
-                          style={{ backgroundColor: "#191919" }}
-                        >
+                        <div className="d-flex align-items-center justify-content-center py-1 bg-black2">
                           <TextStroke
                             fontSize={40}
                             strokeWidth={6}
@@ -115,25 +108,14 @@ const HideoutScreen = () => {
                             color="#edebd6"
                           />
                         </div>
-                        <div
-                          className="d-flex justify-content-center mx-3 mt-3 mb-5"
-                          style={{
-                            fontFamily: "TarkovItalic",
-                            color: "#9ea8ad",
-                            lineHeight: "1.2",
-                            flexWrap: "wrap",
-                          }}
-                        >
+                        <div className="d-flex justify-content-center mx-3 mt-3 mb-5 hideout-desc">
                           <p>{level.description}</p>
                         </div>
                         {(level.stationLevelRequirements.length > 0 ||
                           level.itemRequirements.length > 0 ||
                           level.traderRequirements.length > 0 ||
                           level.skillRequirements.length > 0) && (
-                          <p
-                            className="text-center fs-3 mb-0"
-                            style={{ color: "#edebd6" }}
-                          >
+                          <p className="text-center fs-3 mb-0 light1">
                             CONSTRUCTION REQUIREMENTS
                           </p>
                         )}
@@ -145,10 +127,7 @@ const HideoutScreen = () => {
                           <ConstructRequirements level={level} />
                         )}
                         {level.crafts.length > 0 && (
-                          <p
-                            className="text-center fs-3 mb-0"
-                            style={{ color: "#edebd6" }}
-                          >
+                          <p className="text-center fs-3 mb-0 light1">
                             PRODUCTION
                           </p>
                         )}
@@ -175,16 +154,12 @@ const HideoutScreen = () => {
                                       </div>
                                     )
                                   })}
-                                <div
-                                  className="px-1"
-                                  style={{ paddingTop: "5px" }}
-                                >
-                                  <CraftTimeRequirement
-                                    timeStr={formatInHoursMINsec(
-                                      getHMSfromS(craft.duration)
-                                    )}
-                                  />
-                                </div>
+
+                                <CraftTimeRequirement
+                                  timeStr={formatInHoursMINsec(
+                                    getHMSfromS(craft.duration)
+                                  )}
+                                />
 
                                 {Array.isArray(craft.rewardItems) &&
                                   craft.rewardItems.map((itemRew) => {

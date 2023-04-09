@@ -3,7 +3,7 @@ import { Image } from "react-bootstrap"
 import { useImageSize } from "react-image-size"
 import { TextStroke } from "./TextStroke"
 import { FloatingMessageBox } from "./FloatingMessageBox"
-import hideoutSelectIcon from "../../server/public/static/images/hideout_selected.png"
+import hideouthoverIcon from "../../server/public/static/images/hideout_selected.png"
 import hideoutSelectedIcon from "../../server/public/static/images/selected_border.png"
 import hideoutLockIcon from "../../server/public/static/images/icon_lock.png"
 import hideoutUnlockIcon from "../../server/public/static/images/icon_status_unlocked.png"
@@ -65,34 +65,40 @@ const HideoutIcon = ({
           content={[stationName]}
         />
       )}
+      {/* normal outline */}
       {!greenOutlined && !redOutlined && (
         <Image
           src="/asset/hideout-icon-background.png"
           className="d-block w-100"
         />
       )}
+      {/* green outline */}
       {greenOutlined && (
         <Image
           src="/asset/area_icon_default_back_green.png"
           className="d-block w-100"
         />
       )}
+      {/* red outline */}
       {redOutlined && (
         <Image
           src="/asset/area_icon_locked_back.png"
           className="d-block w-100"
         />
       )}
+      {/* elite station outline */}
       <Image
         src={`/asset/area_icon_elite_back.png`}
         className="position-absolute top-50 start-50 translate-middle"
         hidden={!isElite}
       />
+      {/* producing icon */}
       <Image
         src={`/asset/area_producing_icon.png`}
         className="position-absolute top-50 start-50 translate-middle"
         hidden={!isProducing}
       />
+      {/* hideout icon */}
       <Image
         src={`/asset/${iconName}.png`}
         className="position-absolute top-50 start-50 translate-middle"
@@ -103,16 +109,19 @@ const HideoutIcon = ({
           }px`,
         }}
       />
+      {/* hover effect */}
       <Image
-        src={hideoutSelectIcon}
+        src={hideouthoverIcon}
         className="position-absolute top-50 start-50 translate-middle"
         hidden={selected || hoverHidden}
       />
+      {/* selected outline */}
       <Image
         src={hideoutSelectedIcon}
         className="position-absolute top-50 start-50 translate-middle"
         hidden={!selected}
       />
+      {/* lock icon */}
       {scale === 1 && level !== null && level === 0 && !constructUnlock && (
         <Image
           src={hideoutLockIcon}
@@ -122,6 +131,7 @@ const HideoutIcon = ({
           }}
         />
       )}
+      {/* unlock icon */}
       {scale === 1 && level !== null && level === 0 && constructUnlock && (
         <Image
           src={hideoutUnlockIcon}
@@ -131,6 +141,7 @@ const HideoutIcon = ({
           }}
         />
       )}
+      {/* level text */}
       {level !== null && level > 0 && (
         <div
           className="position-absolute start-50 top-50 tarkov-bold-700"

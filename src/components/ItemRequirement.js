@@ -33,9 +33,9 @@ const ItemRequirement = ({
         </div>
         {showFulfill &&
           (curAmount >= reqAmount ? (
-            <Image src={itemFulfillIcon} style={{ margin: "0 -8px 0 -6px" }} />
+            <Image src={itemFulfillIcon} className="margin-n6px" />
           ) : (
-            <Image src={itemLockedIcon} style={{ margin: "0 -8px 0 -6px" }} />
+            <Image src={itemLockedIcon} className="margin-n6px" />
           ))}
       </div>
     </div>

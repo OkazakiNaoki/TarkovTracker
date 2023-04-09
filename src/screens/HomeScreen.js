@@ -44,11 +44,11 @@ const HomeScreen = () => {
     <>
       <HeadMeta title="Home page" />
       <Container className="py-5">
-        <h1 className="my-3 sandbeige">News</h1>
+        <h1 className="my-3 sand1">News</h1>
         <Row className="my-5">
           <Col className="py-3">
             <div className="px-3">
-              <Table variant="dark" hover style={{ "--bs-table-bg": "none" }}>
+              <Table variant="dark" hover className="bs-table-bg-none">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -92,10 +92,10 @@ const HomeScreen = () => {
           </Col>
         </Row>
 
-        <h1 className="my-3 sandbeige">Video</h1>
+        <h1 className="my-3 sand1">Video</h1>
         <Tabs
           defaultActiveKey="featureVideo"
-          className="my-5 flex-column flex-lg-row"
+          className="my-5 flex-column flex-lg-row tarkov-tabs"
           transition={false}
           onSelect={getLatestVideoHandle}
         >

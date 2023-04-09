@@ -62,7 +62,7 @@ const EditValueModal = ({
       backdrop="static"
       className="bs-modal-bg-black1"
     >
-      <Modal.Header closeButton className="sandbeige">
+      <Modal.Header closeButton className="sand1">
         {title && <Modal.Title id={`${title}`}>{title}</Modal.Title>}
       </Modal.Header>
       <Modal.Body className="bg-black2">
@@ -70,7 +70,7 @@ const EditValueModal = ({
           <Col xs={2}>
             <div className="d-flex justify-content-center align-items-center h-100">
               <Button
-                className="d-flex justify-content-center align-items-center wh-square-60 fs-40px border-radius-20px"
+                className="d-flex justify-content-center align-items-center square-60px fs-40px border-radius-20px"
                 variant="danger"
                 onClick={() => {
                   fiddleValue(-1)
@@ -82,13 +82,13 @@ const EditValueModal = ({
           </Col>
           <Col xs={8}>
             <div className="d-flex justify-content-center align-items-center">
-              <span style={{ fontSize: "70px" }}>{localValue}</span>
+              <span className="fs-70px">{localValue}</span>
             </div>
           </Col>
           <Col xs={2}>
             <div className="d-flex justify-content-center align-items-center h-100">
               <Button
-                className="d-flex justify-content-center align-items-center wh-square-60 fs-40px border-radius-20px"
+                className="d-flex justify-content-center align-items-center square-60px fs-40px border-radius-20px"
                 variant="success"
                 onClick={() => {
                   fiddleValue(1)

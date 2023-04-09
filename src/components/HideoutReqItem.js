@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { Button, Card } from "react-bootstrap"
+import { Plus } from "react-bootstrap-icons"
 import { useDispatch } from "react-redux"
 import { find, get } from "lodash"
-import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
 import { updateInventoryItem } from "../reducers/CharacterSlice"
 import { EditValueModal } from "./EditValueModal"
 import { GainItemMethodBadge } from "./GainItemMethodBadge"
@@ -205,26 +205,19 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
       }}
       closeHandle={openItemCountModal}
     />,
-    <Card
-      key="hideout_item_card"
-      className="bg-dark text-white my-3 rounded w-100 ls-1"
-    >
-      <Card.Title
-        className="p-3 two-line-text-trunc sandbeige"
-        style={{ height: "68px" }}
-        title={itemReq.item.name}
-      >
+    <Card key="hideout_item_card" className="hideout-item-card">
+      <Card.Title className="hideout-item-card-title" title={itemReq.item.name}>
         <strong>{itemReq.item.name}</strong>
       </Card.Title>
-      <div className="px-3" style={{ fontSize: "8px" }}>
+      <div className="hideout-item-card-shortname">
         {itemReq.item.shortName}
       </div>
-      <div className="d-flex position-relative my-3 justify-content-center">
+      <div className="hideout-item-card-icon">
         <div
+          className="square-64px"
           onMouseEnter={itemIconEnterHandle}
           onMouseLeave={itemIconLeaveHandle}
           onMouseMove={mouseMoveHandle}
-          style={{ width: "64px", height: "64px" }}
         >
           <ItemSingleGrid
             itemId={itemReq.item.id}
@@ -234,7 +227,10 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
           />
         </div>
       </div>
-      <div onMouseMove={itemReq ? mouseMoveHandle : null} className="px-3">
+      <div
+        onMouseMove={itemReq ? mouseMoveHandle : null}
+        className="hideout-item-acquire-badge"
+      >
         <GainItemMethodBadge
           craftableStations={itemReq.item.craftableStations}
           questRewards={itemReq.item.rewardTasks}
@@ -251,18 +247,13 @@ const HideoutReqItem = ({ playerInventory, itemReq }) => {
           rewardBadgeLeaveHandle={rewardBadgeLeaveHandle}
         />
       </div>
-      <Card.Text className="text-center my-3">
+      <Card.Text className="hideout-item-card-count">
         {(itemCount ?? 0) + " / " + itemReq.count}
       </Card.Text>
-      <div className="d-flex flex-grow-1 justify-content-center">
+      <div className="hideout-item-card-btn">
         {playerInventory && (
-          <Button
-            variant="secondary"
-            onClick={openItemCountModal}
-            className="align-self-end w-100"
-            style={{ borderRadius: "0 0 0.374rem 0.374rem" }}
-          >
-            +
+          <Button variant="secondary" onClick={openItemCountModal}>
+            <Plus size={24} />
           </Button>
         )}
       </div>

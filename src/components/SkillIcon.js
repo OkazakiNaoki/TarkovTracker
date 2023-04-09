@@ -5,6 +5,7 @@ import { FloatingMessageBox } from "./FloatingMessageBox"
 import skillBorder from "../../server/public/static/images/skill_border.png"
 import levelBadge from "../../server/public/static/images/skill_level_panel.png"
 import maxStandIcon from "../../server/public/static/images/loyalty_king.png"
+import classNames from "classnames"
 
 const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
   // hooks state
@@ -39,47 +40,21 @@ const SkillIcon = ({ skillName, level = null, useNameBox = false }) => {
           content={[skillName]}
         />
       )}
-      <div
-        className="position-relative"
-        style={{
-          backgroundImage: `url(${skillBorder})`,
-          backgroundSize: "102px",
-          width: "102px",
-          height: "102px",
-        }}
-      >
-        <div
-          className="position-absolute top-50 start-50"
-          style={{ transform: "translateX(-50%) translateY(-50%)" }}
-        >
-          <Image
-            src={`/asset/${skillIconMap[skillName]}`}
-            style={{ width: "90px", height: "90px" }}
-          />
-          <Image
-            src={levelBadge}
-            className="position-absolute bottom-0 start-0"
-            style={{
-              transform: "translateX(-3px) translateY(3px)",
-            }}
-          />
+      <div className="skill-icon">
+        <div>
+          <Image src={`/asset/${skillIconMap[skillName]}`} />
+          <Image src={levelBadge} className="skill-icon-badge" />
           {level < 51 ? (
             <p
-              className="position-absolute bottom-0 start-0 mb-0"
-              style={{
-                fontSize: "12px",
-                color: "black",
-                transform: level < 9 ? "translateX(6px)" : "translateX(2px)",
-                userSelect: "none",
-              }}
+              className={classNames(
+                { "skill-icon-level-1d": level < 10 },
+                { "skill-icon-level-2d": level >= 10 }
+              )}
             >
               {level}
             </p>
           ) : (
-            <Image
-              src={maxStandIcon}
-              className="position-absolute bottom-0 start-0"
-            />
+            <Image src={maxStandIcon} className="skill-icon-max-level" />
           )}
         </div>
       </div>

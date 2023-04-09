@@ -63,11 +63,7 @@ const CountdownTimer = ({ targetDate }) => {
     }
   }
 
-  return (
-    <div className="d-inline-block" style={{ fontSize: "12px" }}>
-      {hhmmss}
-    </div>
-  )
+  return <div className="d-inline-block fs-12px">{hhmmss}</div>
 }
 
 export { CountdownTimer }

@@ -134,7 +134,7 @@ const InventoryPanel = ({ playerInventory }) => {
       <ItemSearchBar setSearchParams={setSearchParams} />
       {items && items.length > 0 && (
         <>
-          <h2 className="sandbeige">
+          <h2 className="sand1">
             {`Search result ${statePage}/${statePages}`}
           </h2>
           <div className="d-flex justify-content-center">
@@ -161,7 +161,7 @@ const InventoryPanel = ({ playerInventory }) => {
                 return (
                   <div
                     key={item.id}
-                    className="d-flex align-items-center gray-rounded-20 mb-1 px-3 py-2"
+                    className="d-flex align-items-center border-radius-20px bg-black2 mb-1 px-3 py-2"
                   >
                     <div className="d-inline-block mx-3">
                       <ItemSingleGrid
@@ -170,7 +170,7 @@ const InventoryPanel = ({ playerInventory }) => {
                       />
                     </div>
                     <p className="mb-0 mx-3">{item.name}</p>
-                    <p className="mb-0 me-4 fs-32px ma-left-auto">
+                    <p className="mb-0 me-4 fs-32px margin-l-auto">
                       {"x " +
                         convertKiloMega(
                           findItemAmount(playerInventory, item.id)
@@ -178,7 +178,7 @@ const InventoryPanel = ({ playerInventory }) => {
                     </p>
                     <Button
                       variant="success"
-                      className="mx-2 wh-square-32"
+                      className="mx-2 square-32px"
                       onClick={setCurrentItemHandle.bind(null, item)}
                     >
                       <div className="position-relative">
@@ -198,14 +198,14 @@ const InventoryPanel = ({ playerInventory }) => {
       {/*
         Inventory item part
       */}
-      <h2 className="sandbeige">Inventory</h2>
+      <h2 className="sand1">Inventory</h2>
       <div className="white">
         {playerInventory &&
           playerInventory.map((item) => {
             return (
               <div
                 key={item.item.id}
-                className="d-flex align-items-center gray-rounded-20 mb-1 px-3 py-2"
+                className="d-flex align-items-center border-radius-20px bg-black2 mb-1 px-3 py-2"
               >
                 <div className="d-inline-block mx-3">
                   <ItemSingleGrid
@@ -214,13 +214,13 @@ const InventoryPanel = ({ playerInventory }) => {
                   />
                 </div>
                 <p className="mb-0 mx-3">{item.item.name}</p>
-                <p className="mb-0 me-4 ma-left-auto fs-32px">
+                <p className="mb-0 me-4 margin-l-auto fs-32px">
                   {"x " + convertKiloMega(item.count)}
                 </p>
                 <div>
                   <Button
                     variant="success"
-                    className="mx-2 wh-square-32"
+                    className="mx-2 square-32px"
                     onClick={setEditingTargetInventoryItemHandle.bind(
                       null,
                       item

@@ -1,0 +1,110 @@
+@use 'sass:math';
+@use '../functions/type-convert';
+
+@mixin width-percentage($percentage) {
+    width: $percentage * 1%;
+}
+
+@mixin height-percentage($percentage) {
+    height: $percentage * 1%;
+}
+
+@mixin width-keyword($keyword) {
+    width: $keyword;
+}
+
+@mixin width-pixel($pixel) {
+    width: $pixel * 1px;
+}
+
+@mixin height-pixel($pixel) {
+    height: $pixel * 1px;
+}
+
+@mixin square($size) {
+    width: $size * 1px;
+    height: $size * 1px;
+}
+
+@mixin aspect-ratio($ratio) {
+    aspect-ratio: $ratio;
+}
+
+// generate class
+@mixin generate-width-percentage-class($percentage...) {
+    @for $i from 0 to length($percentage){
+        $percent: nth($percentage, $i + 1);
+        .width-#{$percent} {
+            @include width-percentage($percent);
+        }
+    }
+}
+
+@mixin generate-height-percentage-class($percentage...) {
+    @for $i from 0 to length($percentage){
+        $percent: nth($percentage, $i + 1);
+        .height-#{$percent} {
+            @include height-percentage($percent);
+        }
+    }
+}
+
+@mixin generate-width-keyword-class($keywords) {
+    @each $name, $keyword in $keywords {
+        .width-#{$keyword} {
+            @include width-keyword($keyword);
+        }
+    }
+}
+
+@mixin generate-width-pixel-class($pixels...) {
+    @for $i from 0 to length($pixels) {
+        $p: nth($pixels, $i+1);
+        .width-#{$p}px {
+            @include width-pixel($p);
+        }
+    }
+}
+
+@mixin generate-height-pixel-class($pixels...) {
+    @for $i from 0 to length($pixels) {
+        $p: nth($pixels, $i+1);
+        .height-#{$p}px {
+            @include height-pixel($p);
+        }
+    }
+}
+
+@mixin generate-square-class($pixel...) {
+    @for $i from 0 to length($pixel){
+        $size: nth($pixel, $i + 1);
+        .square-#{$size}px {
+            @include square($size);
+        }
+    }
+}
+
+@mixin generate-aspect-ratio-class($ratio...) {
+    @for $i from 0 to length($ratio){
+        $w: nth(nth($ratio, $i + 1), 1);
+        $h: nth(nth($ratio, $i + 1), 2);
+        $r: math.div($w, $h);
+        .aspect-ratio-#{$w}-#{$h} {
+            @include aspect-ratio($r);
+        }
+    }
+}
+
+@mixin generate-width-fraction($denomirator...) {
+    @for $i from 1 through length($denomirator){
+        $d: nth($denomirator, $i);
+        $num-d: type-convert.to-number($d);
+
+        @for $n from 0 through $num-d {
+            $rate: math.div($n, $num-d);
+            .width-#{$n}-#{$num-d} {
+                @include width-percentage($rate * 100);
+            }
+        }
+    }
+}

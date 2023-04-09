@@ -1,0 +1,50 @@
+// border
+$border-styles: (
+    "none": none,
+    "hide": hidden,
+    "dot": dotted,
+    "dash": dashed,
+    "solid": solid,
+    "double": double,
+    "groove": groove,
+    "ridge": ridge,
+    "inset": inset,
+    "outset": outset,
+);
+
+// width
+$width-keywords: (
+    "max-content": max-content,
+    "min-content": min-content,
+    "fit-content": fit-content,
+    "auto": auto,
+);
+
+// text
+$text-deco-lines: (
+    "none": none,
+    "underline": underline,
+    "overline": overline,
+    "line-through": line-through,
+    "blink": blink,
+);
+
+$white-spaces: (
+    "normal": normal,
+    "nowrap": nowrap,
+    "pre": pre,
+    "pre-wrap": pre-wrap,
+    "pre-line": pre-line,
+    "break-spaces": break-spaces,
+);
+
+// transition
+$transition-timing-functions: (
+    "ease": ease,
+    "ease-in": ease-in,
+    "ease-out": ease-out,
+    "ease-in-out": ease-in-out,
+    "linear": linear,
+    "step-start": step-start,
+    "step-end": step-end,
+);

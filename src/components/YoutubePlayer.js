@@ -3,10 +3,9 @@ import ReactPlayer from "react-player"
 
 const YoutubePlayer = ({ url }) => {
   return (
-    <div className="position-relative" style={{ aspectRatio: "1.7777" }}>
+    <div className="position-relative aspect-ratio-16-9">
       <ReactPlayer
-        className="position-absolute"
-        style={{ top: "0", left: "0" }}
+        className="position-absolute top-0 start-0"
         url={url}
         width="100%"
         height="100%"

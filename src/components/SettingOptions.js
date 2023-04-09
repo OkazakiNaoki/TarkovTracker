@@ -94,8 +94,8 @@ const SettingOptions = ({ setMessage }) => {
 
   return (
     <Form>
-      <div className="gray-rounded-20 py-3 px-5 mb-3">
-        <h2 className="sandbeige">Flea market</h2>
+      <div className="border-radius-20px bg-black2 py-3 px-5 mb-3">
+        <h2 className="sand1">Flea market</h2>
         <div className="my-1 py-3">
           <Form.Label className="fw-bold">
             Item icon resolution at item searching page
@@ -108,7 +108,7 @@ const SettingOptions = ({ setMessage }) => {
             <option value={128}>128px per item grid</option>
           </Form.Select>
         </div>
-        <h2 className="sandbeige">Quest item</h2>
+        <h2 className="sand1">Quest item</h2>
         <div className="my-1 py-3">
           <Form.Label className="fw-bold">
             Default show required item of completed task

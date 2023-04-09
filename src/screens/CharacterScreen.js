@@ -20,6 +20,7 @@ import { PlayerLevelPanel } from "../components/PlayerLevelPanel"
 import { PlayerCharacterPanel } from "../components/PlayerCharacterPanel"
 import leftArrow from "../../server/public/static/images/left_arrow.png"
 import rightArrow from "../../server/public/static/images/icon_right_bracket.png"
+import { TarkovSpinner } from "../components/TarkovSpinner"
 
 const MemoPlayerLevelPanel = memo(PlayerLevelPanel)
 const MemoPlayerCharacterPanel = memo(PlayerCharacterPanel)
@@ -166,7 +167,7 @@ const CharacterScreen = () => {
   return (
     <>
       <div
-        className="hide-level-sticky-btn"
+        className="level-panel-hide-sticky-btn"
         role="button"
         onClick={hideShowCharacterLevelHandle}
       >

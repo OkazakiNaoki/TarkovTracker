@@ -1,7 +1,10 @@
 import React, { useState } from "react"
 import { useEffect } from "react"
+import { formatInHoursMINsec, getHMSfromS } from "../helpers/TimeFormat"
 import { ConstructRequirements } from "./ConstructRequirements"
+import { CraftTimeRequirement } from "./CraftTimeRequirement"
 import { HideoutIcon } from "./HideoutIcon"
+import { ItemRequirement } from "./ItemRequirement"
 import { TarkovStyleButton } from "./TarkovStyleButton"
 import { TextStroke } from "./TextStroke"
 
@@ -44,12 +47,9 @@ const HideoutStationDetail = ({
   }
 
   return (
-    <div className="my-3" style={{ border: "1px solid white" }}>
+    <div className="hideout-station-detail">
       {/* heading */}
-      <div
-        className="d-flex align-items-center"
-        style={{ backgroundColor: "#191919" }}
-      >
+      <div className="hideout-heading">
         <HideoutIcon
           iconName={station.id}
           level={curLevelIndex + 1}
@@ -78,16 +78,8 @@ const HideoutStationDetail = ({
       </div>
       {/* inner */}
       {/* station description */}
-      <div
-        className="d-flex justify-content-center mx-3 mt-3 mb-5"
-        style={{
-          fontFamily: "TarkovItalic",
-          color: "#9ea8ad",
-          lineHeight: "1.2",
-          flexWrap: "wrap",
-        }}
-      >
-        <p className="d-block">
+      <div className="hideout-desc">
+        <p>
           {showUpgrade
             ? station.levels[curLevelIndex + 1].description
             : station.levels[curLevelIndex !== -1 ? curLevelIndex : 0]
@@ -103,7 +95,7 @@ const HideoutStationDetail = ({
             0 ||
           station.levels[curLevelIndex + 1].traderRequirements.length > 0) && (
           <>
-            <p className="text-center fs-3 mb-0" style={{ color: "#edebd6" }}>
+            <p className="hideout-construct-heading">
               {curLevelIndex === -1
                 ? "CONSTRUCTION REQUIREMENTS"
                 : `LEVEL 0${curLevelIndex + 2} UPGRADE REQUIREMENTS`}
@@ -125,44 +117,63 @@ const HideoutStationDetail = ({
       {curLevelIndex !== -1 &&
         !showUpgrade &&
         station.levels[curLevelIndex].crafts.length > 0 && [
-          <p key="craft_heading" className="text-center fs-3">
+          <p key="craft_heading" className="hideout-produce-heading">
             PRODUCTION
           </p>,
-          <div key="crafts">
-            {station.levels.map((lvl) => {
-              return lvl.crafts.map((c, i) => {
-                if (lvl.level <= station.levels[curLevelIndex].level)
+          <div key="crafts" className="hideout-crafts">
+            {station.levels.map((level) => {
+              return level.crafts.map((craft, i) => {
+                if (level.level <= station.levels[curLevelIndex].level) {
                   return (
-                    <div
-                      key={station.name + c.level + "craft_" + i}
-                      className="text-center"
-                    >
-                      {c.duration}
-                      {c.requiredItems.map((itemReq, i) => {
-                        return (
-                          <div key={"itemReq_" + i}>
-                            {itemReq.item.name + "  x" + itemReq.count + "\n"}
-                          </div>
-                        )
-                      })}
-                      {c.rewardItems.map((itemRew) => {
-                        return (
-                          <div key={"itemRew_" + i}>
-                            {itemRew.item.name + "  x" + itemRew.count + "\n"}
-                          </div>
-                        )
-                      })}
+                    <div key={station.name + craft.level + "craft_" + i}>
+                      {Array.isArray(craft.requiredItems) &&
+                        craft.requiredItems.map((itemReq, i) => {
+                          return (
+                            <div
+                              key={`itemRequire_${i}`}
+                              className="hideout-crafts-item"
+                            >
+                              <ItemRequirement
+                                itemId={itemReq.item.id}
+                                itemName={itemReq.item.name}
+                                bgColor={itemReq.item.backgroundColor}
+                                reqAmount={itemReq.count}
+                              />
+                            </div>
+                          )
+                        })}
+
+                      <CraftTimeRequirement
+                        timeStr={formatInHoursMINsec(
+                          getHMSfromS(craft.duration)
+                        )}
+                      />
+
+                      {Array.isArray(craft.rewardItems) &&
+                        craft.rewardItems.map((itemRew) => {
+                          return (
+                            <div
+                              key={`itemReward_${i}`}
+                              className="hideout-crafts-item"
+                            >
+                              <ItemRequirement
+                                itemId={itemRew.item.id}
+                                itemName={itemRew.item.name}
+                                bgColor={itemRew.item.backgroundColor}
+                                reqAmount={itemRew.count}
+                              />
+                            </div>
+                          )
+                        })}
                     </div>
                   )
+                }
               })
             })}
           </div>,
         ]}
       {/* buttons */}
-      <div
-        className="d-flex justify-content-center"
-        style={{ backgroundColor: "#1e1e1e" }}
-      >
+      <div className="d-flex justify-content-center bg-black5">
         {curLevelIndex === -1 && (
           <div className="my-1">
             <TarkovStyleButton

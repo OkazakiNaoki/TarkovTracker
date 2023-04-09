@@ -9,7 +9,6 @@ import { HideoutRequirement } from "./HideoutRequirement"
 import { ItemRequirement } from "./ItemRequirement"
 import { SkillRequirement } from "./SkillRequirement"
 import { TraderRequirement } from "./TraderRequirement"
-import itemInfoBg from "../../server/public/static/images/info_window_back.png"
 
 const ConstructRequirements = ({
   level,
@@ -156,14 +155,8 @@ const ConstructRequirements = ({
   }, [playerSkill])
 
   return (
-    <div
-      className="py-3 w-100"
-      style={{
-        backgroundImage: `url(${itemInfoBg})`,
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <div className="py-3 w-100 hideout-req-block">
+      {/* hideout stations need to be built before this station */}
       {level.stationLevelRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.stationLevelRequirements.map((stationReq, i) => {
@@ -180,6 +173,7 @@ const ConstructRequirements = ({
           })}
         </div>
       )}
+      {/* item requirement of this station */}
       {level.itemRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.itemRequirements.map((itemReq, i) => {
@@ -198,6 +192,7 @@ const ConstructRequirements = ({
           })}
         </div>
       )}
+      {/* trader loyalty level requirement of this station */}
       {level.traderRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.traderRequirements.map((traderReq, i) => {
@@ -214,6 +209,7 @@ const ConstructRequirements = ({
           })}
         </div>
       )}
+      {/* player skill level requirement of this station */}
       {level.skillRequirements.length > 0 && (
         <div className="d-flex justify-content-center flex-wrap mb-5">
           {level.skillRequirements.map((skillReq, i) => {

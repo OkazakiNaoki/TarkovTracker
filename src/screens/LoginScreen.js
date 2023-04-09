@@ -35,12 +35,9 @@ const LoginScreen = () => {
   return (
     <>
       <Container className="h-100">
-        <Row
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "90%" }}
-        >
+        <Row className="d-flex align-items-center justify-content-center height-90">
           <Col md={6} align="center">
-            <h1 className="mb-5 sandbeige">Log in</h1>
+            <h1 className="mb-5 sand1">Log in</h1>
             {errorMsg.length > 0 && (
               <Alert variant="secondary" className="text-center">
                 {errorMsg}
@@ -82,10 +79,7 @@ const LoginScreen = () => {
             </Form>
           </Col>
         </Row>
-        <Row
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "10%" }}
-        >
+        <Row className="d-flex align-items-center justify-content-center height-10">
           <Col md={6} className="text-center">
             New user? <Link to="/register">Register</Link>
           </Col>

@@ -1,0 +1,12 @@
+@mixin background-colors($color) {
+    background-color: $color;
+}
+
+// class generator
+@mixin generate-background-colors-class($colors) {
+    @each $name, $value in $colors {
+        .bg-#{$name} {
+            @include background-colors($value);
+        }
+    }
+}

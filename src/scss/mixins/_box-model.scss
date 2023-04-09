@@ -1,0 +1,136 @@
+@use 'sass:string';
+@use 'sass:math';
+// t - top
+// r - right
+// b - bottom
+// l - left
+$directions: (t, r, b, l);
+
+//// border
+// width
+@mixin border-width($width) {
+    border-width: $width * 1px;
+}
+
+// color
+@mixin border-color($color) {
+    border-color: $color;
+}
+
+// style
+@mixin border-style($style) {
+    border-style: $style;
+}
+
+// radius
+@mixin border-radius($radius) {
+    border-radius: $radius * 1px;
+}
+
+//// margin
+// all direction
+@mixin margin-all-direction($width) {
+    margin: $width * 1px;
+}
+
+// direction combination
+@mixin margin-direction($value) {
+    margin: $value;
+}
+
+// margin auto (only 4 direction)
+@mixin margin-dir-auto($dir) {
+    margin-#{$dir}: auto;
+}
+
+//// generate class
+@mixin generate-border-width-class($width...) {
+    @for $i from 0 to length($width){
+        $w: nth($width, $i + 1);
+        .border-#{$w}px {
+            @include border-width($w);
+        }
+    }
+}
+
+@mixin generate-border-color-class($colors) {
+    @each $name, $color in $colors {
+        .border-#{$name} {
+            @include border-color($color);
+        }
+    }
+}
+
+@mixin generate-border-style-class($styles) {
+    @each $name, $style in $styles {
+        .border-#{$name} {
+            @include border-style($style);
+        }
+    }
+}
+
+@mixin generate-border-radius-class($radius...) {
+    @for $i from 0 to length($radius){
+        $r: nth($radius, $i + 1);
+        .border-radius-#{$r}px {
+            @include border-radius($r);
+        }
+    }
+}
+
+@mixin generate-margin-all-dir-class($width...) {
+    @for $i from 0 to length($width){
+        $w: nth($width, $i+1);
+        $negative: if($w < 0, 'n', '');
+        .margin-#{$negative}#{math.abs($w)}px {
+            @include margin-all-direction($w);
+        }
+    }
+}
+
+@mixin generate-margin-dir-combination-class($width...) {
+    $directions: (t, r, b, l);
+    $on-off: (true, false);
+
+    @for $x from 0 to length($width){
+        @for $i from 1 through length($on-off) {
+            @for $j from 1 through length($on-off) {
+                @for $k from 1 through length($on-off) {
+                    @for $l from 1 through length($on-off) {
+                        $comb: ($i, $j, $k, $l);
+                        $className: '';
+                        $negative: if(nth($width, $x+1)<0, '-n', '');
+                        $value: '';
+                        @for $y from 1 through length($comb) {
+                            $space: if($y != 1, ' ', '');
+                            @if nth($on-off, nth($comb, $y)) {
+                                $className: $className + nth($directions, $y);
+                                $value: $value + $space + nth($width, $x+1) + 'px';
+                            } @else {
+                                $value: $value + $space + 0;
+                            }
+                        }
+                        @if $className != '' {
+                            .margin-#{$className}#{$negative}#{math.abs(nth($width, $x+1))}px {
+                                @include margin-direction(string.unquote($value));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin generate-margin-4-dir-auto-class {
+    $directions: (t, r, b, l);
+    $keyword: ('top', 'right', 'bottom', 'left');
+
+    @for $i from 1 through length($directions) {
+        $dir: nth($directions, $i);
+        $key: nth($keyword, $i);
+        .margin-#{$dir}-auto {
+            @include margin-dir-auto($key);
+        }
+    }
+}

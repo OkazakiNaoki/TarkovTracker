@@ -129,9 +129,9 @@ const QuestItems = ({ playerTasksInfo }) => {
           onClick={() => {
             changeFilterTypeHandle(radio.value)
           }}
-          style={
-            itemFilterType !== radio.value ? { "--bs-btn-bg": "white" } : null
-          }
+          className={classNames({
+            "bs-btn-bg-white": itemFilterType !== radio.value,
+          })}
         >
           {radio.name}
         </Button>

@@ -1,3 +1,4 @@
+import classNames from "classnames"
 import React from "react"
 
 const TextStroke = ({
@@ -10,27 +11,35 @@ const TextStroke = ({
 }) => {
   return (
     <div
-      className="d-flex position-relative"
+      className={classNames(
+        "d-flex",
+        "position-relative",
+        {
+          "tarkov-text-stroke": !bold,
+        },
+        {
+          "tarkov-bold-text-stroke": bold,
+        }
+      )}
       style={{
         fontSize: `${fontSize}px`,
-        fontFamily: bold ? "TarkovBold" : "Tarkov",
-        userSelect: "none",
       }}
     >
-      <div style={{ visibility: "hidden" }}>{content}</div>
+      <div className="tarkov-text-stroke-content">{content}</div>
       <div
-        className="position-absolute"
-        style={{
-          strokeLinecap: "round",
-          WebkitTextStroke: `${strokeWidth}px black`,
-          color: "black",
-          userSelect: "none",
-        }}
+        className="position-absolute tarkov-text-stroke-back"
+        style={
+          strokeWidth !== 1
+            ? {
+                WebkitTextStroke: `${strokeWidth}px black`,
+              }
+            : null
+        }
       >
         {content}
       </div>
       <div
-        className="position-absolute"
+        className="position-absolute tarkov-text-stroke-front"
         style={{ color: color, userSelect: selectable ? "text" : "none" }}
       >
         {content}

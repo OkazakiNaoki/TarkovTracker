@@ -1,0 +1,40 @@
+@use 'sass:string';
+@use 'sass:map';
+
+@function set-transition-value($property: all, $duration: 1s, $timing-func: ease) {
+    @return $property $duration $timing-func;
+}
+
+@mixin transition-single-prop($prop, $dura, $timing-f) {
+    transition: set-transition-value($prop, $dura, $timing-f);
+}
+
+@mixin transition-multi-prop($transition-groups) {
+    $all-values: '';
+    @for $i from 0 to length($transition-groups) {
+        $target-map: nth($transition-groups, $i+1);
+        @if map-has-key($target-map, 'property') 
+        and map-has-key($target-map, 'duration') 
+        and map-has-key($target-map, 'timing-func') {
+            $all-values: $all-values + set-transition-value(map-get($target-map, 'property'), map-get($target-map, 'duration'), map-get($target-map, 'timing-func')) + ', ';
+        }
+    }
+    $all-values: str-slice($all-values, 0, str-length($all-values) - 2);
+    transition: unquote($all-values);
+}
+
+// generators
+@mixin generate-module-single-transition-class($module-name, $action-name, $transition-map) {
+    $prop: map-get($transition-map, 'property');
+    $dura: map-get($transition-map, 'duration');
+    $timing-f: map-get($transition-map, 'timing-func');
+    .#{$module-name}-#{$action-name}-transition {
+        @include transition-single-prop($prop, $dura, $timing-f);
+    }
+}
+
+@mixin generate-module-mix-transition-class($module-name, $action-name, $transition-list) {
+    .#{$module-name}-#{$action-name}-transition {
+        @include transition-multi-prop($transition-list);
+    }
+}

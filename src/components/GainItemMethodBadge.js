@@ -135,9 +135,8 @@ const GainItemMethodBadge = ({
               craftBadgeLeaveHandle()
             }
           }}
-          style={{ width: "fit-content" }}
         >
-          <Badge pill bg="primary" style={{ userSelect: "none" }}>
+          <Badge pill bg="primary" className="user-select-none">
             craft
           </Badge>
         </div>
@@ -160,9 +159,8 @@ const GainItemMethodBadge = ({
               rewardBadgeLeaveHandle()
             }
           }}
-          style={{ width: "fit-content" }}
         >
-          <Badge pill bg="success" style={{ userSelect: "none" }}>
+          <Badge pill bg="success" className="user-select-none">
             reward
           </Badge>
         </div>
@@ -175,9 +173,8 @@ const GainItemMethodBadge = ({
             textBadgeEnterHandle()
           }}
           onMouseLeave={textBadgeLeaveHandle}
-          style={{ width: "fit-content" }}
         >
-          <Badge pill bg="warning" text="dark" style={{ userSelect: "none" }}>
+          <Badge pill bg="warning" text="dark" className="user-select-none">
             collect
           </Badge>
         </div>
@@ -187,9 +184,8 @@ const GainItemMethodBadge = ({
           className="d-inline me-2"
           onMouseEnter={() => tradeBadgeEnterHandle("buy")}
           onMouseLeave={() => tradeBadgeLeaveHandle("buy")}
-          style={{ width: "fit-content" }}
         >
-          <Badge pill bg="info" text="dark" style={{ userSelect: "none" }}>
+          <Badge pill bg="info" text="dark" className="user-select-none">
             buy
           </Badge>
         </div>
@@ -199,9 +195,8 @@ const GainItemMethodBadge = ({
           className="d-inline me-2"
           onMouseEnter={() => tradeBadgeEnterHandle("barter")}
           onMouseLeave={() => tradeBadgeLeaveHandle("barter")}
-          style={{ width: "fit-content" }}
         >
-          <Badge pill bg="danger" text="light" style={{ userSelect: "none" }}>
+          <Badge pill bg="danger" text="light" className="user-select-none">
             barter
           </Badge>
         </div>
@@ -214,9 +209,8 @@ const GainItemMethodBadge = ({
             textBadgeEnterHandle()
           }}
           onMouseLeave={textBadgeLeaveHandle}
-          style={{ width: "fit-content" }}
         >
-          <Badge pill bg="light" text="dark" style={{ userSelect: "none" }}>
+          <Badge pill bg="light" text="dark" className="user-select-none">
             flea
           </Badge>
         </div>

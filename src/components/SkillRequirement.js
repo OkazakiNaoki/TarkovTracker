@@ -12,18 +12,15 @@ const SkillRequirement = ({
   useNameBox = false,
 }) => {
   return (
-    <div>
-      <div
-        className="d-flex justify-content-center"
-        style={{ marginBottom: "-4px" }}
-      >
+    <div className="hideout-skill-req">
+      <div>
         <SkillIcon
           skillName={skillName}
           level={level}
           useNameBox={useNameBox}
         />
       </div>
-      <div className="d-flex justify-content-center">
+      <div>
         {showFulfill &&
           (fulfill ? (
             <Image src={itemFulfillIcon} />

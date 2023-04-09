@@ -1,0 +1,829 @@
+@use 'sass:map';
+@use './mixins/width-height';
+@use './mixins/animation';
+@use './mixins/transition';
+@use './variables/color';
+@use './custom-bootstrap';
+@use './generic';
+
+/* var */
+$body-text-color: white;
+
+$nav-header-bg-color: black;
+$nav-header-border-color: white;
+$nav-header-font-size: 20px;
+
+$main-area-bg-color: black;
+
+$game-edition-block-bg-color: map.get(color.$darks, 'black6');
+$hideout-desc-text-color: map.get(color.$grays, 'gray1');
+
+$floating-box-bg-color: white;
+
+/* ===== reusable components ===== */
+// floating elements
+.floating-hideout-icon {
+    position: fixed;
+    user-select: none;
+    background-color: $floating-box-bg-color;
+    z-index: 100001;
+    transform: scale(0.6, 0.6) translateX(10px) translateY(-100%);
+    transform-origin: top left;
+
+    > div {
+        background-color: #000;
+        border: 3.33px solid #585d60;
+        white-space: break-spaces;
+    }
+}
+
+.floating-box {
+    position: fixed;
+    user-select: none;
+    background-color: $floating-box-bg-color;
+    transform: translateX(10px) translateY(-100%);
+    z-index: 100001;
+    transform-origin: top left;
+
+    > div {
+        background-color: #000;
+        border: 2px solid #585d60;
+        white-space: break-spaces;
+    }
+}
+
+// rounded corner table
+.round-table {
+    th:first-child {
+        border-radius: 10px 0 0 0;
+    }
+
+    th:last-child {
+        border-radius: 0 10px 0 0;
+    }
+
+    tfoot td {
+        border-width: 0;
+        border-radius: 0 0 10px 10px;
+    }
+}
+
+// item grid
+.item-grid-bg {
+    background-image: url("../../server/public/static/images/cell_full_border.png");
+}
+
+.item-grid-outline {
+    outline: 1px solid #495154;
+    outline-offset: -1px;
+}
+
+// skill icon
+.skill-icon {
+    position: relative;
+    background-image: url('../../server/public/static/images/skill_border.png');
+    background-size: 102px;
+    width: 102px;
+    height: 102px;
+
+    > div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+
+        .skill-icon-badge {
+            position: absolute;
+            bottom: 0%;
+            left: 0%;
+            transform: translateX(-3px) translateY(3px);
+        }
+
+        .skill-icon-level-1d {
+            position: absolute;
+            bottom: 0%;
+            left: 0%;
+            margin-bottom: 0;
+            font-size: 12px;
+            color: black;
+            user-select: none;
+            transform: translateX(6px);
+        }
+
+        .skill-icon-level-2d {
+            @extend .skill-icon-level-1d;
+            transform: translateX(2px);
+        }
+
+        .skill-icon-max-level {
+            position: absolute;
+            bottom: 0%;
+            left: 0%;
+        }
+    }
+}
+
+// trader icon
+.trader-level {
+    font-size: 14px;
+    letter-spacing: -1px;
+    color: black;
+    transform: translateX(calc(-50% - 1px)) translateY(-50%);
+}
+
+.trader-max-level {
+    transform: translateX(calc(-50% - 1px)) translateY(-50%);
+}
+
+.trader-icon {
+    > div {
+        &:nth-child(1){
+            width: 130px;
+            height: 130px;
+            border: 1px solid white;
+        }
+
+        &:nth-child(2){
+            transform: translateX(-1px) translateY(-2px);
+        }
+    }
+}
+
+// tarkov style button slide in
+.tarkov-style-button {
+    @keyframes tarkov-btn-fade-in {
+        from {
+            right: calc(-50% + 50px);
+            top: 50%;
+            transform: translateX(calc(-50% - 50px)) translateY(-50%);
+            opacity: 0;
+        }
+        to {
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            opacity: 1;
+        }
+    }
+    @keyframes tarkov-btn-alter-color {
+        to {
+            color: black;
+        }
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: calc(232 / 51);
+    color: black;
+    
+    > div {
+        position: relative;
+
+        > img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            aspect-ratio: calc(232 / 51);
+            right: calc(-50% + 50px);
+            animation: tarkov-btn-fade-in 0.2s ease-out forwards;
+        }
+
+        > div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            white-space: nowrap;
+            animation: tarkov-btn-alter-color 0.2s ease-out forwards;
+        }
+    }
+}
+
+// tarkov style loading icon
+.spin-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../../server/public/static/images/progress_spinner_back.png');
+    width: 51px;
+    height: 51px;
+
+    > div {
+        $from: ('rotate': '0deg', 'offsetX': '-1px', 'offsetY': '-1px');
+        $to: ('rotate': '360deg', 'offsetX': '-1px', 'offsetY': '-1px');
+        @include animation.transform-srt-keyframe('spinner', 'spin', $from, $to, 2s, linear, infinite);
+        background-image: url('../../server/public/static/images/spinner_big.png');
+        width: 43px;
+        height: 43px;
+        transform-origin: center;
+        transform: translateX(-1px) translateY(-1px);
+    }
+}
+
+// text stroke
+.tarkov-text-stroke {
+    font-family: Tarkov;
+
+    > .tarkov-text-stroke-content {
+        visibility: hidden;
+        user-select: none;
+    }
+
+    > .tarkov-text-stroke-back {
+        stroke-linecap: round;
+        -webkit-text-stroke: 1px black;
+        color: black;
+        user-select: none;
+    }
+
+    > .tarkov-text-stroke-front {
+        color: white;
+    }
+}
+
+.tarkov-bold-text-stroke {
+    font-family: TarkovBold;
+
+    > .tarkov-text-stroke-content {
+        visibility: hidden;
+        user-select: none;
+    }
+
+    > .tarkov-text-stroke-back {
+        stroke-linecap: round;
+        -webkit-text-stroke: 1px black;
+        color: black;
+        user-select: none;
+    }
+
+    > .tarkov-text-stroke-front {
+        color: white;
+    }
+}
+
+/* ===== components ===== */
+// root
+body {
+    font-family: Tarkov, serif;
+    letter-spacing: 0.6px;
+    color: $body-text-color;
+}
+
+// header nav
+.tarkov-header {
+    max-height: 80px;
+    background-color: $nav-header-bg-color;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: $nav-header-border-color;
+    font-size: $nav-header-font-size;
+}
+
+// main area
+main {
+    overflow-y: auto;
+    background-color: $main-area-bg-color;
+    background-image: url('../../server/public/static/images/striped_background.png');
+    background-repeat: repeat;
+    background-size: 130px 130px;
+    min-height: calc(100vh - 80px);
+    height: 1px;
+}
+
+// character page / hideout detail component
+.hideout-station-detail {
+    @extend .my-3;
+    border: 1px solid white;
+
+    > .hideout-heading {
+        @extend .d-flex, .align-items-center, .bg-black2;
+    }
+
+    > .hideout-desc {
+        @extend .d-flex, .justify-content-center, .mx-3, .mt-3, .mb-5;
+        font-family: TarkovItalic;
+        color: $hideout-desc-text-color;
+        line-height: 1.2;
+
+        > p {
+            @extend .d-block;
+        }
+    }
+
+    > .hideout-construct-heading {
+        @extend .text-center, .fs-3, .mb-0, .light1;
+    }
+
+    > .hideout-produce-heading {
+        @extend .text-center, .fs-3;
+    }
+
+    > .hideout-crafts {
+        > div {
+            @extend .d-flex, .justify-content-center, .my-3;
+
+            > .hideout-crafts-item {
+                @extend .px-1;
+            }
+        }
+    }
+}
+
+.hideout-req-block {
+    background-image: url('../../server/public/static/images/info_window_back.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hideout-craft-time {
+    padding: 5px;
+    > div {
+        background-image: url('../../server/public/static/images/arrow_right.png');
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 54px;
+        width: 110px;
+
+        > img {
+            padding-right: 10px;
+        }
+
+        > p {
+            font-size: 12px;
+            line-height: 14px;
+        }
+    }
+}
+
+.hideout-loading-block {
+    width: 100%;
+    height: 200px;
+}
+
+// fleamarket page / multi-grid item
+.multi-grid-item {
+    > .multi-grid-item-grid {
+        outline: 1px solid #495154;
+        outline-offset: -1px;
+    }
+
+    > .multi-grid-item-text {
+        white-space: nowrap;
+        letter-spacing: 0px;
+        width: calc(100% - 6px);
+        transform: translateX(4px) translateY(calc(-100% + (-1 * 2px)));
+    }
+
+    > .multi-grid-item-outline {
+        box-shadow: inset 0px 0px 0px 1px #495154;
+    }
+}
+
+// character page / require login page
+.need-login-bg {
+    background-image: url('../../server/public/static/images/glow-images/glow_top.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+// task page / task detail
+.task-detail {
+    .task-detail-image-description {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px;
+    
+        > img {
+            object-fit: contain;
+        }
+    
+        > p {
+            padding-left: 16px;
+        }
+    }
+
+    .task-detail-subheading {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .task-detail-objective {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        margin-bottom: 8px;
+        background-color: #2a2c2e;
+
+        > p {
+            margin-bottom: 0;
+        }
+
+        > .task-detail-objective-count {
+            margin-left: 16px;
+            margin-right: 16px;
+            font-weight: 700;
+        }
+
+        > img, .task-detail-objective-turnin {
+            margin-left: 4px;
+        }
+
+        &-complete {
+            @extend .task-detail-objective;
+            background-color: #101d24; // this is a really dark blue
+        }
+    }
+
+    .task-detail-rewards {
+        padding: 8px;
+
+        > div.row {
+            background-color: #090a0b;
+            padding-left: 48px;
+            padding-right: 48px;
+            // bootstrap vars override
+            --bs-gutter-x: 8px;
+            --bs-gutter-y: 8px;
+
+            .task-detail-reward {
+                &:nth-child(-n+4){
+                    margin-top: 0px;
+                }
+
+                > .task-detail-exp-reward, .task-detail-rep-reward {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    background-color: map.get(color.$darks, 'black4');
+
+                    > div {
+                        text-align: center;
+                    }
+                }
+
+                > .task-detail-item-reward, .task-detail-offer-reward {
+                    padding: 4px;
+                    height: 100%;
+                    background-color: map.get(color.$darks, 'black4');
+
+                    > div {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100%;
+
+                        > div {
+                            display: inline-block;
+                        }
+
+                        > p {
+                            display: inline-block;
+                            margin-bottom: 0;
+                            padding-left: 8px;
+                            font-size: 14px;
+                        }
+                    }
+                }
+
+                > .task-detail-skill-reward {
+                    @extend .task-detail-exp-reward;
+                    padding: 4px;
+                }
+
+                > .task-detail-trader-reward {
+                    padding: 4px;
+                    height: 100%;
+                    background-color: map.get(color.$darks, 'black4');
+
+                    > div {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100%;
+
+                        > img {
+                            @extend .square-64px;
+                        }
+
+                        > p {
+                            display: inline-block;
+                            margin-bottom: 0;
+                            padding-left: 8px;
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// character page / player level panel / hide button
+.level-panel-hide-sticky-btn {
+    background-color: black;
+    padding: 10px 20px 10px 10px;
+    position: fixed;
+    top: 20%;
+    left: -45px;
+    z-index: 9999;
+    text-align: center;
+    border-width: 3px 3px 3px 0;
+    border-style: solid;
+    border-color: #292929;
+    border-radius: 0 10px 10px 0;
+
+    &:hover {
+        @include animation.to-position-keyframe('hide-level-btn', 'slide-out', ('left': 0px), 0.5s, $timing-func: ease-in-out, $fiil-mode: forwards);
+    }
+}
+
+// trader page / trader card
+.trader-card {
+    background-image: url('../../server/public/static/images/image_diagonal_trader.png');
+    background-repeat: no-repeat;
+    background-color: black;
+
+    .trader-card-name {
+        color: #c6c4b2;
+        background-color: #282925;
+        margin-top: 3px;
+        text-align: center;
+    }
+
+    .trader-card-stand-icon {
+        margin-right: 3px;
+    }
+
+    .trader-card-rep {
+        font-size: 12px;
+        margin-right: 7px;
+    }
+}
+
+// character page / hideout skill requirement
+.hideout-skill-req {
+    > div:nth-of-type(1) {
+        @extend .d-flex, .justify-content-center;
+        margin-bottom: -4px;
+    }
+
+    > div:nth-of-type(2) {
+        @extend .d-flex, .justify-content-center;
+    }
+}
+
+// character page / hideout hideout requirement
+.hideout-hideout-req {
+    @extend .d-flex, .align-items-center, .mx-3;
+
+    > div:nth-of-type(1) {
+        @extend .d-inline-block;
+        margin-right: -10px;
+    }
+
+    > div:nth-of-type(2) {
+        @extend .d-inline-block, .me-2;
+
+        &.hideout-req-unqualified {
+            color: #C40000;
+        }
+
+        &.hideout-req-qualified {
+            color: white;
+        }
+    }
+
+    > img {
+        margin: -6px;
+    }
+}
+
+// character page / quest required item card
+.quest-item-card {
+    @extend .bg-dark, .my-3, .w-100;
+    letter-spacing: 1px;
+
+    .quest-item-card-title {
+        @extend .p-3;
+        height: 68px;
+        @extend .trunc-2-line, .sand1;
+    }
+
+    .quest-item-card-shortname {
+        @extend .px-3;
+        font-size: 8px;
+    }
+
+    .quest-item-card-icon {
+        @extend .d-flex, .justify-content-center, .my-3;
+
+        > div {
+            @extend .square-64px;
+        }
+    }
+
+    .quest-item-acquire-badge {
+        @extend .px-3;
+    }
+
+    .quest-item-card-count {
+        @extend .my-3, .text-center;
+    }
+
+    .quest-item-card-btn {
+        @extend .d-flex, .justify-content-center, .flex-grow-1;
+
+        > button {
+            align-self: flex-end;
+            width: 100%;
+            border-radius: 0 0 0.374rem 0.374rem;
+        }
+    }
+}
+
+// character page / hideout required item card
+.hideout-item-card {
+    @extend .bg-dark, .my-3, .w-100;
+    letter-spacing: 1px;
+
+    .hideout-item-card-title {
+        @extend .p-3, .trunc-2-line, .sand1;
+        height: 68px;
+    }
+
+    .hideout-item-card-shortname {
+        @extend .px-3;
+        font-size: 8px;
+    }
+
+    .hideout-item-card-icon {
+        @extend .d-flex, .justify-content-center, .my-3;
+
+        > div {
+            @extend .square-64px;
+        }
+    }
+
+    .hideout-item-acquire-badge {
+        @extend .px-3;
+    }
+
+    .hideout-item-card-count {
+        @extend .my-3, .text-center;
+    }
+
+    .hideout-item-card-btn {
+        @extend .d-flex, .justify-content-center, .flex-grow-1;
+
+        > button {
+            align-self: flex-end;
+            width: 100%;
+            border-radius: 0 0 0.374rem 0.374rem;
+        }
+    }
+}
+
+// character page / player level panel
+.player-level-panel {
+    @extend .p-0, .overflow-hidden, .bg-black2;
+    border-radius: 40px;
+
+    div.row:nth-of-type(1) {
+        @extend .p-0, .m-0;
+        border-radius: 40px 40px 0 0;
+        background-color: $game-edition-block-bg-color;
+
+        > div {
+            @extend .d-flex, .justify-content-center, .align-items-center;
+
+            > img {
+                @extend .me-2;
+                width: 19px;
+                height: 17px;
+            }
+
+            > p {
+                @extend .my-3, .text-center;
+            }
+        }
+    }
+
+    div.row:nth-of-type(2) {
+        @extend .my-3, .text-center;
+
+        div.col {
+            @extend .sand1;
+            font-size: 90px;
+
+            .player-level-icon {
+                @extend .d-inline, .me-3;
+                height: 100px;
+            }
+        }
+    }
+
+    div.row:nth-of-type(3) {
+        @extend .my-3;
+        text-align: center;
+    }
+
+    &-res-adj {
+        @extend .player-level-panel;
+        transition: width 3s ease;
+    }
+
+    &-hide {
+        @extend .player-level-panel;
+        width: 0;
+        max-width: 0;
+        transition: width 3s ease, max-width 3s ease;
+    }
+}
+
+// character page / initialize player data
+.initial-player-data {
+    @extend .my-5;
+
+    > div {
+        @extend .d-flex, .align-content-center, .justify-content-center, .align-items-center, .flex-wrap;
+
+        > div:nth-of-type(1) {
+            @extend .w-100, .d-flex, .justify-content-center, .mb-5, .fs-1, .sand1;
+        }
+
+        > div:nth-of-type(2), div:nth-of-type(4), div:nth-of-type(6) {
+            @extend .px-2, .py-1, .fs-3;
+        }
+
+        > div:nth-of-type(3) {
+            @extend .w-100, .d-flex, .justify-content-center, .mt-3, .mb-5;
+
+            > div {
+                @extend .sand1, .px-5, .pb-3;
+                font-size: 90px;
+                border-radius: 15px;
+                border: 1px solid #b7ad9c;
+
+                &:hover {
+                    border: 1px solid #00000000;
+                    box-shadow: 0 0 20px 5px #9a8866;
+                }
+
+                > img {
+                    @extend .d-inline, .me-3;
+                    height: 100px;
+                }
+            }
+        }
+
+        > div:nth-of-type(5) {
+            @extend .w-100, .d-flex, .justify-content-center, .mt-3, .mb-5;
+
+            > div {
+                @extend .mx-3;
+                border-radius: 15px;
+                border: 1px solid #00000000;
+                
+                &:hover {
+                    border: 1px solid #00000000;
+                    box-shadow: 0 0 20px 5px #9a8866;
+                }
+            }
+
+            > .init-setup-selected {
+                border: 1px solid #b7ad9c;
+            }
+        }
+
+        > div:nth-of-type(7) {
+            @extend .w-100, .d-flex, .justify-content-center, .mt-3, .mb-5;
+
+            > div.row > div.col > div {
+                @extend .mx-3, .d-flex, .justify-content-center;
+                border-radius: 15px;
+                border: 1px solid #00000000;
+                
+                &:hover {
+                    border: 1px solid #00000000;
+                    box-shadow: 0 0 20px 5px #9a8866;
+                }
+
+                > img {
+                    max-width: 200px;
+                }
+            }
+
+            > div.row > div.col > .init-setup-selected {
+                border: 1px solid #b7ad9c;
+            }
+        }
+
+        > div:nth-of-type(8) {
+            @extend .w-100, .d-flex, .justify-content-center, .my-3;
+        }
+    }
+}

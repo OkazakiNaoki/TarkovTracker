@@ -42,16 +42,16 @@ module.exports = {
         use: "babel-loader",
       },
       {
-        test: /\.(jpe?g|png|gif|svg|webp)$/i,
+        test: /\.(pdf|zip)$/i,
         loader: "file-loader",
         options: {},
       },
       {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        test: /\.(css|scss|sass)$/i,
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        test: /\.(woff|woff2|eot|ttf|otf|jpe?g|png|gif|svg|webp)$/i,
         type: "asset/resource",
       },
     ],
