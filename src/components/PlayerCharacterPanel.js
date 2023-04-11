@@ -7,6 +7,7 @@ import { SkillPanel } from "./SkillPanel"
 import { TraderPanel } from "./TraderPanel"
 import { QuestItems } from "./QuestItems"
 import { InventoryPanel } from "./InventoryPanel"
+import { TraderOffers } from "./TraderOffers"
 
 const PlayerCharacterPanel = ({
   traders,
@@ -18,6 +19,7 @@ const PlayerCharacterPanel = ({
   traderProgress,
   playerTasksInfo,
   playerHideoutLevel,
+  playerUnlockedOffer,
 }) => {
   // useEffect(() => {
   //   console.log("debug: player character panel rerendered")
@@ -87,6 +89,16 @@ const PlayerCharacterPanel = ({
               )}
             </div>
           )}
+        </Tab>
+
+        {/* Trader offer */}
+        <Tab eventKey="traderoffer" title="Trader offer">
+          <TraderOffers
+            traders={traders}
+            useTable={false}
+            useRowCol={true}
+            playerUnlockedOffer={playerUnlockedOffer}
+          />
         </Tab>
       </Tabs>
     </Col>

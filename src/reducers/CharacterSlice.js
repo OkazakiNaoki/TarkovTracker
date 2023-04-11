@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { getIndexOfObjArrWhereFieldEqualTo } from "../helpers/LoopThrough"
-import { safeGet } from "../helpers/ObjectExt"
 
 export const getTasksOfTraderWithLevel = createAsyncThunk(
   "character/getTasksOfTraderWithLevel",
@@ -999,6 +998,93 @@ export const updateUnlockedTrader = createAsyncThunk(
   }
 )
 
+export const addUnlockedOffer = createAsyncThunk(
+  "character/addUnlockedOffer",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+
+      const newUnlockedOffer = await axios.post(
+        "/api/player/trader/offers",
+        null,
+        config
+      )
+
+      return newUnlockedOffer.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getUnlockedOffer = createAsyncThunk(
+  "character/getUnlockedOffer",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const unlockedOffer = await axios.get("/api/player/trader/offers", config)
+
+      return unlockedOffer.data
+    } catch (error) {
+      return error.response && error.response.data
+        ? error.response.data
+        : error.message
+    }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().character.requests["getUnlockedOffer"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
+  }
+)
+
+export const updateUnlockedOffer = createAsyncThunk(
+  "character/updateUnlockedOffer",
+  async (params, { getState }) => {
+    try {
+      const { user } = getState().user
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      }
+      const updatedTraders = await axios.put(
+        `/api/player/trader/offers`,
+        {
+          offers: params.offers,
+        },
+        config
+      )
+
+      return updatedTraders.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const characterSlice = createSlice({
   name: "character",
   initialState: {
@@ -1019,6 +1105,8 @@ const characterSlice = createSlice({
     unlockedTraders: null,
     traderProgress: null,
     traderLL: {},
+    // trader offers
+    unlockedOffers: null,
     // hideout progress
     playerHideoutLevel: null,
     // inventory
@@ -1041,6 +1129,7 @@ const characterSlice = createSlice({
       state.playerCompletedObjectives = null
       state.playerObjectiveProgress = null
       state.unlockedTraders = null
+      state.unlockedOffers = null
       state.traderProgress = null
       state.traderLL = {}
       state.playerHideoutLevel = null
@@ -1244,6 +1333,43 @@ const characterSlice = createSlice({
         state.unlockedTraders = traders
       })
       .addCase(updateUnlockedTrader.rejected, (state, action) => {})
+      .addCase(addUnlockedOffer.pending, (state, action) => {})
+      .addCase(addUnlockedOffer.fulfilled, (state, action) => {
+        const unlockedOfferArr = action.payload
+        const unlockedOfferObject = {}
+        unlockedOfferArr.forEach((offer) => {
+          unlockedOfferObject[
+            `${offer.trader}-${offer.level}-${offer.itemId}`
+          ] = offer.unlocked
+        })
+        state.unlockedOffers = unlockedOfferObject
+      })
+      .addCase(addUnlockedOffer.rejected, (state, action) => {})
+      .addCase(getUnlockedOffer.pending, (state, action) => {
+        state.requests["getUnlockedOffer"] = "pending"
+      })
+      .addCase(getUnlockedOffer.fulfilled, (state, action) => {
+        const unlockedOfferArr = action.payload
+        const unlockedOfferObject = {}
+        unlockedOfferArr.forEach((offer) => {
+          unlockedOfferObject[
+            `${offer.trader}-${offer.level}-${offer.itemId}`
+          ] = offer.unlocked
+        })
+        state.unlockedOffers = unlockedOfferObject
+        state.requests["getUnlockedOffer"] = "fulfilled"
+      })
+      .addCase(getUnlockedOffer.rejected, (state, action) => {})
+      .addCase(updateUnlockedOffer.pending, (state, action) => {})
+      .addCase(updateUnlockedOffer.fulfilled, (state, action) => {
+        const newUnlockedOffer = action.payload
+        newUnlockedOffer.forEach((newOffer) => {
+          state.unlockedOffers[
+            `${newOffer.trader}-${newOffer.level}-${newOffer.itemId}`
+          ] = true
+        })
+      })
+      .addCase(updateUnlockedOffer.rejected, (state, action) => {})
   },
 })
 

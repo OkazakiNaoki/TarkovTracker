@@ -1,57 +1,6 @@
 import mongoose from "mongoose"
 
-export const itemCategoryScheme = mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
-export const simpleTaskScheme = mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    id: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
-export const simpleHandbookScheme = mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    id: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
-export const simpleStationScheme = mongoose.Schema(
-  {
-    id: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
+// item related
 export const simpleItemScheme = mongoose.Schema(
   {
     id: {
@@ -66,11 +15,15 @@ export const simpleItemScheme = mongoose.Schema(
       type: String,
       required: false,
     },
+    shortName: {
+      type: String,
+      required: false,
+    },
   },
   { _id: false }
 )
 
-export const detailItemScheme = mongoose.Schema(
+export const firItemScheme = mongoose.Schema(
   {
     id: {
       type: String,
@@ -101,30 +54,6 @@ export const detailItemScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const simpleTraderScheme = mongoose.Schema(
-  {
-    id: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
-export const craftIdScheme = mongoose.Schema(
-  {
-    id: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-)
-
 export const itemAmountScheme = mongoose.Schema(
   {
     item: {
@@ -139,28 +68,55 @@ export const itemAmountScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const stationLevelScheme = mongoose.Schema(
+// item category related
+export const simpleHandbookScheme = mongoose.Schema(
   {
-    station: {
-      type: simpleStationScheme,
+    name: {
+      type: String,
       required: true,
     },
-    level: {
-      type: Number,
+    id: {
+      type: String,
       required: true,
     },
   },
   { _id: false }
 )
 
-const skillLevelScheme = mongoose.Schema(
+export const itemCategoryScheme = mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
     },
-    level: {
-      type: Number,
+  },
+  { _id: false }
+)
+
+// task related
+export const simpleTaskScheme = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+)
+
+// trader related
+export const simpleTraderScheme = mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
       required: true,
     },
   },
@@ -181,51 +137,22 @@ export const traderLevelScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const hideoutLevels = mongoose.Schema(
+// skill related
+const skillLevelScheme = mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
     level: {
       type: Number,
       required: true,
     },
-    constructionTime: {
-      type: Number,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    itemRequirements: [
-      {
-        type: itemAmountScheme,
-      },
-    ],
-    stationLevelRequirements: [
-      {
-        type: stationLevelScheme,
-      },
-    ],
-    skillRequirements: [
-      {
-        type: skillLevelScheme,
-      },
-    ],
-    traderRequirements: [
-      {
-        type: traderLevelScheme,
-      },
-    ],
-    crafts: [
-      {
-        type: craftIdScheme,
-      },
-    ],
   },
-  {
-    _id: false,
-  }
+  { _id: false }
 )
 
+// task related
 export const itemRequireByTaskScheme = mongoose.Schema(
   {
     trader: {
@@ -289,6 +216,7 @@ export const taskScheme = mongoose.Schema(
   { _id: false }
 )
 
+// requirement related
 export const traderLevelReq = mongoose.Schema(
   {
     requiredReputation: {
@@ -305,4 +233,88 @@ export const traderLevelReq = mongoose.Schema(
     },
   },
   { _id: false }
+)
+
+// hideout related
+export const simpleStationScheme = mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+)
+
+export const craftIdScheme = mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+)
+
+export const stationLevelScheme = mongoose.Schema(
+  {
+    station: {
+      type: simpleStationScheme,
+      required: true,
+    },
+    level: {
+      type: Number,
+      required: true,
+    },
+  },
+  { _id: false }
+)
+
+export const hideoutLevels = mongoose.Schema(
+  {
+    level: {
+      type: Number,
+      required: true,
+    },
+    constructionTime: {
+      type: Number,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    itemRequirements: [
+      {
+        type: itemAmountScheme,
+      },
+    ],
+    stationLevelRequirements: [
+      {
+        type: stationLevelScheme,
+      },
+    ],
+    skillRequirements: [
+      {
+        type: skillLevelScheme,
+      },
+    ],
+    traderRequirements: [
+      {
+        type: traderLevelScheme,
+      },
+    ],
+    crafts: [
+      {
+        type: craftIdScheme,
+      },
+    ],
+  },
+  {
+    _id: false,
+  }
 )

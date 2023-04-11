@@ -138,8 +138,8 @@ $floating-box-bg-color: white;
 .trader-icon {
     > div {
         &:nth-child(1){
-            width: 130px;
-            height: 130px;
+            width: fit-content;
+            height: fit-content;
             border: 1px solid white;
         }
 

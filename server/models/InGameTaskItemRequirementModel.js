@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import {
-  detailItemScheme,
+  firItemScheme,
   itemRequireByTaskScheme,
   taskItemRewardScheme,
   stationLevelScheme,
@@ -13,7 +13,7 @@ const inGameTaskItemRequirementsSchema = mongoose.Schema(
       required: true,
     },
     item: {
-      type: detailItemScheme,
+      type: firItemScheme,
       required: true,
     },
     rewardTasks: [

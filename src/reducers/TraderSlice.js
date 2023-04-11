@@ -319,6 +319,28 @@ export const getTaskItemRequirements = createAsyncThunk(
   }
 )
 
+export const getTraderOffers = createAsyncThunk(
+  "trader/getTraderOffers",
+  async (params) => {
+    try {
+      const { data } = await axios.get("/api/trader/offers")
+      return data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().trader.requests["getTraderOffers"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
+  }
+)
+
 const traderSlice = createSlice({
   name: "trader",
   initialState: {
@@ -391,6 +413,7 @@ const traderSlice = createSlice({
       state.tasksDetail = {}
       state.tasksDetailFetched = {}
       state.taskItemRequirement = []
+      state.traderOffers = null
     },
   },
   extraReducers: (builder) => {
@@ -426,7 +449,6 @@ const traderSlice = createSlice({
         state.requests[`getTaskDetail.${action.meta.arg.id}`] = "pending"
       })
       .addCase(getTaskDetail.fulfilled, (state, action) => {
-        console.dir(action.payload)
         if (action.payload.data) {
           // put in the new fetched task detail data
           state.tasksDetail[action.payload.traderName] = {
@@ -473,6 +495,26 @@ const traderSlice = createSlice({
           "fulfilled"
       })
       .addCase(getLevelReqOfTrader.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
+      .addCase(getTraderOffers.pending, (state, action) => {
+        state.requests["getTraderOffers"] = "pending"
+      })
+      .addCase(getTraderOffers.fulfilled, (state, action) => {
+        const offers = action.payload
+        const sortedOffers = {}
+        offers.forEach((offer) => {
+          const trader = offer.offerTrader
+          if (!sortedOffers.hasOwnProperty(trader)) {
+            sortedOffers[offer.offerTrader] = []
+          }
+          delete offer.offerTrader
+          sortedOffers[trader].push(offer)
+        })
+        state.traderOffers = sortedOffers
+        state.requests["getTraderOffers"] = "fulfilled"
+      })
+      .addCase(getTraderOffers.rejected, (state, action) => {
         throw Error(action.payload)
       })
   },

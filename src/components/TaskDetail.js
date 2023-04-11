@@ -14,6 +14,7 @@ import {
   updateInventoryItem,
   updateObjectiveProgress,
   updateTraderProgress,
+  updateUnlockedOffer,
   updateUnlockedTrader,
 } from "../reducers/CharacterSlice"
 import blueCheck from "../../server/public/static/images/blue_check.png"
@@ -229,7 +230,21 @@ const TaskDetail = ({
             )
           }
           // offerUnlock
-          /// trader.name, level, item.id, item.name
+          const offers = []
+          rewards.offerUnlock.forEach((offer) => {
+            offers.push({
+              trader: offer.trader.name,
+              level: offer.level,
+              itemId: offer.item.id,
+            })
+          })
+          if (offers.length > 0) {
+            await dispatch(
+              updateUnlockedOffer({
+                offers: offers,
+              })
+            )
+          }
           // skillLevelReward
           /// name, level
         }

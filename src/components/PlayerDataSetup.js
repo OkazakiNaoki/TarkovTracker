@@ -14,6 +14,7 @@ import {
   addTraderProgress,
   addSkillProgress,
   addUnlockedTrader,
+  addUnlockedOffer,
 } from "../reducers/CharacterSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
@@ -122,6 +123,8 @@ const PlayerDataSetup = () => {
           traders: [{ traderName: "Jaeger", unlocked: false }],
         })
       )
+      // player unlocked offers
+      dispatch(addUnlockedOffer())
       // player inventory data
       dispatch(addInventoryItem({ itemList: [] }))
       // player skill data

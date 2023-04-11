@@ -12,6 +12,7 @@ import {
   getTraderProgress,
   getSkillProgress,
   getUnlockedTrader,
+  getUnlockedOffer,
 } from "../reducers/CharacterSlice"
 import { getLevelReqOfTrader, getTasksOfTrader } from "../reducers/TraderSlice"
 import { PlayerDataSetup } from "../components/PlayerDataSetup"
@@ -54,6 +55,7 @@ const CharacterScreen = () => {
     playerHideoutLevel,
     playerInventory,
     playerSkill,
+    unlockedOffers,
   } = useSelector((state) => state.character)
 
   //// effect
@@ -138,6 +140,13 @@ const CharacterScreen = () => {
     }
   }, [initSetup, playerSkill])
 
+  // get player's unlocked trade offers
+  useEffect(() => {
+    if (initSetup && !unlockedOffers) {
+      dispatch(getUnlockedOffer())
+    }
+  }, [initSetup, unlockedOffers])
+
   //// handle
   const adjustPlayerLevelHandle = (level) => {
     dispatch(updateCharacterData({ characterLevel: level }))
@@ -211,6 +220,7 @@ const CharacterScreen = () => {
                 traderProgress={traderProgress}
                 playerTasksInfo={playerTasksInfo}
                 playerHideoutLevel={playerHideoutLevel}
+                playerUnlockedOffer={unlockedOffers}
               />
             </Col>
           </Row>

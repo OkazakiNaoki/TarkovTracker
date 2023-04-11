@@ -39,6 +39,11 @@ import {
   getSkillProgress,
   updateSkillProgress,
 } from "../controllers/PlayerSkillController.js"
+import {
+  addUnlockedOffer,
+  getUnlockedOffer,
+  updateUnlockedOffer,
+} from "../controllers/PlayerUnlockedOfferController.js"
 
 const router = express.Router()
 
@@ -77,6 +82,12 @@ router
   .get(protect, getTraderUnlock)
   .post(protect, addTraderUnlock)
   .put(protect, updateTraderUnlock)
+
+router
+  .route("/trader/offers")
+  .get(protect, getUnlockedOffer)
+  .post(protect, addUnlockedOffer)
+  .put(protect, updateUnlockedOffer)
 
 router
   .route("/hideout/level")
