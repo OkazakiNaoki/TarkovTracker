@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 
 // item related
-export const simpleItemScheme = mongoose.Schema(
+export const simpleItemSchema = mongoose.Schema(
   {
     id: {
       type: String,
@@ -23,7 +23,7 @@ export const simpleItemScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const firItemScheme = mongoose.Schema(
+export const firItemSchema = mongoose.Schema(
   {
     id: {
       type: String,
@@ -54,10 +54,10 @@ export const firItemScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const itemAmountScheme = mongoose.Schema(
+export const itemAmountSchema = mongoose.Schema(
   {
     item: {
-      type: simpleItemScheme,
+      type: simpleItemSchema,
       required: true,
     },
     count: {
@@ -69,7 +69,7 @@ export const itemAmountScheme = mongoose.Schema(
 )
 
 // item category related
-export const simpleHandbookScheme = mongoose.Schema(
+export const simpleHandbookSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -83,7 +83,7 @@ export const simpleHandbookScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const itemCategoryScheme = mongoose.Schema(
+export const itemCategorySchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -94,7 +94,7 @@ export const itemCategoryScheme = mongoose.Schema(
 )
 
 // task related
-export const simpleTaskScheme = mongoose.Schema(
+export const simpleTaskSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -109,7 +109,7 @@ export const simpleTaskScheme = mongoose.Schema(
 )
 
 // trader related
-export const simpleTraderScheme = mongoose.Schema(
+export const simpleTraderSchema = mongoose.Schema(
   {
     id: {
       type: String,
@@ -123,10 +123,10 @@ export const simpleTraderScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const traderLevelScheme = mongoose.Schema(
+export const traderLevelSchema = mongoose.Schema(
   {
     trader: {
-      type: simpleTraderScheme,
+      type: simpleTraderSchema,
       required: true,
     },
     level: {
@@ -138,7 +138,7 @@ export const traderLevelScheme = mongoose.Schema(
 )
 
 // skill related
-const skillLevelScheme = mongoose.Schema(
+export const skillLevelSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -153,7 +153,7 @@ const skillLevelScheme = mongoose.Schema(
 )
 
 // task related
-export const itemRequireByTaskScheme = mongoose.Schema(
+export const itemRequireByTaskSchema = mongoose.Schema(
   {
     trader: {
       type: String,
@@ -179,7 +179,7 @@ export const itemRequireByTaskScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const taskItemRewardScheme = mongoose.Schema(
+export const taskItemRewardSchema = mongoose.Schema(
   {
     trader: {
       type: String,
@@ -201,7 +201,7 @@ export const taskItemRewardScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const taskScheme = mongoose.Schema(
+export const taskSchema = mongoose.Schema(
   {
     id: {
       type: String,
@@ -211,7 +211,7 @@ export const taskScheme = mongoose.Schema(
       type: String,
       required: true,
     },
-    trader: { type: simpleTraderScheme, required: true },
+    trader: { type: simpleTraderSchema, required: true },
   },
   { _id: false }
 )
@@ -236,7 +236,7 @@ export const traderLevelReq = mongoose.Schema(
 )
 
 // hideout related
-export const simpleStationScheme = mongoose.Schema(
+export const simpleStationSchema = mongoose.Schema(
   {
     id: {
       type: String,
@@ -250,7 +250,7 @@ export const simpleStationScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const craftIdScheme = mongoose.Schema(
+export const craftIdSchema = mongoose.Schema(
   {
     id: {
       type: String,
@@ -260,10 +260,10 @@ export const craftIdScheme = mongoose.Schema(
   { _id: false }
 )
 
-export const stationLevelScheme = mongoose.Schema(
+export const stationLevelSchema = mongoose.Schema(
   {
     station: {
-      type: simpleStationScheme,
+      type: simpleStationSchema,
       required: true,
     },
     level: {
@@ -290,27 +290,27 @@ export const hideoutLevels = mongoose.Schema(
     },
     itemRequirements: [
       {
-        type: itemAmountScheme,
+        type: itemAmountSchema,
       },
     ],
     stationLevelRequirements: [
       {
-        type: stationLevelScheme,
+        type: stationLevelSchema,
       },
     ],
     skillRequirements: [
       {
-        type: skillLevelScheme,
+        type: skillLevelSchema,
       },
     ],
     traderRequirements: [
       {
-        type: traderLevelScheme,
+        type: traderLevelSchema,
       },
     ],
     crafts: [
       {
-        type: craftIdScheme,
+        type: craftIdSchema,
       },
     ],
   },

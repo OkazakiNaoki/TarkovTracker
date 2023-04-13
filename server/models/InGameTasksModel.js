@@ -1,8 +1,8 @@
 import mongoose from "mongoose"
 import {
-  taskScheme,
-  simpleTraderScheme,
-  traderLevelScheme,
+  taskSchema,
+  simpleTraderSchema,
+  traderLevelSchema,
 } from "./InGameSubModels.js"
 
 const inGameTasksSchema = mongoose.Schema(
@@ -16,7 +16,7 @@ const inGameTasksSchema = mongoose.Schema(
       required: true,
     },
     trader: {
-      type: simpleTraderScheme,
+      type: simpleTraderSchema,
       required: true,
     },
     minPlayerLevel: {
@@ -25,19 +25,19 @@ const inGameTasksSchema = mongoose.Schema(
     },
     taskRequirements: [
       {
-        type: taskScheme,
+        type: taskSchema,
         required: false,
       },
     ],
     traderLevelRequirements: [
       {
-        type: traderLevelScheme,
+        type: traderLevelSchema,
         required: false,
       },
     ],
     needForTasks: [
       {
-        type: taskScheme,
+        type: taskSchema,
         required: false,
       },
     ],

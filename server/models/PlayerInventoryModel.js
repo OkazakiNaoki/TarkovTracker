@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import User from "./UserModel.js"
-import { itemAmountScheme } from "./InGameSubModels.js"
+import { itemAmountSchema } from "./InGameSubModels.js"
 
 const playerInventorySchema = mongoose.Schema({
   user: {
@@ -10,7 +10,7 @@ const playerInventorySchema = mongoose.Schema({
   },
   items: [
     {
-      type: itemAmountScheme,
+      type: itemAmountSchema,
     },
   ],
 })

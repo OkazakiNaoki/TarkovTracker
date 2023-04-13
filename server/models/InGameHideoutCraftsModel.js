@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { itemAmountScheme, simpleStationScheme } from "./InGameSubModels.js"
+import { itemAmountSchema, simpleStationSchema } from "./InGameSubModels.js"
 
 const inGameHideoutCraftsSchema = mongoose.Schema(
   {
@@ -8,7 +8,7 @@ const inGameHideoutCraftsSchema = mongoose.Schema(
       required: true,
     },
     station: {
-      type: simpleStationScheme,
+      type: simpleStationSchema,
       required: true,
     },
     level: {
@@ -21,12 +21,12 @@ const inGameHideoutCraftsSchema = mongoose.Schema(
     },
     requiredItems: [
       {
-        type: itemAmountScheme,
+        type: itemAmountSchema,
       },
     ],
     rewardItems: [
       {
-        type: itemAmountScheme,
+        type: itemAmountSchema,
       },
     ],
   },

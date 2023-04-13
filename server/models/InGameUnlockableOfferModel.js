@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { simpleItemScheme } from "./InGameSubModels.js"
+import { simpleItemSchema } from "./InGameSubModels.js"
 
 const inGameUnlockableOfferScheme = mongoose.Schema(
   {
@@ -24,7 +24,7 @@ const inGameUnlockableOfferScheme = mongoose.Schema(
       required: true,
     },
     offerItem: {
-      type: simpleItemScheme,
+      type: simpleItemSchema,
       required: true,
     },
   },

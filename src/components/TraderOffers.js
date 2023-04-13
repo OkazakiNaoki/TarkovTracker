@@ -89,8 +89,8 @@ const TraderOffers = ({
                     <span>{"None"}</span>
                   </div>
                 )}
-              {/* ssome for this trader */}
-              {useRowCol && (
+              {/* some for this trader */}
+              {useRowCol && playerUnlockedOffer && (
                 <Row xs={2} md={4} lg={6} className="g-1 mb-5">
                   {traderOffers &&
                     Array.isArray(traderOffers[trader.name]) &&

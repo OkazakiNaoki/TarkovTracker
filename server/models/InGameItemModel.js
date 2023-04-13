@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { itemCategoryScheme, simpleHandbookScheme } from "./InGameSubModels.js"
+import { itemCategorySchema, simpleHandbookSchema } from "./InGameSubModels.js"
 
 const inGameItemSchema = mongoose.Schema(
   {
@@ -17,12 +17,12 @@ const inGameItemSchema = mongoose.Schema(
     },
     categories: [
       {
-        type: itemCategoryScheme,
+        type: itemCategorySchema,
       },
     ],
     handbookCategories: [
       {
-        type: simpleHandbookScheme,
+        type: simpleHandbookSchema,
       },
     ],
     width: {

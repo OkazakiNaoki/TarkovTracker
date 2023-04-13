@@ -12,7 +12,11 @@ const TraderIconLevel = ({ traderName = null, level, justCrown = false }) => {
 
   // effect
   useEffect(() => {
-    if (traderName && !traderLevels.hasOwnProperty(traderName)) {
+    if (
+      traderName &&
+      traderLevels &&
+      !traderLevels.hasOwnProperty(traderName)
+    ) {
       dispatch(getLevelReqOfTrader({ trader: traderName }))
     }
   }, [])

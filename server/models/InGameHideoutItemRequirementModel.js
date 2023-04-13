@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 import {
-  stationLevelScheme,
-  simpleTaskScheme,
-  itemAmountScheme,
-  taskItemRewardScheme,
+  stationLevelSchema,
+  simpleTaskSchema,
+  itemAmountSchema,
+  taskItemRewardSchema,
 } from "./InGameSubModels.js"
 
 const traderBuyItemScheme = mongoose.Schema(
@@ -16,7 +16,7 @@ const traderBuyItemScheme = mongoose.Schema(
       type: Number,
     },
     taskUnlock: {
-      type: simpleTaskScheme,
+      type: simpleTaskSchema,
     },
     price: {
       type: Number,
@@ -41,11 +41,11 @@ const traderBarterItemScheme = mongoose.Schema(
       required: true,
     },
     taskUnlock: {
-      type: simpleTaskScheme,
+      type: simpleTaskSchema,
     },
     requiredItems: [
       {
-        type: itemAmountScheme,
+        type: itemAmountSchema,
       },
     ],
   },
@@ -72,12 +72,12 @@ const itemScheme = mongoose.Schema(
     },
     rewardTasks: [
       {
-        type: taskItemRewardScheme,
+        type: taskItemRewardSchema,
       },
     ],
     craftableStations: [
       {
-        type: stationLevelScheme,
+        type: stationLevelSchema,
       },
     ],
     buyable: [{ type: traderBuyItemScheme }],
@@ -90,7 +90,7 @@ const inGameHideoutItemRequirementsSchema = mongoose.Schema(
   {
     levels: [
       {
-        type: stationLevelScheme,
+        type: stationLevelSchema,
       },
     ],
     item: {
