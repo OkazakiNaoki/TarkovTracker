@@ -18,6 +18,8 @@ const ItemSingleGrid = ({
   locked = false,
   transparent = 255,
   useBgImg = true,
+  useBgCompatible = false,
+  useDisableOutline = false,
   useNameBox = false,
   useInline = false,
   scale = 1,
@@ -44,16 +46,17 @@ const ItemSingleGrid = ({
     <div
       className={classNames(
         { "d-inline": useInline },
-        "margin-rb-n1px",
-        "item-grid-outline",
+        { "item-grid-outline": !useDisableOutline },
         {
-          "item-grid-bg": useBgImg,
+          "item-grid-bg": !useBgCompatible && useBgImg,
         }
       )}
       style={{
         width: `${64 * scale}px`,
         height: `${64 * scale}px`,
-        backgroundColor: `${bgColors[bgColor]}${transparent.toString(16)}`,
+        backgroundColor: useBgCompatible
+          ? "#174917"
+          : `${bgColors[bgColor]}${transparent.toString(16)}`,
       }}
       onMouseEnter={useNameBox ? mouseEnterHandle : null}
       onMouseLeave={useNameBox ? mouseLeaveHandle : null}
@@ -89,7 +92,8 @@ const ItemSingleGrid = ({
           <div
             className="position-absolute top-0 end-0 fs-8px"
             style={{
-              transform: "translateX(-1px) translateY(-2px)",
+              maxWidth: "62px",
+              transform: "translateY(-2px)",
             }}
           >
             {shortName && shortName}

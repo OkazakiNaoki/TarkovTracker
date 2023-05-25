@@ -16,6 +16,7 @@ import { resetTrader } from "../reducers/TraderSlice"
 import { resetFleamarket } from "../reducers/FleamarketSlice"
 import { resetHideout } from "../reducers/HideoutSlice"
 import logo from "../../server/public/static/images/escape_from_tarkov_logo.png"
+import { purgePersistStore } from "../store"
 
 const Header = () => {
   // redux
@@ -33,13 +34,15 @@ const Header = () => {
   // route
   const navigate = useNavigate()
 
-  const logoutHandle = () => {
-    dispatch(resetCharacter())
-    dispatch(resetItem())
-    dispatch(resetTrader())
-    dispatch(resetFleamarket())
-    dispatch(resetHideout())
-    dispatch(resetUser())
+  const logoutHandle = async () => {
+    // dispatch(resetCharacter())
+    // dispatch(resetItem())
+    // dispatch(resetTrader())
+    // dispatch(resetFleamarket())
+    // dispatch(resetHideout())
+    // dispatch(resetUser())
+
+    await purgePersistStore()
     navigate("/")
   }
 
@@ -66,6 +69,9 @@ const Header = () => {
               </LinkContainer>
               <LinkContainer to="/fleamarket">
                 <Nav.Link className="mx-3">Flea market</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/build">
+                <Nav.Link className="mx-3">Build</Nav.Link>
               </LinkContainer>
             </Nav>
             {Object.keys(user).length > 0 ? (

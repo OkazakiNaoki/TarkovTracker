@@ -1,0 +1,12 @@
+@mixin cursors($cursors) {
+    cursor: $cursors;
+}
+
+// class generator
+@mixin generate-cursor-class($cursors) {
+    @each $name, $value in $cursors {
+        .cursor-#{$name} {
+            @include cursors($value);
+        }
+    }
+}

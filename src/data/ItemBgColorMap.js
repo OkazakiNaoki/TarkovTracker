@@ -6,5 +6,5 @@ export const bgColors = {
   red: "#6d2318",
   violet: "#4c2a55",
   orange: "#3c1900",
-  black: "#000",
+  black: "#000000",
 }

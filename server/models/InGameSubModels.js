@@ -318,3 +318,40 @@ export const hideoutLevels = mongoose.Schema(
     _id: false,
   }
 )
+
+// slots
+const itemFilterSchema = mongoose.Schema(
+  {
+    allowedItems: {
+      type: [simpleItemSchema],
+      required: true,
+    },
+    excludedItems: {
+      type: [simpleItemSchema],
+      required: true,
+    },
+  },
+  { _id: false }
+)
+
+export const slotSchema = mongoose.Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    required: {
+      type: Boolean,
+      required: true,
+    },
+    filters: {
+      type: itemFilterSchema,
+      required: true,
+    },
+  },
+  { _id: false }
+)

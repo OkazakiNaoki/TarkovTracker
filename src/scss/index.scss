@@ -21,6 +21,22 @@ $hideout-desc-text-color: map.get(color.$grays, 'gray1');
 $floating-box-bg-color: white;
 
 /* ===== reusable components ===== */
+// use bold Bender font
+.tarkov-bold {
+    font-family: TarkovBold;
+}
+
+// tarkov guide general button
+.tarkov-guide-btn {
+    border: 1px solid #585d60;
+    background-color: #222222;
+    color: #b7ad9c;
+
+    :hover {
+        color: white;
+    }
+}
+
 // floating elements
 .floating-hideout-icon {
     position: fixed;
@@ -374,10 +390,6 @@ main {
         letter-spacing: 0px;
         width: calc(100% - 6px);
         transform: translateX(4px) translateY(calc(-100% + (-1 * 2px)));
-    }
-
-    > .multi-grid-item-outline {
-        box-shadow: inset 0px 0px 0px 1px #495154;
     }
 }
 
@@ -826,4 +838,13 @@ main {
             @extend .w-100, .d-flex, .justify-content-center, .my-3;
         }
     }
+}
+
+// build page / mod slot border color
+.item-slot-drop-in-forbid {
+    border: 1px solid red;
+}
+
+.item-slot-drop-in-allow {
+    border: 1px solid green;
 }

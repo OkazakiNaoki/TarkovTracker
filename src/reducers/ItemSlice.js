@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
-import { Placeholder } from "react-bootstrap"
+import qs from "qs"
 import {
   isArrayAndEmpty,
-  isArrayAndNotEmpty,
   isStringArray,
   isObjectArray,
   isNumArrayArray,
@@ -278,6 +277,157 @@ export const refectchFleaMarketSellPrice = createAsyncThunk(
   }
 )
 
+export const getWeaponList = createAsyncThunk(
+  "item/getWeaponList",
+  async (params) => {
+    try {
+      const weapons = await axios.get("/api/items/weapons")
+
+      return weapons.data
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().item.requests["getWeaponList"]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
+  }
+)
+
+export const getWeapon = createAsyncThunk(
+  "item/getWeapon",
+  async (params) => {
+    try {
+      const weapon = await axios.get(`/api/item/weapon?id=${params.id}`)
+
+      return weapon.data[0]
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  },
+  {
+    condition: (params, { getState }) => {
+      const fetchStatus = getState().item.requests[`getWeaponList.${params.id}`]
+      if (fetchStatus === "pending" || fetchStatus === "fulfilled") {
+        return false
+      }
+    },
+  }
+)
+
+export const getFilterModIds = createAsyncThunk(
+  "item/getFilterModIds",
+  async (params, { getState }) => {
+    const { handbook = "All", keyword = null, page = 1, limit = 20 } = params
+    const { fetchedMods, fetchedModFilter } = getState().item
+    try {
+      // find out if the filter was fetched before
+      const ownHandbook = fetchedModFilter.hasOwnProperty(handbook)
+      const ownPage = ownHandbook
+        ? fetchedModFilter[handbook].hasOwnProperty(page)
+        : false
+      let wereFetched = ownHandbook && ownPage
+      let hasKeyword = keyword !== null
+
+      // fetch filtered mod id list if it's not yet fetch before, or if keyword is given
+      let modIds
+      let pages
+      let mods
+      if (!wereFetched || hasKeyword) {
+        const parameters = {
+          ...(handbook !== "All" && { handbook }),
+          keyword,
+          page,
+          limit,
+        }
+
+        const filterResult = await axios.get("/api/items/modIds", {
+          params: parameters,
+          paramsSerializer: (params) => {
+            return qs.stringify(params)
+          },
+        })
+        modIds = filterResult.data.modIds
+        pages = filterResult.data.pages
+
+        // read mod id list of filter result, find out mod data that is not yet fetch
+        const notFetched = []
+        modIds.forEach((id) => {
+          if (!fetchedMods.hasOwnProperty(id)) {
+            notFetched.push(id)
+          }
+        })
+
+        // fetch mod data that is not yet fetch
+        if (notFetched.length > 0) {
+          const modsResult = await axios.get("/api/items/mods", {
+            params: { ids: notFetched },
+            paramsSerializer: (params) => {
+              return qs.stringify(params)
+            },
+          })
+          mods = modsResult.data.mods
+        } else {
+          mods = []
+        }
+      }
+
+      return {
+        ...((!wereFetched || hasKeyword) && { pages }),
+        ...((!wereFetched || hasKeyword) && { modIds }),
+        ...((!wereFetched || hasKeyword) && { mods }),
+        wereFetched,
+        hasKeyword,
+      }
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
+export const getModByIds = createAsyncThunk(
+  "item/getModByIds",
+  async (params, { getState }) => {
+    const { modIds } = params
+    const { fetchedMods } = getState().item
+    try {
+      const notFetched = []
+      modIds.forEach((id) => {
+        if (!fetchedMods.hasOwnProperty(id)) {
+          notFetched.push(id)
+        }
+      })
+
+      if (notFetched.length > 0) {
+        console.log("thunk", notFetched)
+        const modsResult = await axios.get("/api/items/mods", {
+          params: { ids: notFetched },
+          paramsSerializer: (params) => {
+            return qs.stringify(params)
+          },
+        })
+        const mods = modsResult.data.mods
+
+        return mods
+      } else return []
+    } catch (error) {
+      return error.response && error.response.data.message
+        ? error.response.data.message
+        : error.message
+    }
+  }
+)
+
 const getZoomLevelsString = (zoomLevels) => {
   let zoomLevelsStr = ""
   for (let i = 0; i < zoomLevels[0].length; i++) {
@@ -354,11 +504,93 @@ export const searchHideoutItemReq = createAsyncThunk(
 const ItemSlice = createSlice({
   name: "item",
   initialState: {
+    requests: {},
     isLoading: false,
     item: { properties: [], hideout: null },
     searchedItemId: [],
     searchedItem: [],
     loadingQueue: 0,
+    weaponList: null,
+    weapons: {},
+    currentModFilter: [],
+    fetchedModFilter: {},
+    fetchedMods: {},
+    modCategories: {
+      "Gear mods": {
+        Magazines: {},
+        "Charging handles": {},
+        Mounts: {},
+        "Stocks & chassis": {},
+        Launchers: {},
+      },
+      "Functional mods": {
+        "Light & laser devices": {
+          "Tactical combo devices": {},
+          Flashlights: {},
+          "Laser target pointers": {},
+        },
+        "Muzzle devices": {
+          "Flashhiders & brakes": {},
+          Suppressors: {},
+          "Muzzle adapters": {},
+        },
+        Sights: {
+          "Assault scopes": {},
+          Collimators: {},
+          "Iron sights": {},
+          Optics: {},
+          "Compact collimators": {},
+          "Special purpose sights": {},
+        },
+        Foregrips: {},
+        "Auxiliary parts": {},
+        Bipods: {},
+      },
+      "Vital parts": {
+        Barrels: {},
+        "Pistol grips": {},
+        "Receivers & slides": {},
+        Handguards: {},
+        "Gas blocks": {},
+      },
+    },
+    modCategoriesLayer: [
+      ["Gear mods", "Functional mods", "Vital parts"],
+      [
+        "Magazines",
+        "Charging handles",
+        "Mounts",
+        "Stocks & chassis",
+        "Launchers",
+        "Light & laser devices",
+        "Muzzle devices",
+        "Sights",
+        "Foregrips",
+        "Auxiliary parts",
+        "Bipods",
+        "Barrels",
+        "Pistol grips",
+        "Receivers & slides",
+        "Handguards",
+        "Gas blocks",
+      ],
+      [
+        "Tactical combo devices",
+        "Flashlights",
+        "Laser target pointers",
+        "Flashhiders & brakes",
+        "Suppressors",
+        "Muzzle adapters",
+        "Assault scopes",
+        "Collimators",
+        "Iron sights",
+        "Optics",
+        "Compact collimators",
+        "Special purpose sights",
+      ],
+    ],
+    draggingMod: null,
+    draggingModIndex: null,
   },
   reducers: {
     recoverItem: (state, action) => {
@@ -379,9 +611,20 @@ const ItemSlice = createSlice({
       state.item = state.searchedItem[index]
     },
     resetItem: (state, action) => {
+      state.requests = {}
       state.isLoading = false
       state.item = { properties: [], hideout: null }
       state.loadingQueue = 0
+      state.weaponList = null
+      state.weapons = {}
+    },
+    clearFetchedMods: (state, action) => {
+      state.fetchedMods = {}
+      state.fetchedModFilter = {}
+    },
+    setDraggingMod: (state, action) => {
+      state.draggingMod = action.payload.mod
+      state.draggingModIndex = action.payload.index
     },
   },
   extraReducers: (builder) => {
@@ -481,8 +724,99 @@ const ItemSlice = createSlice({
         }
         state.error = action.payload
       })
+      .addCase(getWeaponList.pending, (state, action) => {
+        state.requests["getWeaponList"] = "pending"
+      })
+      .addCase(getWeaponList.fulfilled, (state, action) => {
+        const weaponList = {}
+        action.payload.forEach((weapon) => {
+          if (weaponList.hasOwnProperty(weapon.handbook)) {
+            weaponList[weapon.handbook].push({
+              name: weapon.shortName,
+              id: weapon.id,
+              default: weapon.default,
+            })
+          } else {
+            weaponList[weapon.handbook] = [
+              {
+                name: weapon.shortName,
+                id: weapon.id,
+                default: weapon.default,
+              },
+            ]
+          }
+        })
+
+        state.weaponList = weaponList
+        state.requests["getWeaponList"] = "fulfilled"
+      })
+      .addCase(getWeaponList.rejected, (state, action) => {
+        throw Error(action.payload)
+      })
+      .addCase(getWeapon.pending, (state, action) => {
+        state.requests[`getWeapon.${action.meta.arg.id}`] = "pending"
+      })
+      .addCase(getWeapon.fulfilled, (state, action) => {
+        state.weapons[action.payload.id] = action.payload
+        state.requests[`getWeapon.${action.meta.arg.id}`] = "fulfilled"
+      })
+      .addCase(getWeapon.rejected, (state, action) => {
+        state.requests[`getWeapon.${action.meta.arg.id}`] = "rejected"
+        throw Error(action.payload)
+      })
+      .addCase(getFilterModIds.pending, (state, action) => {})
+      .addCase(getFilterModIds.fulfilled, (state, action) => {
+        if (action.payload.wereFetched && !action.payload.hasKeyword) {
+          // filter mods have been fetched before
+          state.modHandbook = action.meta.arg.handbook
+          state.modPage = action.meta.arg.page
+          state.modPages =
+            state.fetchedModFilter[action.meta.arg.handbook]["pages"]
+          state.currentModFilter =
+            state.fetchedModFilter[action.meta.arg.handbook][
+              action.meta.arg.page
+            ]
+        } else {
+          // save new fetched filter mod ids into fetchedModFilter
+          if (!action.payload.wereFetched) {
+            if (
+              !state.fetchedModFilter.hasOwnProperty(action.meta.arg.handbook)
+            ) {
+              const newHandbookObj = {}
+              newHandbookObj["pages"] = action.payload.pages
+              newHandbookObj[action.meta.arg.page] = action.payload.modIds
+              state.fetchedModFilter[action.meta.arg.handbook] = newHandbookObj
+            } else {
+              state.fetchedModFilter[action.meta.arg.handbook][
+                action.meta.arg.page
+              ] = action.payload.modIds
+            }
+          }
+          // add the new mod data
+          action.payload.mods.forEach((mod) => {
+            state.fetchedMods[mod.id] = mod
+          })
+          state.modPage = action.meta.arg.page
+          state.modPages = action.payload.pages
+          state.modHandbook = action.meta.arg.handbook
+          state.currentModFilter = action.payload.modIds
+        }
+      })
+      .addCase(getFilterModIds.rejected, (state, action) => {
+        state.error = action.payload
+      })
+      .addCase(getModByIds.pending, (state, action) => {})
+      .addCase(getModByIds.fulfilled, (state, action) => {
+        action.payload.forEach((mod) => {
+          state.fetchedMods[mod.id] = mod
+        })
+      })
+      .addCase(getModByIds.rejected, (state, action) => {
+        state.error = action.payload
+      })
   },
 })
 
 export default ItemSlice.reducer
-export const { resetItem, recoverItem } = ItemSlice.actions
+export const { resetItem, recoverItem, clearFetchedMods, setDraggingMod } =
+  ItemSlice.actions

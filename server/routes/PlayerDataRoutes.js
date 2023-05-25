@@ -44,6 +44,11 @@ import {
   getUnlockedOffer,
   updateUnlockedOffer,
 } from "../controllers/PlayerUnlockedOfferController.js"
+import {
+  addWeaponPreset,
+  getWeaponPreset,
+  updateWeaponPreset,
+} from "../controllers/PlayerBuildPresetController.js"
 
 const router = express.Router()
 
@@ -106,5 +111,11 @@ router
   .get(protect, getSkillProgress)
   .post(protect, addSkillProgress)
   .put(protect, updateSkillProgress)
+
+router
+  .route("/preset")
+  .get(protect, getWeaponPreset)
+  .post(protect, addWeaponPreset)
+  .put(protect, updateWeaponPreset)
 
 export default router

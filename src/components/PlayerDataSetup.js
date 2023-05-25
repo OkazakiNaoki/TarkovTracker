@@ -16,6 +16,7 @@ import {
   addUnlockedTrader,
   addUnlockedOffer,
 } from "../reducers/CharacterSlice"
+import { initializePreset } from "../reducers/CustomizationSlice"
 import { getAllHideout } from "../reducers/HideoutSlice"
 import { getTaskItemRequirements } from "../reducers/TraderSlice"
 import { addUserPreference } from "../reducers/UserSlice"
@@ -133,6 +134,8 @@ const PlayerDataSetup = () => {
         newSkills.push({ skillName: skill, level: 1 })
       })
       dispatch(addSkillProgress({ skills: newSkills }))
+      // player weapon presets data
+      dispatch(initializePreset())
     }
   }
 

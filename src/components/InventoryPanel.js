@@ -118,6 +118,18 @@ const InventoryPanel = ({ playerInventory }) => {
     closeModalHandle()
   }
 
+  const pageNumChangeHandle = (pageNum) => {
+    const newSearchParams = {}
+    const handbook = searchParams.get("handbook")
+      ? JSON.parse(searchParams.get("handbook"))
+      : null
+    newSearchParams.handbook =
+      handbook && handbook.length > 0 ? JSON.stringify(handbook) : ""
+    newSearchParams.keyword = searchParams.get("keyword") ?? ""
+    newSearchParams.page = pageNum
+    setSearchParams(newSearchParams)
+  }
+
   return (
     <>
       <EditValueModal
@@ -144,13 +156,7 @@ const InventoryPanel = ({ playerInventory }) => {
               <Paginate
                 page={statePage}
                 pages={statePages}
-                keyword={searchParams.get("keyword")}
-                handbook={
-                  searchParams.get("handbook")
-                    ? JSON.parse(searchParams.get("handbook"))
-                    : null
-                }
-                setSearchParams={setSearchParams}
+                setPageNum={pageNumChangeHandle}
                 usePrevNext={true}
               />
             )}

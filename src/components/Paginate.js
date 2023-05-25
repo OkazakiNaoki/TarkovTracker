@@ -4,12 +4,10 @@ import { Pagination } from "react-bootstrap"
 const Paginate = ({
   page,
   pages = 0,
-  keyword,
-  handbook,
-  setSearchParams,
   usePageNum = false,
   usePrevNext = false,
   useFirstLast = false,
+  setPageNum,
 }) => {
   const GetRange = (pageNum) => {
     let limit = 10 // page button range
@@ -40,14 +38,7 @@ const Paginate = ({
       <Pagination.Item
         key={`page_${pageNum}`}
         active={pageNum === page}
-        onClick={() => {
-          setSearchParams({
-            handbook:
-              handbook && handbook.length > 0 ? JSON.stringify(handbook) : "",
-            keyword: keyword ?? "",
-            page: pageNum,
-          })
-        }}
+        onClick={setPageNum.bind(null, pageNum)}
       >
         {pageNum}
       </Pagination.Item>
@@ -59,30 +50,13 @@ const Paginate = ({
       <Pagination>
         {useFirstLast && (
           <Pagination.First
-            onClick={() => {
-              setSearchParams({
-                handbook:
-                  handbook && handbook.length > 0
-                    ? JSON.stringify(handbook)
-                    : "",
-                keyword: keyword ?? "",
-                page: 1,
-              })
-            }}
+            onClick={setPageNum.bind(null, 1)}
+            disabled={page === 1}
           />
         )}
         {usePrevNext && (
           <Pagination.Prev
-            onClick={() => {
-              setSearchParams({
-                handbook:
-                  handbook && handbook.length > 0
-                    ? JSON.stringify(handbook)
-                    : "",
-                keyword: keyword ?? "",
-                page: page - 1,
-              })
-            }}
+            onClick={setPageNum.bind(null, page - 1)}
             disabled={page === 1}
           />
         )}
@@ -92,31 +66,14 @@ const Paginate = ({
           })}
         {usePrevNext && (
           <Pagination.Next
-            onClick={() => {
-              setSearchParams({
-                handbook:
-                  handbook && handbook.length > 0
-                    ? JSON.stringify(handbook)
-                    : "",
-                keyword: keyword ?? "",
-                page: page + 1,
-              })
-            }}
+            onClick={setPageNum.bind(null, page + 1)}
             disabled={page === pages}
           />
         )}
         {useFirstLast && (
           <Pagination.Last
-            onClick={() => {
-              setSearchParams({
-                handbook:
-                  handbook && handbook.length > 0
-                    ? JSON.stringify(handbook)
-                    : "",
-                keyword: keyword ?? "",
-                page: pages,
-              })
-            }}
+            onClick={setPageNum.bind(null, pages)}
+            disabled={page === pages}
           />
         )}
       </Pagination>

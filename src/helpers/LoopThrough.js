@@ -1,3 +1,36 @@
+import { findKey } from "lodash"
+
+export const findTopLevelKey = (obj, targetKey) => {
+  let result = null
+  for (let key in obj) {
+    if (key === targetKey) {
+      return key
+    } else if (typeof obj[key] === "object" && obj[key] !== null) {
+      const found = findTopLevelKey(obj[key], targetKey)
+      if (found !== null) {
+        result = key
+        break
+      }
+    }
+  }
+  return result
+}
+
+export const findKeyPath = (obj, targetKey, path = []) => {
+  for (let key in obj) {
+    if (key === targetKey) {
+      path.push(key)
+      return path
+    } else if (typeof obj[key] === "object" && obj[key] !== null) {
+      const found = findKeyPath(obj[key], targetKey, path.concat(key))
+      if (found !== null) {
+        return found
+      }
+    }
+  }
+  return null
+}
+
 const resolvePath = (object, path, defaultValue) =>
   path.split(".").reduce((o, p) => (o && o[p] ? o[p] : defaultValue), object)
 

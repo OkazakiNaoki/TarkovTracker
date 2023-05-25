@@ -9,6 +9,7 @@ import TraderReducer from "./reducers/TraderSlice"
 import HideoutReducer from "./reducers/HideoutSlice"
 import UserReducer from "./reducers/UserSlice"
 import CharacterReducer from "./reducers/CharacterSlice"
+import CustomizationReducer from "./reducers/CustomizationSlice"
 import SocialMediaReducer from "./reducers/MediaSlice"
 
 const gameDataPersistConfig = {
@@ -64,6 +65,13 @@ const combinedReducer = combineReducers({
     },
     CharacterReducer
   ),
+  customization: persistReducer(
+    {
+      key: "user-customization",
+      storage: session,
+    },
+    CustomizationReducer
+  ),
   socialMedia: persistReducer(
     {
       key: "game-socialmedia",
@@ -82,3 +90,9 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
+
+export const purgePersistStore = () => {
+  persistor.purge().then(() => {
+    window.location.reload()
+  })
+}

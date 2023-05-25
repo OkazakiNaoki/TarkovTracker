@@ -37,6 +37,18 @@ const FleamarketScreen = () => {
     )
   }, [searchParams])
 
+  const pageNumChangeHandle = (pageNum) => {
+    const newSearchParams = {}
+    const handbook = searchParams.get("handbook")
+      ? JSON.parse(searchParams.get("handbook"))
+      : null
+    newSearchParams.handbook =
+      handbook && handbook.length > 0 ? JSON.stringify(handbook) : ""
+    newSearchParams.keyword = searchParams.get("keyword") ?? ""
+    newSearchParams.page = pageNum
+    setSearchParams(newSearchParams)
+  }
+
   return (
     <>
       <HeadMeta title="Fleamarket" />
@@ -77,15 +89,9 @@ const FleamarketScreen = () => {
           <Paginate
             page={statePage}
             pages={statePages}
-            keyword={searchParams.get("keyword")}
-            handbook={
-              searchParams.get("handbook")
-                ? JSON.parse(searchParams.get("handbook"))
-                : null
-            }
-            setSearchParams={setSearchParams}
             usePageNum={true}
             useFirstLast={true}
+            setPageNum={pageNumChangeHandle}
           />
         </div>
       </Container>

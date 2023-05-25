@@ -5,8 +5,10 @@
 @use './mixins/background';
 @use './mixins/transition';
 @use './mixins/position';
+@use './mixins/cursor';
 @use './variables/color';
 @use './variables/keyword';
+
 
 // width and height
 @include width-height.generate-width-percentage-class(0);
@@ -19,7 +21,7 @@
 
 @include width-height.generate-width-pixel-class(32, 696);
 
-@include width-height.generate-square-class(20, 32, 60, 64);
+@include width-height.generate-square-class(20, 24, 32, 60, 64);
 
 @include width-height.generate-aspect-ratio-class((1, 1), (16, 9));
 
@@ -29,10 +31,15 @@
 @include box-model.generate-border-width-class(0, 1);
 
 @include box-model.generate-border-color-class(color.$lights);
+@include box-model.generate-border-color-class(color.$reds);
 
 @include box-model.generate-border-style-class(keyword.$border-styles);
 
 @include box-model.generate-border-radius-class(20, 40);
+
+.border-1px-transparent {
+    border: 1px solid rgba(0,0,0,0);
+}
 
 @include box-model.generate-margin-all-dir-class(-6);
 
@@ -53,6 +60,9 @@
 @include text.generate-text-color-class(color.$lights);
 @include text.generate-text-color-class(color.$sands);
 @include text.generate-text-color-class(color.$oranges);
+@include text.generate-text-color-class(color.$blues);
+@include text.generate-text-color-class(color.$greens);
+@include text.generate-text-color-class(color.$reds);
 
 @include text.generate-trunc-lines-class(2);
 
@@ -61,11 +71,22 @@
 
 // background
 @include background.generate-background-colors-class(color.$darks);
+@include background.generate-background-colors-class(color.$oranges);
+@include background.generate-background-colors-class(color.$blues);
+@include background.generate-background-colors-class(color.$greens);
+@include background.generate-background-colors-class(color.$reds);
+
+.bg-img-none {
+    background-image: none;
+}
 
 // transition
 
 // position
 @include position.generate-position-left-fraction(3);
+
+// cursor
+@include cursor.generate-cursor-class(keyword.$cursors);
 
 // user select
 .user-select-none {

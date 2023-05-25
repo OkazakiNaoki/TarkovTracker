@@ -10,6 +10,7 @@ module.exports = {
     filename: "bundle.js",
   },
   target: "web",
+  devtool: "source-map",
   devServer: {
     port: "3000",
     static: ["./server/public"],

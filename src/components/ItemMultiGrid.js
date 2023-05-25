@@ -5,6 +5,7 @@ import { TextStroke } from "./TextStroke"
 import { nonExistItemIconList } from "../data/NonExistItemIconList"
 import itemGrid from "../../server/public/static/images/cell_full_border.png"
 import placeholderImg from "../../server/public/static/images/m4a1_placeholder.png"
+import classNames from "classnames"
 
 const iconRes = {
   64: "",
@@ -15,33 +16,49 @@ const ItemMultiGrid = ({
   itemId,
   foundInRaid = false,
   shortName = null,
-  bgColor,
+  bgColor = null,
   width = 1,
   height = 1,
-  scale = 1,
   resolution,
+  scale = 1,
+  hideGrid = false,
+  fitParent = true,
 }) => {
   return (
     <div
-      className="h-100"
+      className={classNames({ "h-100": fitParent })}
       style={{
-        maxWidth: `${width * 64 * scale}px`,
-        maxHeight: `${height * 64 * scale}px`,
+        ...(!fitParent && { width: `${width * 64 * scale}px` }),
+        ...(!fitParent && { height: `${height * 64 * scale}px` }),
+        ...(fitParent && { maxWidth: `${width * 64 * scale}px` }),
+        ...(fitParent && { maxHeight: `${height * 64 * scale}px` }),
       }}
     >
       <div className="d-flex">
         <div className="position-relative multi-grid-item">
           {/* item grids */}
-          <Row sm={width} className="g-0 multi-grid-item-grid">
+          <Row
+            sm={width}
+            className={classNames("g-0", {
+              "multi-grid-item-grid": !hideGrid,
+            })}
+          >
             {new Array(width * height).fill().map((grid, i) => {
               return (
                 <Col key={`cell_${i}`} className="aspect-ratio-1-1">
-                  <div className="w-100 h-100 margin-rb-n1px">
+                  <div
+                    className={classNames(
+                      { "w-100": fitParent },
+                      { "h-100": fitParent }
+                    )}
+                  >
                     <Image
                       src={itemGrid}
-                      className="mw-100 mh-100"
+                      className={classNames("mw-100", "mh-100", {
+                        invisible: hideGrid,
+                      })}
                       style={{
-                        backgroundColor: `${bgColors[bgColor]}`,
+                        backgroundColor: `${bgColor && bgColors[bgColor]}`,
                       }}
                     ></Image>
                   </div>
@@ -54,7 +71,7 @@ const ItemMultiGrid = ({
             {itemId && !nonExistItemIconList.includes(itemId) && (
               <Image
                 src={`/asset/${itemId}-icon${iconRes[resolution]}.png`}
-                className="object-fit-contain mh-100 mw-100"
+                className="position-absolute object-fit-contain mh-100 mw-100"
               />
             )}
             {nonExistItemIconList.includes(itemId) && (
