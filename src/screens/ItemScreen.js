@@ -277,6 +277,7 @@ const ItemScreen = ({}) => {
                               {buy.vendor.name}
                               {buy.vendor.name !== "Flea Market" && (
                                 <TraderIconLevel
+                                  traderName={buy.vendor.name}
                                   level={buy.vendor.minTraderLevel}
                                 />
                               )}
@@ -387,16 +388,22 @@ const ItemScreen = ({}) => {
                       return (
                         <tr key={i}>
                           <td className="px-3">
-                            <Image
-                              src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
-                                traders,
-                                "name",
-                                barter.trader.name,
-                                "id"
-                              )}.png`}
-                              className="me-2 width-32px"
-                            />
-                            {barter.trader.name}
+                            <div className="d-flex align-items-center">
+                              <Image
+                                src={`/asset/${getArrObjFieldBWhereFieldAEqualTo(
+                                  traders,
+                                  "name",
+                                  barter.trader.name,
+                                  "id"
+                                )}.png`}
+                                className="me-2 width-32px"
+                              />
+                              {barter.trader.name}
+                              <TraderIconLevel
+                                traderName={barter.trader.name}
+                                level={barter.level}
+                              />
+                            </div>
                           </td>
                           <td className="ws-break-spaces">
                             {barter.requiredItems.reduce((prev, req, i) => {

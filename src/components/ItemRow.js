@@ -39,7 +39,7 @@ const ItemRow = ({ item, loading = false }) => {
                 height={item.height}
                 scale={1}
                 resolution={
-                  preference && preference.fleaMarketItemIconResolution
+                  preference ? preference.fleaMarketItemIconResolution : 64
                 }
               />
             </Link>
